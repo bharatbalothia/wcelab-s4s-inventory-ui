@@ -1,0 +1,17 @@
+[
+    {
+        "Supplier": "3M Company",
+        "Availability": "10,000",
+        "Date": "Now"
+    },
+    {
+        "Supplier": "Kimberly-Clark",
+        "Availability": "8,000",
+        "Date": "Now"
+    },
+    {
+        "Supplier": "SAS Safety",
+        "Availability": "12,000",
+        "Date": "10-06-2020"
+    }
+]

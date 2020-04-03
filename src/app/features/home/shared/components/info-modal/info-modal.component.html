@@ -1,0 +1,35 @@
+<!--
+ =================================================================
+   Licensed Materials - Property of IBM
+
+   5737-D18
+
+   (C) Copyright IBM Corp. 2018-2020 All Rights Reserved.
+
+   US Government Users Restricted Rights - Use, duplication or
+   disclosure restricted by GSA ADP Schedule Contract with
+   IBM Corp.
+ =================================================================
+-->
+
+<ibm-modal (overlaySelected)="closeModal()" [size]="displayData.size">
+    <ibm-modal-header (closeSelect)="closeModal()">{{ displayData.header }}</ibm-modal-header>
+    <section class="bx--modal-content">
+      <ng-container
+        *ngIf="displayData.template"
+        [ngTemplateOutlet]="displayData.template"
+        [ngTemplateOutletContext]="{ data: displayData.templateData }">
+      </ng-container>
+    </section>
+    <ibm-modal-footer>
+        <button
+          class="bx--btn"
+          [class.bx--btn--primary]="buttonData.class?.primary"
+          [class.bx--btn--danger]="buttonData.class?.danger"
+          [class.bx--btn--secondary]="!buttonData.class?.primary && !buttonData.class?.danger"
+          [attr.modal-primary-focus]="buttonData.primary"
+          (click)="onButton()">
+          {{ buttonData.text }}
+        </button>
+    </ibm-modal-footer>
+</ibm-modal>

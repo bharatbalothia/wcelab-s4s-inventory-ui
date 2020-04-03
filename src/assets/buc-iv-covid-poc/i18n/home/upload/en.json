@@ -1,0 +1,16 @@
+{
+  "UPLOAD": {
+    "TITLE_UPLOAD_INV": "Upload inventory",
+    "PAGE_LOADED": "Upload page loaded.",
+    "LABEL_instructions": "Upload the list of SKUs using a CSV file.",
+    "LABEL_tooltip": "Upload file must be of the following format:<br><br>nodeid,unitofmeasure,sku,productclass,quantity<br>oneNode1,EACH,012sku,,561<br>oneNode5,,013sku,,452",
+    "LABEL_upload": "Upload",
+    "LABEL_noData": "No data",
+    "LABEL_uploadSuccessful": "Upload was successful.",
+    "SKUID": "SKU ID",
+    "NODEID": "Node ID",
+    "QUANTITY": "Quantity",
+    "PRODUCTCLASS": "Product class",
+    "UOM": "Unit of measure"
+  }
+}

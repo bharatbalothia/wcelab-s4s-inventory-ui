@@ -1,0 +1,169 @@
+/* You can add global styles to this file, and also import other style files */
+@import "carbon-components/scss/globals/scss/styles.scss";
+@import "@carbon/colors/scss/colors.scss";
+
+// Use the gray 10 theme
+$carbon--theme: $carbon--theme--g10;
+@include carbon--theme();
+body {
+  background-color: $ui-background;
+}
+
+.page-component {
+  margin-left: 0.625rem;
+  margin-right: 0.625rem;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: calc(100vh - 2rem);
+}
+
+/* Override height of the ibm-dropdown-list menu*/
+ul.bx--list-box__menu.bx--multi-select {
+  max-height: 25rem;
+}
+
+/* Paddings */
+.p-20 {
+  padding: 20px;
+}
+.p-16 {
+  padding: $spacing-05;
+}
+.pt-16 {
+  padding: $spacing-05 0 0 0;
+}
+.px-16 {
+  padding: 0 $spacing-05;
+}
+.pl-16 {
+  padding: 0 0 0 $spacing-05;
+}
+.pt-32 {
+  padding-top: $spacing-07;
+}
+.pl-32 {
+  padding-left: $spacing-07;
+}
+.p-8 {
+  padding: $spacing-03;
+}
+.pl-8 {
+  padding: 0 0 0 $spacing-03;
+}
+.pr-8 {
+  padding: 0 $spacing-03 0 0;
+}
+.pb-8 {
+  padding: 0 0 $spacing-03 0;
+}
+.p-0 {
+  padding: 0;
+}
+.pr-0 {
+  padding-right: 0px;
+}
+.pl-0 {
+  padding-left: 0px;
+}
+.px-8 {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+.px-10 {
+  padding: 0px 10px 0px 10px;
+}
+.pt-24 {
+  padding-top: $spacing-06;
+}
+.pb-24 {
+  padding-bottom: $spacing-06;
+}
+.py-24 {
+  padding: $spacing-06 0;
+}
+.py-16-24{
+  padding-top: $spacing-05;
+  padding-bottom: $spacing-06;
+}
+
+/* Margins */
+.my-8 {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+.m-16 {
+  margin: $layout-01;
+}
+.mx-16 {
+  margin: 0 $layout-01;
+}
+.mr-16 {
+  margin: 0 $layout-01 0 0;
+}
+.mt-16 {
+  margin: $layout-01 0 0 0;
+}
+.mt-10{
+  margin-top: 10px;
+}
+.mt-2{
+  margin-top: 2px;
+}
+.ml-16 {
+  margin: 0 0 0 $layout-01;
+}
+.my-16 {
+  margin: $layout-01 0;
+}
+
+/* Backgrounds */
+.bg-color {
+    background-color: $ui-background;
+}
+.bg-white {
+  background-color: $ui-01;
+}
+.bg-ltgray {
+  background-color: $ui-02;
+}
+
+/* Structural styles */
+.buc-fill-height {
+  height: calc(100% - 16px);
+  flex: 1;
+}
+
+.buc-d-flex {
+  display: flex;
+}
+
+.buc-justify-content-between {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Positioning */
+.align-right {
+  display: flex;
+  justify-content: right;
+}
+
+.bx--grid.d--flex.bx--no-gutter {
+  display: flex;
+  flex-direction: column;
+  margin-right: 0;
+  margin-left: 0;
+  height: 100%;
+  min-width: 25rem;
+}
+
+.bx--grid.d--flex.bx--no-gutter.info-modal-grid {
+  .bx--row {
+    margin-right: 0;
+    margin-left: 0;
+  }
+  .bx--row.margin-left--1rem {
+    margin-left: 1rem;
+  }
+}

@@ -1,0 +1,12 @@
+[
+    {
+        "ProductId": "9211_N95",
+        "UOM": "UNIT",
+        "Availability": "5,000"
+    },
+    {
+        "ProductId": "8000_N95",
+        "UOM": "CASE",
+        "Availability": "3,000"
+    }
+]

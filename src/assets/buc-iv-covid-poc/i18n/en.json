@@ -1,0 +1,10 @@
+{
+    "APP_COMPONENT": {
+        "APP_NAME": "Emergency Portal",
+        "MSG_LOADING": "Loading...",
+        "MSG_ERROR": "Loading, refresh page if it is not redirecting to main page within 30 seconds.",
+        "TOPITEMS": "Top items",
+        "ITEMSEARCH": "Find inventory",
+        "IVUPLOAD": "Upload inventory"
+    }
+}

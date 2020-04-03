@@ -1,0 +1,22 @@
+@import "~@carbon/layout/scss/layout";
+@import "@carbon/colors/scss/colors.scss";
+
+
+.app-root-buc-app-fulfillment {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+
+    .app-region-header {
+        padding: 0px 15px;
+    }
+     .app-region-body {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        margin: $layout-01;
+        div {
+            height: 100%;
+        }
+    }
+}

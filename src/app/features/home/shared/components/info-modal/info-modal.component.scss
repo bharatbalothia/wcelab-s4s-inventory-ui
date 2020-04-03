@@ -1,0 +1,19 @@
+:host {
+
+  .bx--modal-content {
+    padding-right: 1rem;
+    display: flex;
+    margin-bottom: 2.5rem;
+  }
+
+  .bx--modal-container--sm .bx--modal-header {
+    line-height: 40px;
+    font-weight: bold;
+  }
+
+  button.bx--btn.bx--btn--primary {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+  }
+}

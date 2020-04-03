@@ -1,0 +1,58 @@
+<!--<div>
+  <nav>
+      <ul class="nav-area">
+          <li class ="active">
+              <a [routerLink]="'/home/homepage1'" >{{'APP_COMPONENT.TOPITEMS' | translate}} </a>
+          </li>
+          <li>
+              <a [routerLink]="'/home/itemsearch'" >{{'APP_COMPONENT.ITEMSEARCH' | translate}} </a>
+          </li>
+      </ul>
+  </nav>
+</div>-->
+<div class="pt-32"></div>
+<!--<div class="bx--row">
+    <div class="bx--col"><h2><span>{{'HOMEPAGE1.ITEM_AVAILABILITY_AND_DEMAND' | translate}}</span></h2></div>
+</div> -->
+<div class="bx--row">
+  <div class="bx--col">
+    <div class="bx--row">
+      <!--<buc-dropdown class="bx--col-md-4 bx--col-sm-6"
+        [label]="'HOMEPAGE1.LABEL_DG' | translate" [theme]="'dark'" [disabled]="!isScreenInitialized"
+        [invalid]="!isDGSelected && errorMessage != ''" [invalidText]="errorMessage"
+        placeholder="" [disabled]="false" (selected)="selectDG($event)" [items]="dgListValues">
+      </buc-dropdown>-->
+
+      <buc-dropdown class="bx--col-md-4 bx--col-sm-6"
+        [label]="'HOMEPAGE1.LABEL_CATEGORY' | translate" [theme]="'dark'" [disabled]="!isScreenInitialized"
+        placeholder="" [disabled]="false" (selected)="fetchAllProductsByCategoryId($event)" [items]="categoryListValues">
+      </buc-dropdown>
+
+      <buc-dropdown class="bx--col-md-4 bx--col-sm-6"
+        [label]="'HOMEPAGE1.LABEL_PRODUCT' | translate" [theme]="'dark'" [disabled]="!isScreenInitialized"
+        [invalid]="!isDGSelected && errorMessage != ''" [invalidText]="errorMessage"
+        placeholder="" [disabled]="false"  (selected)="fetchAllSuppliersByProductId($event)"  [items]="productListValues">
+      </buc-dropdown>
+    </div>
+    <div class="bx--row">
+      <div class="bx--col">
+        <buc-table [model]='model' [(selectedItems)]="selected" [hasSearch]=true [size]="'sm'" [tableToolbarModel]="tableToolbarModel" _batchText="items selected"
+                (selectPage)="onSelectPage($event)" (selectedItemsChange)="onSelectedItems($event)" (sort)="onSort($event)" (rowsSelectedChange)="selectRows($event)"
+                class="bx--data-table bx--data-table--short bx--data-table--no-border" [showSelectionColumn]="false" [searchValue]="searchValue">
+                <tbody>
+                  <tr>
+                    <td class="no-data" colspan="3">
+                      <div>
+                        <buc-empty-state stateMessage="{{'HOMEPAGE1.LABEL_SELECT_DG' | translate}}"></buc-empty-state>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+        </buc-table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ibm-placeholder></ibm-placeholder>
+    

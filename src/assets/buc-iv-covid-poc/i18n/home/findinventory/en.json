@@ -1,0 +1,18 @@
+{
+    "FINDINVENTORY": {
+        "TITLE": "Find item inventory",
+        "SEARCHFOR": "Enter SKU ID",
+        "SEARCH": "Search",
+        "TOTALAVAILABLE": "Total Available",
+        "COUNTY": "County",
+        "NAME": "Name",
+        "AVAILABLE": "Availability",
+        "REGION": "Region",
+        "LABEL_required": "Item Id is required",
+        "NODATA": "No data found.",
+        "REPLACEMENTITEMS": "Replacement items inventory",
+        "SKU": "SKU ID:",
+        "TOTAL": "Total:",
+        "CLOSE": "Close"
+    }
+}

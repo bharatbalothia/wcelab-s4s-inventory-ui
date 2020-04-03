@@ -1,0 +1,61 @@
+
+<div>
+    <nav>
+        <ul class="nav-area">
+            <li>
+                <a [routerLink]="'/home/homepage1'" >{{'APP_COMPONENT.TOPITEMS' | translate}} </a>
+            </li>
+            <li class="active">
+                <a [routerLink]="'/home/itemsearch'" >{{'APP_COMPONENT.ITEMSEARCH' | translate}} </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+    <div class="bx--row pt-32">
+        <div class="bx--col">
+            <h2>
+                <span>{{'FINDINVENTORY.TITLE' | translate}}</span>
+            </h2>
+        </div>
+    </div>
+    <div class="bx--row">
+        <div class="bx--col search-region">
+            <div class="bx--row pt-24">
+                <div class="bx--col">
+                    <div class="bx--row pl-16">
+                        <div class="bx--no-gutter bx--col-lg-10 bx--col-md-6 bx--col-sm-2">
+                            <buc-label class=""
+                                label="{{'FINDINVENTORY.SEARCHFOR' | translate}}"
+                                placeholder="{{'FINDINVENTORY.SEARCHFOR' | translate}}" [basicInput]="true"
+                                [(inputValue)]="itemId">
+                            </buc-label>
+                        </div>
+                        <span></span>
+                    <!--
+                        <input ibmText #itemidsearchtext [autocomplete]="true" (blur)="onText(itemidsearchtext.value)">
+                    -->
+                        <div class="search-btn bx--no-gutter bx--col-lg-2 bx--col-md-2 bx--col-sm-2 pt-18 pl-16">
+                            <buc-button
+                                [attr.tid]="'search-inventory'"
+                                [btnSize]="'md'"
+                                (click)="findInventory()">
+                                {{'FINDINVENTORY.SEARCH' | translate}}
+                                <ibm-icon-search16 class="bx--btn__icon"></ibm-icon-search16>
+                            </buc-button>
+                        </div>
+                    </div>
+                    
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="false" class="bx--col summary-region">
+        <app-item-summary></app-item-summary>
+    </div>
+    <div class="bx--col dg-availability-region">
+        <app-item-dg-availability></app-item-dg-availability>
+    </div>
+
+    <ibm-placeholder></ibm-placeholder>

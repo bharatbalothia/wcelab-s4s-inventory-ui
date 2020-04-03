@@ -1,0 +1,57 @@
+<div class="screen bx--row pt-24">
+  <buc-tabs [tabData]="tabData"></buc-tabs>
+  <!--
+  <div class="bx--col">
+    <h2><span>{{'FINDINVENTORY.COUNTY' | translate}}</span></h2>
+  </div>
+  <div class="bx--col">
+    <h2><span>{{'FINDINVENTORY.REGION' | translate}}</span></h2>
+  </div>
+  -->
+  <ng-template #invTable>
+    <div class="bx--row">
+      <div class="bx--col">
+        <div class="bx--row">
+          <div class="bx--col">
+            <buc-table [model]='model' [(selectedItems)]="selected" [hasSearch]=false [size]="'sm'" _batchText="items selected"
+                (selectPage)="onSelectPage($event)" (selectedItemsChange)="onSelectedItems($event)" (sort)="onSort($event)" (rowsSelectedChange)="selectRows($event)"
+                class="bx--data-table bx--data-table--short bx--data-table--no-border" [showSelectionColumn]="false" [searchValue]="searchValue">
+                <tbody>
+                  <tr>
+                    <td class="no-data" colspan="3">
+                      <div>
+                        <buc-empty-state stateMessage="{{'FINDINVENTORY.NODATA' | translate}}"></buc-empty-state>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+            </buc-table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>  
+</div>
+
+<ng-template #availability let-data="data">
+  {{ data.total }}
+</ng-template>
+
+<ng-template #availWithLink let-data="data">
+  <a (click)="onViewChildItemModal(data.childItemIds, data.childItemTotals)">{{ data.total }}</a>
+</ng-template>
+
+<ng-template #childItemModal let-data="data">
+  <div class="bx--grid d--flex bx--no-gutter info-modal-grid">
+    <ng-container *ngFor="let child of data.childItemIds; index as i">
+      <div class="bx--row">
+        <div class="bx--col">
+          {{'FINDINVENTORY.SKU' | translate}} {{ child }}
+        </div>
+        <div class="bx--col">
+          {{'FINDINVENTORY.TOTAL' | translate}} {{ data.childItemTotals[i] }}
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</ng-template>
