@@ -52,26 +52,13 @@ export class InventoryAvailabilityService {
           segment: undefined,
           segmentType: undefined
         };
-        
-
-
 
          return this.availabilitySvc.postByTenantIdV1AvailabilityNetwork({
            $queryParameters: { },
            tenantId: BucSvcAngularStaticAppInfoFacadeUtil.getInventoryTenantId(),
            body: reqPayload 
          });
-
-
-        // const headers = { 'Authorization': 'Bearer jl6SBDozmCrrvwlxTnhUNPqUOaIWGbab', 'Content-Type': 'application/json',  'Accept': 'application/json' }
-        // const body =  reqPayload ;
-        // const obsToReturn$  = this._httpClient.post<any>('https://edge-api.watsoncommerce.ibm.com/inventory/us-6fd57b71/v1/availability/network', body, { headers });
-        // console.log('Padman Response Suppliers '+ obsToReturn$);
-        // return obsToReturn$;
-
-        
-      
-
+ 
     }
 
     private _buildGetNetworkAvailabilityRequestLine(method, dgId, itemId, uom, productClass) {

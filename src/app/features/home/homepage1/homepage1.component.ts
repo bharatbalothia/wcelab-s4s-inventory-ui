@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { fromEvent } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { DatePipe } from '@angular/common';
 
 import {
   BucTableToolbarModel,
@@ -17,6 +18,8 @@ import { InventoryDemandService } from '../shared/services/inventory-demand.serv
 import  *  as   GetSuppliersByProductIdJSON from './GetSuppliersByProductId.json';
 import  *  as   GetSuppliersByProductIdGroupByItemJSON from './GetSuppliersByProductIdGroupByItem.json';
 import  *  as   GetLocationAndAvailabilityByItem from './GetLocationAndAvailabilityByItem.json';
+
+// PENDING - 1 - Need additonal logic to see the logged in users timezone
 
 @Component({
   selector: 'app-homepage1',
@@ -374,7 +377,7 @@ export class Homepage1Component implements OnInit {
   }
 
   
-  //Padman: Fetch All Suppliers search by user selected ProductId 
+  //Padman: Get Availability & Date Group by Supplier For user selected ProductId 
   public fetchAllSuppliersByProductId(event) {
     console.log('fetchAllSuppliersByProductId starts')
     this.selectedProductId = event.item.content;
@@ -382,46 +385,48 @@ export class Homepage1Component implements OnInit {
      
     if (this.selectedProductId !== '') {
      this._getAllSuppliersByProductId(this.selectedProductId);
-      
     }
   }
 
   private async _getAllSuppliersByProductId(selectedProductId) {
     try {
-      const ivResponse = await this.invAvailService.getInventoryForDG( [selectedProductId], '3MC', ['UNIT'],['GOOD'] ).toPromise();
-      //const responses4s = (GetSuppliersByProductIdJSON as any).default;
-      this.parseInventoryForDGResponse(ivResponse) ;
-
       const allSuppliersHavingSelectedProduct = [];
-      if (ivResponse.length > 0) {
-        for (const supplier of ivResponse) {
-          allSuppliersHavingSelectedProduct.push(supplier); 
+      
+      console.log('this.allSuppliers', this.allSuppliers)
+      for (const supplier of this.allSuppliers) {
+        const supplierName = supplier.supplier_id;
+        
+        console.log('SupplierName selectedProductId ', supplierName, selectedProductId)
+        const ivResponse = await this.invAvailService.getInventoryForDG( [selectedProductId], supplierName , ['UNIT'],['GOOD'] ).toPromise();
+        console.log('getInventoryForDG',ivResponse, ivResponse.lines.length);
+        if ( ivResponse.lines.length > 0) {
+          const availabilityGroupBySupplier = ivResponse.lines[0];
+           
+          if( availabilityGroupBySupplier.networkAvailabilities.length > 0 &&
+            ( availabilityGroupBySupplier.networkAvailabilities[0].totalAvailableQuantity >0 ) ){
+
+            const now = Date.now();
+            var availableDate = 'Now';
+            if((new Date(availabilityGroupBySupplier.networkAvailabilities[0].earliestShipTs)).getTime() > now){
+              availableDate = new DatePipe('en-US').transform(availabilityGroupBySupplier.networkAvailabilities[0].earliestShipTs, 'MM/dd/yyyy');
+            }
+            allSuppliersHavingSelectedProduct.push({
+              Supplier: supplier.supplier_id,
+              Availability: availabilityGroupBySupplier.networkAvailabilities[0].totalAvailableQuantity,
+              Date: availableDate
+              //TODO PENDING - 1
+            }); 
+          }
         }
       }
-      console.log('Padman allSuppliersHavingSelectedProduct', allSuppliersHavingSelectedProduct, ivResponse) ;   
-      const allSuppliersSearchByProductId = allSuppliersHavingSelectedProduct.map((supplier) => {
-        return {
-          Supplier: supplier.Supplier,
-          Availability: supplier.Availability,
-          Date: supplier.Date
-        };
-      });
       console.log('allSuppliersSearchByProductId to ' ,this.allSuppliersSearchByProductId);
-      this.prepareSupplierTable(allSuppliersSearchByProductId);
+      this.prepareSupplierTable(allSuppliersHavingSelectedProduct);
     } catch (err) {
       console.log('Error fetching availability: ', err);
     }
   }
 
-  parseInventoryForDGResponse(ivResponse){
-  
-    // console.log('ivResponse', ivResponse);
-    // console.log('ivResponse.lines.length', ivResponse.lines.length);
 
-    // for (let index = 0; index < ivResponse.lines.length; index++) {
-    //   console.log('ivResponse.lines[index].lineId', ivResponse.lines[index].lineId;
-    // }
-  }
 
   prepareSupplierTable(response) {
     this.model.header = [
@@ -503,3 +508,4 @@ export class Homepage1Component implements OnInit {
   selectRows(e) {
   }
 }
+ 
