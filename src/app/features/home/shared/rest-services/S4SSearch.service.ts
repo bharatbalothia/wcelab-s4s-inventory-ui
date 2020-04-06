@@ -13,6 +13,8 @@
 /* tslint:disable */
 import { HttpClient } from '@angular/common/http';
 import { HttpParams } from "@angular/common/http";
+import { retry, catchError } from 'rxjs/operators';
+ 
 
 import {
     Injectable
@@ -641,7 +643,7 @@ class S4SSearchService {
 
         const headers = { 'Authorization': 'Basic N21jNGZyN2tqdzh6cnE3a2loYmZpYTV5cThkOHJxNjU6dDg5czk1amJqbm1lZmQyZHhzNDN1bmwxcjJwNnp1ZjA=', 'Content-Type': 'application/json',  'Accept': 'application/json' }
     
-        const obsToReturn$  = this._httpClient.get("https://s4s-supplement-service.mybluemix.net/products",  { headers });
+        const obsToReturn$  = this._httpClient.get("https://s4s-supplement-service-dev.mybluemix.net/products",  { headers }); 
         console.log('Custom Rest call to get all Countries '+ obsToReturn$);
         return obsToReturn$;
     }
@@ -663,11 +665,8 @@ class S4SSearchService {
         $refresh ? : any,
         useMocks ? : boolean
     }): Observable < any > {
-        console.log('Padman Calling S4S');
         const headers = { 'Authorization': 'Basic N21jNGZyN2tqdzh6cnE3a2loYmZpYTV5cThkOHJxNjU6dDg5czk1amJqbm1lZmQyZHhzNDN1bmwxcjJwNnp1ZjA=', 'Content-Type': 'application/json',  'Accept': 'application/json' }
-    
-        const obsToReturn$  = this._httpClient.get("https://s4s-supplement-service.mybluemix.net/product/categories", { headers });
-        console.log('Padman Response All categories'+ obsToReturn$);
+        const obsToReturn$  = this._httpClient.get("https://s4s-supplement-service-dev.mybluemix.net/product/categories", { headers });
         return obsToReturn$;
     }
 
@@ -687,11 +686,8 @@ class S4SSearchService {
         $refresh ? : any,
         useMocks ? : boolean
     }): Observable < any > {
-        console.log('Padman params All Products by CategoryId '+ parameters['categoryId']);
         const headers = { 'Authorization': 'Basic N21jNGZyN2tqdzh6cnE3a2loYmZpYTV5cThkOHJxNjU6dDg5czk1amJqbm1lZmQyZHhzNDN1bmwxcjJwNnp1ZjA=', 'Content-Type': 'application/json',  'Accept': 'application/json' }
-    
-        const obsToReturn$  = this._httpClient.get("https://s4s-supplement-service.mybluemix.net/products/category/"+parameters['categoryId'] , { headers });
-        console.log('Padman Response All Products by CategoryId '+ obsToReturn$);
+        const obsToReturn$  = this._httpClient.get("https://s4s-supplement-service-dev.mybluemix.net/products/category/"+parameters['categoryId'] , { headers });
         return obsToReturn$;
     }
 
@@ -704,11 +700,38 @@ class S4SSearchService {
         useMocks ? : boolean
     }): Observable < any > {
         const headers = { 'Authorization': 'Basic N21jNGZyN2tqdzh6cnE3a2loYmZpYTV5cThkOHJxNjU6dDg5czk1amJqbm1lZmQyZHhzNDN1bmwxcjJwNnp1ZjA=', 'Content-Type': 'application/json',  'Accept': 'application/json' }
-    
-        const obsToReturn$  = this._httpClient.get("https://s4s-supplement-service.mybluemix.net/suppliers", { headers });
-        console.log('Padman Response Suppliers '+ obsToReturn$);
+        const obsToReturn$  = this._httpClient.get("https://s4s-supplement-service-dev.mybluemix.net/suppliers", { headers });
         return obsToReturn$;
     }
+
+    public getContactDetailsOfSelectedSupplier(parameters: {
+        'supplierId'  : string,
+        $queryParameters ? : any, 
+        $headers ? : any,
+        $cache ? : any,
+        $refresh ? : any,
+        useMocks ? : boolean
+    }): Observable < any > {
+        const headers = { 'Authorization': 'Basic N21jNGZyN2tqdzh6cnE3a2loYmZpYTV5cThkOHJxNjU6dDg5czk1amJqbm1lZmQyZHhzNDN1bmwxcjJwNnp1ZjA=', 'Content-Type': 'application/json',  'Accept': 'application/json' }
+        const obsToReturn$  = this._httpClient.get("https://s4s-supplement-service-dev.mybluemix.net/suppliers/"+ parameters['supplierId'], { headers });
+        return obsToReturn$;
+    }
+
+    
+
+    public getItemDetails(parameters: {
+        'childItemId'  : string,
+        $queryParameters ? : any, 
+        $headers ? : any,
+        $cache ? : any,
+        $refresh ? : any,
+        useMocks ? : boolean
+    }): Observable < any > {
+        const headers = { 'Authorization': 'Basic N21jNGZyN2tqdzh6cnE3a2loYmZpYTV5cThkOHJxNjU6dDg5czk1amJqbm1lZmQyZHhzNDN1bmwxcjJwNnp1ZjA=', 'Content-Type': 'application/json',  'Accept': 'application/json' }
+        return  this._httpClient.get("https://s4s-supplement-service-dev.mybluemix.net/products/"+ parameters['childItemId'], { headers });
+    }
+
+ 
 }
 
 export {

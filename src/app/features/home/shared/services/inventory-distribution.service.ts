@@ -4,6 +4,9 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { DistributionGroupService } from '../rest-services/DistributionGroup.service';
 import { S4SSearchService } from '../rest-services/S4SSearch.service';
+import { ShipNodeService } from '../rest-services/ShipNode.service';
+import { catchError } from 'rxjs/operators';
+import { of as observableOf } from 'rxjs';
 
 import { BucSvcAngularStaticAppInfoFacadeUtil } from '@buc/svc-angular';
 
@@ -14,7 +17,8 @@ export class InventoryDistributionService {
 
   constructor(
     private dgSvc: DistributionGroupService,
-  	private s4sSvc: S4SSearchService
+    private s4sSvc: S4SSearchService,
+    private shipNodeSvc : ShipNodeService
   ) { }
 
   public getDistributionRuleDetails(dgId: string): Observable<any> {
@@ -53,6 +57,28 @@ export class InventoryDistributionService {
     return this.s4sSvc.fetchAllSuppliers({} )
     .pipe( map(r => r) );
   }
+
+  
+  public getContactDetailsOfSelectedSupplier(supplierId : string): Observable<any> {
+    return this.s4sSvc.getContactDetailsOfSelectedSupplier({supplierId : supplierId} )
+    .pipe( map(r => r) );
+  }
+   
+  public getChildItemDetails(childItemId : string): Observable<any> { 
+    return this.s4sSvc.getItemDetails({childItemId : childItemId} )
+    .pipe( map(r => r) )
+    .pipe(catchError((err) => observableOf([])));
+  }
+
+  public getByTenantIdV1ConfigurationShipNodes(): Observable<any> {  
+    const tenantId = BucSvcAngularStaticAppInfoFacadeUtil.getInventoryTenantId();
+    return this.shipNodeSvc.getByTenantIdV1ConfigurationShipNodes({ tenantId : tenantId } )
+    .pipe( map(r => r) );
+  }
+  
+  
+  
+  
 }
 
 export interface DistributionRuleListApiResponse {

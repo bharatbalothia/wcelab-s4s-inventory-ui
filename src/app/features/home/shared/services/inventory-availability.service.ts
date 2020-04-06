@@ -38,25 +38,18 @@ export class InventoryAvailabilityService {
       uoms: any[],
       productClass: any[]
     ) {
-        const deliveryMethod = ['SHP'];
-        const lines = [];
-
-        items.forEach((item, idx) => {
-          deliveryMethod.forEach(method => {
-            lines.push(this._buildGetNetworkAvailabilityRequestLine(method, dgId, item, uoms[idx], productClass[idx]));
-          });
-        });
-        const reqPayload: GetNetworkAvailabilityRequest = {
-          distributionGroupId: dgId,
-          lines,
-          segment: undefined,
-          segmentType: undefined
-        };
-
+        const reqPayload = {
+          "deliveryMethod": "SHP",
+          "unitOfMeasure": uoms[0],
+           "lineId": "1"
+        }
+        
          return this.availabilitySvc.postByTenantIdV1AvailabilityNetwork({
-           $queryParameters: { },
+           $queryParameters: {  },
            tenantId: BucSvcAngularStaticAppInfoFacadeUtil.getInventoryTenantId(),
-           body: reqPayload 
+           body: reqPayload ,
+           itemId: items[0], 
+           dgId : dgId 
          });
  
     }
@@ -82,35 +75,48 @@ export class InventoryAvailabilityService {
       productClass: any[]
     ) {
         const deliveryMethod = ['SHP'];
-        const lines = [];
-        items.forEach((item, idx) => {
-          deliveryMethod.forEach(method => {
-            lines.push(this._buildGetNodeAvailabilityRequestLine(method, nodes, item, uoms[idx], productClass[idx]));
-          });
-        });
-        const reqPayload: GetNodeAvailabilityRequest = {
-          lines,
-          segment: undefined,
-          segmentType: undefined
-        };
 
+        const reqPayload = {
+          'deliveryMethod': 'SHP',
+          'itemId' : items[0], 
+          'unitOfMeasure': uoms[0],
+          'shipNodes': nodes
+      }; 
+         
+        console.log('Request payload getInventoryForNodes', reqPayload);
         return this.availabilitySvc.postByTenantIdV1AvailabilityNode({
           $queryParameters: { },
           tenantId: BucSvcAngularStaticAppInfoFacadeUtil.getInventoryTenantId(),
-          body: reqPayload
+          body: reqPayload,
+          productId :  items[0]
         });
     }
 
-    private _buildGetNodeAvailabilityRequestLine(method, nodes, itemId, uom, productClass) {
-        const line: GetNodeAvailabilityRequestLine = {
-            deliveryMethod: method,
-            itemId,
-            lineId: productClass ? `${itemId}_${method}_${uom}_${productClass}` : `${itemId}_${method}_${uom}`,
-            productClass,
-            unitOfMeasure: uom,
-            shipNodes: nodes
-        };
-        return line;
+    public getInventoryForNetwork(
+      items: string[],
+      nodes: string[],
+      uoms: any[],
+      productClass: any[]
+    ) {
+      /*  const deliveryMethod = ['SHP'];
+        const reqPayload = {
+          'deliveryMethod': 'SHP',
+          'itemId' : items[0], 
+          'unitOfMeasure': uoms[0],
+          'shipNodes': nodes
+      };*/ 
+      const reqPayload = {
+        'deliveryMethod': 'SHP',
+        'unitOfMeasure': 'EACH'    
+      }
+        
+        return this.availabilitySvc.postByTenantIdV1AvailabilityNetworkBySupplierAndProductId({
+          $queryParameters: { },
+          tenantId: BucSvcAngularStaticAppInfoFacadeUtil.getInventoryTenantId(),
+          body: reqPayload,
+          productId :  items[0],
+          supplierId : nodes[0]
+        });
     }
 
     public getInventoryBreakupForNodes(

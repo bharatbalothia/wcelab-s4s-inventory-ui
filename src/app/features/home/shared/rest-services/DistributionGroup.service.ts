@@ -682,12 +682,7 @@ class DistributionGroupService {
         // if (cached !== undefined && !parameters.$refresh) {
         //     return Observable.of(cached).map(o => JSON.stringify(o));
         // }
-        console.log(' --- getByTenantIdV1ConfigurationDistributionGroups starts--- ');
-        console.log('url'+ url);
-        console.log('this.domain'+ this.domain);
-        console.log('resourceDomain'+ this.resourceDomain);
-        console.log('queryParameters'+ queryParameters);
-        console.log('options'+ this.options);
+ 
         
         
         const obsToReturn$ = this.http.get(url, this.resourceDomain, queryParameters, this.options);
@@ -771,14 +766,7 @@ class DistributionGroupService {
         // if (cached !== undefined && !parameters.$refresh) {
         //     return Observable.of(cached).map(o => JSON.stringify(o));
         // }
-        console.log(' --- getByTenantIdV1ConfigurationDistributionGroupsByDistributionGroupId starts--- ');
-        console.log('url'+ url);
-        console.log('this.domain'+ this.domain);
-        console.log('resourceDomain'+ this.resourceDomain);
-        console.log('queryParameters'+ queryParameters);
-        console.log('options'+ this.options);
-        console.log(' --- getByTenantIdV1ConfigurationDistributionGroupsByDistributionGroupId end--- ');
-
+        
         const obsToReturn$ = this.http.get(url, this.resourceDomain, queryParameters, this.options);
 
         return obsToReturn$;
@@ -868,13 +856,6 @@ class DistributionGroupService {
         if (!headers['Content-Type']) {
             headers['Content-Type'] = 'application/json; charset=utf-8';
         }
-        console.log(' --- putByTenantIdV1ConfigurationDistributionGroupsByDistributionGroupId starts--- ');
-        console.log('url'+ url);
-        console.log('this.domain'+ this.domain);
-        console.log('resourceDomain'+ this.resourceDomain);
-        console.log('queryParameters'+ queryParameters);
-        console.log('options'+ this.options);
-        console.log(' --- putByTenantIdV1ConfigurationDistributionGroupsByDistributionGroupId end--- ');
         const obsToReturn$ = this.http.put(url, this.resourceDomain, queryParameters, body, this.options);
 
         return obsToReturn$;
@@ -952,13 +933,6 @@ class DistributionGroupService {
             headers['Content-Type'] = 'application/json; charset=utf-8';
         }
         
-        console.log(' --- putByTenantIdV1ConfigurationDistributionGroupsByDistributionGroupId starts--- ');
-        console.log('url'+ url);
-        console.log('this.domain'+ this.domain);
-        console.log('resourceDomain'+ this.resourceDomain);
-        console.log('queryParameters'+ queryParameters);
-        console.log('options'+ this.options);
-        console.log(' --- putByTenantIdV1ConfigurationDistributionGroupsByDistributionGroupId end--- ');
         const obsToReturn$ = this.http.delete(url, this.resourceDomain, queryParameters, body, this.options);
 
         return obsToReturn$;

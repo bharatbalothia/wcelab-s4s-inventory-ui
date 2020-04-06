@@ -393,7 +393,7 @@ type GetNodeAvailabilityRequest = {
 
 };
 type GetNodeAvailabilityRequestLine = {
-    'lineId': string
+    'lineId' ?: string
 
     'itemId': string
 
@@ -573,29 +573,24 @@ class AvailabilityService {
         this.options = BucCommBEHttpWrapperService.getRequestOptions(this.resourceDomain)
     }
 
-    /**
-    * Provides the current availability picture, including non-expired reservations, at the network level. Responds with availability based on configured distribution groups.
 
-    * @method
-    * @name Availability#postByTenantIdV1AvailabilityNetwork
-         * @param {} body - Input JSON
-         * @param {string} tenantId - The IBM provided tenant ID to access your APIs.
-    */
-    public postByTenantIdV1AvailabilityNetwork(parameters: {
-        'body': GetNetworkAvailabilityRequest,
+    public postByTenantIdV1AvailabilityNetworkBySupplierAndProductId(parameters: {
+        'body': any,
         'tenantId': string,
         $queryParameters ? : any,
         $headers ? : any,
         $cache ? : any,
         $refresh ? : any,
-        useMocks ? : boolean
+        useMocks ? : boolean,
+        productId ? : string,
+        supplierId ? : string 
     }){
-
         let useMocks = false
         if (parameters.useMocks) {
             useMocks = true
         }
-        let path = '/{tenantId}/v1/availability/network'
+        let path = '/{tenantId}/v1/availability/'+parameters['productId']+'/network/'+parameters['supplierId'];
+       
 
         const headers = parameters.$headers || {}
         headers['Accept'] = 'application/json';
@@ -638,9 +633,82 @@ class AvailabilityService {
         if (!headers['Content-Type']) {
             headers['Content-Type'] = 'application/json; charset=utf-8';
         }
-
+        //console.log('Padman Before invoking the request' , url, body);
         const obsToReturn$ = this.http.post(url, this.resourceDomain, queryParameters, body, this.options);
-        console.log('Padman Availability by N/w' , obsToReturn$);
+        //console.log('Padman Availability by N/w' , obsToReturn$);
+        return obsToReturn$;
+    }
+    /**
+    * Provides the current availability picture, including non-expired reservations, at the network level. Responds with availability based on configured distribution groups.
+
+    * @method
+    * @name Availability#postByTenantIdV1AvailabilityNetwork
+         * @param {} body - Input JSON
+         * @param {string} tenantId - The IBM provided tenant ID to access your APIs.
+    */
+    public postByTenantIdV1AvailabilityNetwork(parameters: {
+        'body': any,
+        'tenantId': string,
+        $queryParameters ? : any,
+        $headers ? : any,
+        $cache ? : any,
+        $refresh ? : any,
+        useMocks ? : boolean,
+        productId ? : string,
+        supplierId ? : string ,
+        itemId : string, 
+        dgId : string
+    }){
+
+        let useMocks = false
+        if (parameters.useMocks) {
+            useMocks = true
+        }
+        let path = '/{tenantId}/v1/availability/'+parameters['itemId'] +'/network/'+parameters['dgId'] ;
+        const headers = parameters.$headers || {}
+        headers['Accept'] = 'application/json';
+        headers['Content-Type'] = 'application/json';
+
+        const form = {}
+        let body = {}
+        const queryParameters = {}
+
+        // allow use of param with or without underscore
+        parameters['body'] = parameters['body'] || parameters['body'];
+
+        if (parameters['body'] !== undefined) {
+            body = parameters['body'];
+        }
+
+        if (parameters['body'] === undefined) {
+            return throwError(new Error('Missing required  parameter: body'));
+        }
+
+        // allow use of param with or without underscore
+        parameters['tenantId'] = parameters['tenantId'] || parameters['tenantId'];
+
+        path = path.replace('{tenantId}', parameters['tenantId']);
+
+        if (parameters['tenantId'] === undefined) {
+            return throwError(new Error('Missing required  parameter: tenantId'));
+        }
+
+        if (parameters.$queryParameters) {
+            Object.keys(parameters.$queryParameters)
+                .forEach(function(parameterName) {
+                    const parameter = parameters.$queryParameters[parameterName];
+                    queryParameters[parameterName] = parameter;
+                });
+        }
+
+        const url = this.domain + path;
+
+        if (!headers['Content-Type']) {
+            headers['Content-Type'] = 'application/json; charset=utf-8';
+        }
+//        console.log('Padman Before invoking the request' , url, body);
+        const obsToReturn$ = this.http.post(url, this.resourceDomain, queryParameters, body, this.options);
+//        console.log('Padman Availability by N/w' , obsToReturn$);
         return obsToReturn$;
     }
     /**
@@ -652,21 +720,23 @@ class AvailabilityService {
          * @param {string} tenantId - The IBM provided tenant ID to access your APIs.
     */
     public postByTenantIdV1AvailabilityNode(parameters: {
-        'body': GetNodeAvailabilityRequest,
+        'body',
         'tenantId': string,
         $queryParameters ? : any,
         $headers ? : any,
         $cache ? : any,
         $refresh ? : any,
-        useMocks ? : boolean
+        useMocks ? : boolean,
+        'productId' ? : string
     }) {
 
         let useMocks = false
         if (parameters.useMocks) {
             useMocks = true
         }
-        let path = '/{tenantId}/v1/availability/node'
-
+        
+        let path = '/us-4474f893/v1/availability/'+parameters['productId']+'/node'
+         
         const headers = parameters.$headers || {}
         headers['Accept'] = 'application/json';
         headers['Content-Type'] = 'application/json';
@@ -708,7 +778,8 @@ class AvailabilityService {
         if (!headers['Content-Type']) {
             headers['Content-Type'] = 'application/json; charset=utf-8';
         }
-
+        console.log('url body', url, body, this.options, queryParameters);
+        
         const obsToReturn$ = this.http.post(url, this.resourceDomain, queryParameters, body, this.options);
 
         return obsToReturn$;

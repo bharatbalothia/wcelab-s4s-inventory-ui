@@ -561,7 +561,7 @@ class ShipNodeService {
          * @param {string} tenantId - The IBM provided tenant ID to access your APIs.
     */
     public getByTenantIdV1ConfigurationShipNodes(parameters: {
-        'tenantId': string,
+        'tenantId'  : string,
         $queryParameters ? : any,
         $headers ? : any,
         $cache ? : any,

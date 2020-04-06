@@ -5,7 +5,9 @@
         "LABEL_SELECT_DG": "Select your network level to see data",
         "LABEL_CATEGORY": "CATEGORY",
         "LABEL_PRODUCT": "PRODUCT",
-        "LABEL_SELECT_PRODUCT" : "SELECT PRODUCT"
+        "LABEL_SELECT_PRODUCT" : "SELECT PRODUCT",
+        "LABEL_FETCH_SUPPLIER_DETAILS" : "Supplier Record",
+        "LABEL_FETCH_SUPPLIER_LOCATION_DETAILS" : "Suppler Location"
 
     },
     "LIST_TABLE": {
@@ -13,7 +15,10 @@
         "HEADER_AVAILABILITY": "Availability",
         "HEADER_DEMAND": "Demand",
         "HEADER_SUPPLIER": "Supplier",
-        "HEADER_DATE": "Date"
+        "HEADER_DATE": "Date",
+        "PRODUCT_MODEL_NUMBER" : "Product(Model#)",
+        "UOM" : "UOM",
+        "LOCATION": "Location"
     },
     "APP_COMPONENT": {
         "APP_NAME": "Emergency Portal",
