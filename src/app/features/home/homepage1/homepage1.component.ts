@@ -20,8 +20,8 @@ import  *  as   GetSuppliersByProductIdGroupByItemJSON from './GetSuppliersByPro
 import  *  as   GetLocationAndAvailabilityByItem from './GetLocationAndAvailabilityByItem.json';
 import { AvailabilityService } from '../shared/rest-services/Availability.service';
 
-// PENDING - 1 - Need additonal logic to see the logged in users timezone
-
+//PENDING - 1 - Need additonal logic to see the logged in users timezone
+//TODO -2  : Code Change to make on IV call to pass array of Supplier, instead of multiple IV calls.
 @Component({
   selector: 'app-homepage1',
   templateUrl: './homepage1.component.html',
@@ -151,7 +151,6 @@ export class Homepage1Component implements OnInit {
   }
 
   private async _getAllProductsByCategoryId(selectedCategory) {
-    
     try {
       const responses4s = await this.invDistService.getAllProductsByCategoryId( selectedCategory ).toPromise();
       console.log('S4S response of all products with in selected category id ',  selectedCategory , responses4s);
@@ -164,8 +163,8 @@ export class Homepage1Component implements OnInit {
       
       this.productListValues = allProducts.map((product) => {
         return {
-          content: product.item_id,
-          id: product._id,
+          content: product.description, 
+          id: product.item_id,
           selected: false
         };
       });
@@ -178,8 +177,7 @@ export class Homepage1Component implements OnInit {
   // Fetch Supplier for searched product id starts
   //Padman: Get Availability & Date Group by Supplier For user selected ProductId 
   public fetchAllSuppliersByProductId(event) {
-    
-    this.selectedProductId = event.item.content;
+    this.selectedProductId = event.item.id;
     console.log('User selected Product ', this.selectedProductId); 
     if (this.selectedProductId !== '') {
      this._getAllSuppliersByProductId(this.selectedProductId);
@@ -189,7 +187,7 @@ export class Homepage1Component implements OnInit {
   private async _getAllSuppliersByProductId(selectedProductId) {
     try {
       const allSuppliersHavingSelectedProduct = [] ;
-	  
+	  //TODO -2  : Code Change to make on IV call to pass array of Supplier, instead of multiple IV calls.
       for (const supplier of this.allSuppliers) {
         const supplierName = supplier.supplier_id;
         console.log('Making IV call with all Available Supplier Name',  supplierName , 'And selected Product Id ' , selectedProductId); 
@@ -199,6 +197,7 @@ export class Homepage1Component implements OnInit {
           const availabilityGroupBySupplier = ivResponse.lines[0];
           for (const line of ivResponse.lines){
             if(line.itemId == selectedProductId){
+              
               if( availabilityGroupBySupplier.networkAvailabilities.length > 0 &&
                 ( availabilityGroupBySupplier.networkAvailabilities[0].totalAvailableQuantity >0 ) ){
                 const now = Date.now();
@@ -210,7 +209,7 @@ export class Homepage1Component implements OnInit {
                   availableDate = new DatePipe('en-US').transform(availabilityGroupBySupplier.networkAvailabilities[0].earliestShipTs, 'MM/dd/yyyy');
                 } 
                 allSuppliersHavingSelectedProduct.push({
-                  Supplier: supplier.supplier_id,
+                  Supplier: supplier.description +' ('+supplier.supplier_id + ')',
                   Availability: availabilityGroupBySupplier.networkAvailabilities[0].totalAvailableQuantity,
                   Date: availableDate
                   //TODO PENDING - 1
@@ -289,19 +288,36 @@ export class Homepage1Component implements OnInit {
         suppliers.push(supplier); 
       }
     }
+
     this.allSuppliers = suppliers.map((supplier) => {
       return {
         _id: supplier._id,
         supplier_id: supplier.supplier_id,
         description: supplier.description,
-        supplier_type: supplier.supplier_type,
-        address_attributes: []
+        supplier_type: supplier.supplier_type, 
+        address_line_1 : this.getValueByName(supplier.address_attributes,'address_line_1'),
+        city : this.getValueByName(supplier.address_attributes,'city'),
+        state : this.getValueByName(supplier.address_attributes,'state'),
+        zipcode : this.getValueByName(supplier.address_attributes,'zipcode'),
+        country : this.getValueByName(supplier.address_attributes,'country'),
+        contactPerson : this.getValueByName(supplier.address_attributes,'contactPerson'),
+        phoneNumber : this.getValueByName(supplier.address_attributes,'phoneNumber'),
       };
     });
 
     console.log('Model - S4S allSuppliers List ' ,this.allSuppliers);   
   }
 
+  private getValueByName(address_attributes,name){
+    if(address_attributes.length > 0 ){  
+      for(var i = 0 ; i < address_attributes.length; i++){
+        if(name === address_attributes[i].name){
+          return address_attributes[i].value
+        }
+      }
+    }
+    return "";
+  }
   //Fetch Supplier Detail Record starts ------------------
   public fetchSupplierDetails(){
     this._fetchSupplierDetails();
@@ -310,34 +326,53 @@ export class Homepage1Component implements OnInit {
   //2. Call IV 'Get Network Availability Product Breakup' for network (supplier) - returns list of all child items
   //3. Call S4S /product/:id get product details of all child items
   private async _fetchSupplierDetails(){
-   
+   //TODO reuse with  cache  object instead of making this call. Make the call if there is a cache miss.
     //1. Call S4s GET/supplier/:id - on select of row
     console.log('User selected Supplier is', this.selectedSupplierId);
-    const responses4s = await this.invDistService.getContactDetailsOfSelectedSupplier(this.selectedSupplierId).toPromise();
-    console.log('S4S response of the supplier '  , responses4s);
-
-    let supplierName = '3MC';
-    let supplierContactNumber;
- 
-    for (const address of responses4s.address_attributes) {
-      if(address.name === 'name'){
-        supplierName = address.value;
+    
+    let isSupplierFound = false;
+    let responses4s;
+    this.allSuppliers.forEach(eachSupplier => {
+      if (eachSupplier.supplier_id === this.selectedSupplierId) {
+        responses4s = eachSupplier;
+        isSupplierFound = true;
+        console.log('S4S response of the supplier from Cache'  , responses4s);
       }
-      if(address.name === 'phoneNumber'){
-        supplierContactNumber = address.value;
+    }); 
+    if(!isSupplierFound){
+      responses4s = await this.invDistService.getContactDetailsOfSelectedSupplier(this.selectedSupplierId).toPromise();
+      console.log('S4S response of the supplier '  , responses4s);
+    }
+    
+
+    let supplierContactNumber= (responses4s.phoneNumber !== '' ) ? responses4s.phoneNumber :'No contact provided';
+    let supplierName =(responses4s.contactPerson !== '') ? responses4s.contactPerson :'No phone number provided';
+    
+    if(responses4s.address_attributes !== undefined){
+      for (const address of responses4s.address_attributes) {
+        if(address.name === 'name' && address.value !== ''){
+          supplierName = address.value;
+        }
+        if(address.name === 'phoneNumber' && address.value !== ''){
+          supplierContactNumber = address.value;
+        }
       }
     }
 
-
     var productTotalAvailableQuantity;
     var productTotalAvailableDate;
- 
     this.ProductBreakupBySupplier.map((supplier) => {
       productTotalAvailableDate = supplier.Date;
       productTotalAvailableQuantity = supplier.Availability;
       }
     );
 
+    let selectedProductIdModelNumber = this.selectedProductId;      
+    this.productListValues.map((product) => {
+      if(this.selectedProductId === product.id){
+        selectedProductIdModelNumber =  product.content +' (' +this.selectedProductId +') ';
+      }
+    });
     this.selectedSupplier =   {
       _id: responses4s._id,
       supplier_id: responses4s.supplier_id,
@@ -345,7 +380,8 @@ export class Homepage1Component implements OnInit {
       supplier_type: responses4s.supplier_type,
       supplierName:  supplierName,
       supplierContactNumber : supplierContactNumber,
-      selectedProductId : this.selectedProductId, 
+      selectedProductId : this.selectedProductId,
+      selectedProductIdModelNumber : selectedProductIdModelNumber, 
       productTotalAvailableQuantity : productTotalAvailableQuantity,
       productTotalAvailableDate : productTotalAvailableDate
     };
@@ -359,8 +395,11 @@ export class Homepage1Component implements OnInit {
 
     for (const networkAvailability of ivResponse.lines){
       if(networkAvailability.networkAvailabilities.length>0){
-
-        console.log('Child Item ', networkAvailability.itemId); 
+           if(ivResponse.lines.length>=2 && networkAvailability.itemId ===this.selectedProductId ){
+             continue;
+           }
+        
+        console.log('S4S Child Item ', networkAvailability.itemId); 
         const responsesChildItem4s = await this.invDistService.getChildItemDetails(networkAvailability.itemId).toPromise();
         console.log('S4S response Child Item '  , responsesChildItem4s);
         var unitOfMeasure ;
@@ -369,6 +408,7 @@ export class Homepage1Component implements OnInit {
           this.availabilityByProductBreakUp.push(
             {
               "itemId" : networkAvailability.itemId,
+              "itemDescription" : responsesChildItem4s.description,
               "unitOfMeasure" : unitOfMeasure,
               "shipNodes" : networkAvailability.networkAvailabilities[0].distributionGroupId ,
               "availableQuantity" : networkAvailability.networkAvailabilities[0].totalAvailableQuantity ,
@@ -416,10 +456,9 @@ export class Homepage1Component implements OnInit {
   }
 
   createSupplierDetailsTableRow(supplier) {
-    console.log('supplier', supplier)
     const tableRow = [
       {
-        data: supplier.itemId
+        data: supplier.itemDescription +' ('+supplier.itemId +')'
       },
       {
         data: supplier.unitOfMeasure,
@@ -439,7 +478,7 @@ export class Homepage1Component implements OnInit {
 
   private async _fetchSupplierLocationRecord(){
      
-    let selectedProductId = this.userSelectedChildItemId ;  
+    
     //Fetch all DGs
     console.log('Get all Available ShipNode IV call');
     const shipNodes = await this.invDistService.getByTenantIdV1ConfigurationShipNodes().toPromise(); 
@@ -452,16 +491,13 @@ export class Homepage1Component implements OnInit {
    
      //2. Call IV 'Get Network Availability Product Breakup' for network (supplier) - returns list of all child items
     console.log('Get IV Network Availability at ship node level For selected Child Item', this.userSelectedChildItemId);
-    const ivResponse = await this.invAvailService.getInventoryForNodes( [selectedProductId], shipNodeList , ['UNIT'], [] ).toPromise();
+    const ivResponse = await this.invAvailService.getInventoryForNodes( [this.userSelectedChildItemId], shipNodeList , ['UNIT'], [] ).toPromise();
     console.log('IV  response ',  ivResponse);
     this.locationAvailabilityByProductBreakUp = []; 
     for(const line of ivResponse.lines){
       if(line.itemId == this.userSelectedChildItemId){
-        console.log('Padman line.shipNodeAvailability.length', line.shipNodeAvailability.length)
         if(line.shipNodeAvailability.length > 0 ){  
           for(var i = 0 ; i < line.shipNodeAvailability.length; i++){
-            console.log('Padman line.shipNodeAvailability[i].length', line.shipNodeAvailability[i].shipNode)
-            
             this.locationAvailabilityByProductBreakUp.push(
               {
                 "shipNodeLocation" : line.shipNodeAvailability[i].shipNode, 
@@ -469,7 +505,6 @@ export class Homepage1Component implements OnInit {
                 "availableQuantity" : line.shipNodeAvailability[i].totalAvailableQuantity 
               }
             );
-            
           }
         }
       }
@@ -477,10 +512,13 @@ export class Homepage1Component implements OnInit {
 
 
     this.availabilityByProductBreakUp.map((itemAvailability) => {
-      this.selectedSupplier.selectedItemId = itemAvailability.itemId;
-      this.selectedSupplier.itemUOM = itemAvailability.unitOfMeasure;
-      this.selectedSupplier.itemTotalAvailableQuantity = itemAvailability.availableQuantity;
-      this.selectedSupplier.itemAvailableDate = itemAvailability.itemAvailableDate;
+      console.log('itemAvailability.itemId' , itemAvailability.itemId ,this.selectedProductId );
+        if(itemAvailability.itemId === this.userSelectedChildItemId){
+          this.selectedSupplier.selectedItemId = itemAvailability.itemId;
+          this.selectedSupplier.itemUOM = itemAvailability.unitOfMeasure;
+          this.selectedSupplier.itemTotalAvailableQuantity = itemAvailability.availableQuantity;
+          this.selectedSupplier.itemAvailableDate = itemAvailability.itemAvailableDate;
+        }
       }
     );
 
@@ -537,20 +575,21 @@ export class Homepage1Component implements OnInit {
   
 
   onSelectedItems(e) { 
-    console.log('onSelectedItems Padman 4', e );
-    console.log('onSelectedItems Padman 4', e.originalTarget.textContent );
-    
+    console.log('onSelectedItems', e );
   }
   onSelectPage(e){}
   onSort(e){}
   selectRows(e){
-    console.log('selectRows event:::::::::::::',e);
+    console.log('selectRows',e);
   }
   
 
   OpenSupplierRecordOverlay(map,event){
-   this.selectedSupplierId = event.originalTarget.textContent ;
-    console.log('Supplier Record to display for ',event.originalTarget.textContent);
+   this.selectedSupplierId = event.originalTarget.textContent.substring(
+                              event.originalTarget.textContent.lastIndexOf("(") + 1, 
+                              event.originalTarget.textContent.lastIndexOf(")") 
+                              );
+    console.log('Supplier Record to display for ',this.selectedSupplierId);
     this.allSuppliers.forEach(line => {
       if (line.supplier_id === this.selectedSupplierId) {
         this.fetchSupplierDetails();        
@@ -558,18 +597,19 @@ export class Homepage1Component implements OnInit {
     });
   }
 
-  onclickSupplierLocation(m,e){
-  this.userSelectedChildItemId = e.originalTarget.textContent;
-  console.log('Selected Item to show up availability by Location ',e.originalTarget.textContent);
+  OpenSupplierLocationOverlay(m,event){ 
+  this.userSelectedChildItemId = event.originalTarget.textContent.substring(
+                                  event.originalTarget.textContent.lastIndexOf("(") + 1, 
+                                  event.originalTarget.textContent.lastIndexOf(")") 
+                                );
+    console.log('Selected Item to show up availability by Location ',this.userSelectedChildItemId);
     this.availabilityByProductBreakUp.forEach(line => {
       if (line.itemId === this.userSelectedChildItemId) {
         console.log('Call fetchSupplierLocationRecord');
         this.fetchSupplierLocationRecord();
       }
     });
-   
   } 
- 
 
   backSupplierLocation(){
     this.displaySecondOverlay = false;
@@ -578,7 +618,6 @@ export class Homepage1Component implements OnInit {
 
   back(){
     this.displayFirstOverlay = false; 
-
   }
 
 }

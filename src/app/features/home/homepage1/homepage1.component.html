@@ -69,7 +69,7 @@
       </div>
       <div class="bx--row">
           <div class="bx--col-lg-8">
-              <p class="bx--label">{{selectedSupplier.supplierContactNumber}}</p>
+              <p class="bx--label">{{selectedSupplier.supplierContactNumber}}</p> 
           </div>
       </div>
 
@@ -80,7 +80,7 @@
         
             <div class="bx--row">
               <div class="bx--col" style="font-weight: bold; font-size: x-large;">
-                {{selectedSupplier.selectedProductId}}  
+                {{selectedSupplier.selectedProductIdModelNumber}}  
               </div>
               <div class="bx--col"  style="font-weight: bold; font-size: x-large;">
                 {{selectedSupplier.productTotalAvailableQuantity}}  
@@ -102,7 +102,7 @@
     <buc-table [class.no-data]="model.totalDataLength===0 && !isScreenInitialized" style="border: mediumblue;"
      [model]='modelFirstOverylay' [(selectedItems)]="selected" [size]="'sm'" [tableToolbarModel]="tableToolbarModel" _batchText="items selected"
             (selectPage)="onSelectPage($event)" (selectedItemsChange)="onSelectedItems($event)" (sort)="onSort($event)"  
-            (click)=onclickSupplierLocation(model,$event)
+            (click)=OpenSupplierLocationOverlay(model,$event)
             (rowsSelectedChange)="selectRows($event)"
             class="bx--data-table bx--data-table--short bx--data-table--no-border" [showSelectionColumn]="false" [searchValue]="searchValue">
 
@@ -202,7 +202,7 @@
         <buc-table [class.no-data]="model.totalDataLength===0 && !isScreenInitialized"
          [model]='modelSecondOverylay' [(selectedItems)]="selected" [size]="'sm'" [tableToolbarModel]="tableToolbarModel" _batchText="items selected"
                 (selectPage)="onSelectPage($event)" (selectedItemsChange)="onSelectedItems($event)" (sort)="onSort($event)"
-                (click)=onclickSupplierLocation($event)
+                
                 (rowsSelectedChange)="selectRows($event)"
                 class="bx--data-table bx--data-table--short bx--data-table--no-border" [showSelectionColumn]="false" [searchValue]="searchValue">
 
