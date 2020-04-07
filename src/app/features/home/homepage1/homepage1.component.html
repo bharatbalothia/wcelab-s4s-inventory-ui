@@ -167,7 +167,7 @@
                   {{selectedSupplier.supplier_id}}{{' '}}{{selectedSupplier.selectedProductId}}
               </div>
               <div class="bx--col"  style="font-weight: bold; font-size: x-large;">
-                {{selectedSupplier.productTotalAvailableQuantity}}  
+                {{selectedSupplier.itemTotalAvailableQuantity}}  
               </div>
             </div>
             <div class="bx--row">
@@ -181,7 +181,7 @@
 
               <div class="bx--row">
               <div class="bx--col">
-              {{'Unit of Measure : ' | translate}}{{selectedSupplier.itemUOM}}  
+              {{'Unit of Measure : ' | translate}} {{selectedSupplier.itemUOM}}  
               </div>
               </div>            
                 <div class="bx--row">
@@ -191,7 +191,7 @@
                 </div>              
                 <div class="bx--row">
                 <div class="bx--col">
-                  {{'Item total :' | translate}}{{selectedSupplier.itemTotalAvailableQuantity}}  
+                  {{'Additional Info :' | translate}}{{'Not Provided'| translate}}  
                 </div>
                 </div>              
       </div>

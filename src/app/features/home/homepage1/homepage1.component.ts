@@ -345,8 +345,8 @@ export class Homepage1Component implements OnInit {
     }
     
 
-    let supplierContactNumber= (responses4s.phoneNumber !== '' ) ? responses4s.phoneNumber :'No contact provided';
-    let supplierName =(responses4s.contactPerson !== '') ? responses4s.contactPerson :'No phone number provided';
+    let supplierContactNumber= (responses4s.phoneNumber !== '' ) ? responses4s.phoneNumber :'Phone number not provided';
+    let supplierName =(responses4s.contactPerson !== '') ? responses4s.contactPerson :'Point of contact not provided';
     
     if(responses4s.address_attributes !== undefined){
       for (const address of responses4s.address_attributes) {
