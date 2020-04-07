@@ -20,8 +20,9 @@
       <div class="bx--col">
         <buc-table [class.no-data]="model.totalDataLength===0 && !isScreenInitialized"
         [model]='model' [(selectedItems)]="selected" [hasSearch]=false [size]="'sm'" [tableToolbarModel]="tableToolbarModel" _batchText="items selected"
-            (selectPage)="onSelectPage($event)" (selectedItemsChange)="onSelectedItems($event)" (sort)="onSort($event)" (click)="OpenSupplierRecordOverlay(model.data.map,$event)" (rowsSelectedChange)="selectRows($event)"
-                class="bx--data-table bx--data-table--short bx--data-table--no-border" [showSelectionColumn]="false" [searchValue]="searchValue">  
+            (selectPage)="onSelectPage($event)" (selectedItemsChange)="onSelectedItems($event)" (sort)="onSort($event)" 
+            (click)="OpenSupplierRecordOverlay(model.data.map,$event)" (rowsSelectedChange)="selectRows($event)"
+                class="bx--data-table bx--data-table--short bx--data-table--no-border" [showSelectionColumn]=false [searchValue]="searchValue">  
                 <tbody>
                   <tr>
                     <td class="no-data" colspan="3">
@@ -39,40 +40,49 @@
 </div>
 
 
+
+
 <!-- customization -->
 <div class="bx--grid" *ngIf="displayFirstOverlay" >
   <ibm-modal (overlaySelected)="back()" [attr.tid]="componentId + '-modal'">
-    <ibm-modal-header (closeSelect)="back()" [attr.tid]="componentId + '-modal-header'">{{'Supplier Record Details' | translate}}
+    <ibm-modal-header (closeSelect)="back()" [attr.tid]="componentId + '-modal-header'">
+    
+      <!-- <div class="bx--row">
+        <div class="bx--col"><h2><span>{{'Supplier Record Details' | translate}}</span></h2></div>
+      </div> -->
+
+      <div class="bx--row">
+        <div class="bx--col-lg-16">
+        <nav>
+          <ul >
+              <li style="font-size: large;">
+                &nbsp;  &nbsp;  <a [routerLink]="'/home/homepage1'" >{{selectedSupplier.description}} </a>
+              </li>
+          </ul>
+          </nav>
+        </div>             
+      </div>
+      <div class="bx--row">
+        <div class="bx--col-lg-8">
+            <p class="bx--label">{{'Contact Person : ' | translate}} {{selectedSupplier.supplierName}}</p>
+        </div>
+      </div>
+      <div class="bx--row">
+          <div class="bx--col-lg-8">
+              <p class="bx--label">{{selectedSupplier.supplierContactNumber}}</p>
+          </div>
+      </div>
+
     </ibm-modal-header>
     
     <section class="bx--modal-content" [attr.tid]="componentId + '-modal-content'">
       <div class="bx--grid bx--no-gutter">            
+        
             <div class="bx--row">
-              <div class="bx--col-lg-16">
-              <nav>
-                <ul class="nav-area">
-                    <li>
-                      &nbsp;  <a [routerLink]="'/home/homepage1'" >{{selectedSupplier.description}} </a>
-                    </li>
-                </ul>
-                </nav>
-              </div>             
-            </div>
-            <div class="bx--row">
-              <div class="bx--col-lg-8">
-                  <p class="bx--label">{{'Contact Person' | translate}} {{selectedSupplier.supplierName}}</p>
-              </div>
-            </div>
-            <div class="bx--row">
-                <div class="bx--col-lg-8">
-                    <p class="bx--label">{{selectedSupplier.supplierContactNumber}}</p>
-                </div>
-            </div>
-            <div class="bx--row">
-              <div class="bx--col">
+              <div class="bx--col" style="font-weight: bold; font-size: x-large;">
                 {{selectedSupplier.selectedProductId}}  
               </div>
-              <div class="bx--col">
+              <div class="bx--col"  style="font-weight: bold; font-size: x-large;">
                 {{selectedSupplier.productTotalAvailableQuantity}}  
               </div>
             </div>
@@ -81,7 +91,7 @@
                 &nbsp;
               </div>
               <div class="bx--col">
-                {{selectedSupplier.productTotalAvailableDate}}  
+                {{'Available : ' | translate}}  {{selectedSupplier.productTotalAvailableDate}}  
               </div>
             </div>
         </div>
@@ -89,7 +99,7 @@
 </section>
 
   <div class="bx--col">
-    <buc-table [class.no-data]="model.totalDataLength===0 && !isScreenInitialized"
+    <buc-table [class.no-data]="model.totalDataLength===0 && !isScreenInitialized" style="border: mediumblue;"
      [model]='modelFirstOverylay' [(selectedItems)]="selected" [size]="'sm'" [tableToolbarModel]="tableToolbarModel" _batchText="items selected"
             (selectPage)="onSelectPage($event)" (selectedItemsChange)="onSelectedItems($event)" (sort)="onSort($event)"  
             (click)=onclickSupplierLocation(model,$event)
@@ -107,9 +117,10 @@
             </tbody>
     </buc-table>
   </div>
-
+<br>
 <ibm-modal-footer>
-  <button class="bx--btn bx--btn--primary" 
+  
+  <button class="bx--btn bx--btn--primary  bx--btn--sm" 
   [attr.tid]="componentId + '-cancel-btn'"
   modal-primary-focus (click)="back()">
       {{'Back'}}
@@ -122,49 +133,67 @@
 <!-- 2nd table -->
 <div class="bx--grid" *ngIf="displaySecondOverlay">
   <ibm-modal (overlaySelected)="backSupplierLocation()" [attr.tid]="componentId + '-modal'">
-    <ibm-modal-header (closeSelect)="backSupplierLocation()" [attr.tid]="componentId + '-modal-header'">{{'Supplier location record' | translate}}
+    <ibm-modal-header (closeSelect)="backSupplierLocation()" [attr.tid]="componentId + '-modal-header'">
+      <!-- {{'Supplier location record' | translate}} -->
+      <div class="bx--row">
+        <div class="bx--col-lg-16">
+        <nav>
+          <ul >
+              <li style="font-size: large;">
+                &nbsp;  &nbsp;  <a [routerLink]="'/home/homepage1'" >{{selectedSupplier.description}} </a>
+              </li>
+          </ul>
+          </nav>
+        </div>             
+      </div>
+      <div class="bx--row">
+        <div class="bx--col-lg-8">
+            <p class="bx--label">{{'Contact Person : ' | translate}} {{selectedSupplier.supplierName}}</p>
+        </div>
+      </div>
+      <div class="bx--row">
+          <div class="bx--col-lg-8">
+              <p class="bx--label">{{selectedSupplier.supplierContactNumber}}</p>
+          </div>
+      </div>  
     </ibm-modal-header>
 
     <section class="bx--modal-content" [attr.tid]="componentId + '-modal-content'">
       <div class="bx--grid bx--no-gutter">            
-              <div class="bx--row">
-                <div class="bx--col-lg-16">
-                <nav>
-                  <ul class="nav-area">
-                      <li>
-                        &nbsp;  <a [routerLink]="'/home/homepage1'" >{{selectedSupplier.description}} </a>
-                      </li>
-                  </ul>
-                </nav>
-                </div>             
+             
+
+        <div class="bx--row">
+              <div class="bx--col" style="font-weight: bold; font-size: x-large;">
+                  {{selectedSupplier.supplier_id}}{{' '}}{{selectedSupplier.selectedProductId}}
               </div>
-              <div class="bx--row">
-                <div class="bx--col-lg-8">
-                    <p class="bx--label">{{'Contact Person' | translate}} {{selectedSupplier.supplierName}}</p>
-                </div>
+              <div class="bx--col"  style="font-weight: bold; font-size: x-large;">
+                {{selectedSupplier.productTotalAvailableQuantity}}  
               </div>
-              <div class="bx--row">
-                  <div class="bx--col-lg-8">
-                      <p class="bx--label">{{selectedSupplier.supplierContactNumber}}</p>
-                  </div>
+            </div>
+            <div class="bx--row">
+              <div class="bx--col">
+                &nbsp;
               </div>
+              <div class="bx--col">
+                {{'Available : ' | translate}}  {{selectedSupplier.productTotalAvailableDate}}  
+              </div>
+            </div>
 
               <div class="bx--row">
-                <div class="bx--col">
-                  {{'Model No' | translate}} {{selectedSupplier.selectedItemId}}  
-                </div>
-                <div class="bx--col">
-                  {{'Item total' | translate}}{{selectedSupplier.itemTotalAvailableQuantity}}  
-                </div>
+              <div class="bx--col">
+              {{'Unit of Measure : ' | translate}}{{selectedSupplier.itemUOM}}  
               </div>
-              <div class="bx--row">
+              </div>            
+                <div class="bx--row">
                 <div class="bx--col">
-                  {{'Unit of Measure' | translate}}{{selectedSupplier.itemUOM}}  
+                  {{'Model No : ' | translate}} {{selectedSupplier.selectedItemId}}  
                 </div>
+                </div>              
+                <div class="bx--row">
                 <div class="bx--col">
-                  {{'Available' | translate}} {{selectedSupplier.itemAvailableDate}}  
+                  {{'Item total :' | translate}}{{selectedSupplier.itemTotalAvailableQuantity}}  
                 </div>
-              </div>              
+                </div>              
       </div>
     </section>
     

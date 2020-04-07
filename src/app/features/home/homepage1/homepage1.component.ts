@@ -108,7 +108,7 @@ export class Homepage1Component implements OnInit {
  
 
     if (!this.isScreenInitialized) {
-      this.initializeDGListDropDown();
+      
       
       this.initializeCategoriesListDropDown();
        this.fetchAllSuppliers();
@@ -117,210 +117,9 @@ export class Homepage1Component implements OnInit {
     }
 
   }
+ 
 
-  async initializeDGListDropDown() {
-    const dgList = await this.invDistService.getDistributionRuleListByPage().toPromise();
-    const filteredDGList = [];
-    dgList.distributionGroups.map((dg) => {
-      if (dg.dgId.startsWith(this.countyPrefix) || dg.dgId.startsWith(this.regionPrefix)) {
-        dg.dgName = dg.dgName.split('_')[1];
-        filteredDGList.push(dg);
-      }
-    });
-    this.dgListValues = filteredDGList.map((dg) => {
-      return {
-        content: dg.dgName,
-        id: dg.dgId,
-        selected: false
-      };
-    });
-
-    this.isScreenInitialized = true;
-  }
-  
-  
-
-  private async initDGNodes() {
-    for (const dg of this.dgListValues) {
-      const newDG: any = {};
-      const response = await this.invDistService.getDistributionRuleDetails(dg.id).toPromise();   
-
-      const nodes = [];
-      if (response.length > 0) {
-        nodes.push(response.map(node => node.shipNode));
-      }
-
-      newDG.distributionGroupId = dg.id;
-      newDG.shipNodes = nodes[0];
-      this.dgNodes.push(newDG);
-    }
-    console.log('this.dgNodes set to ', this.dgNodes);
-  }
-
-  async initializeTable(data) {
-    if (data && data.lines) {
-      const response = data.lines;
-      this.prepareTable(response);
-    }
-  }
-
-  prepareTable(response) {
-    this.model.header = [
-      [
-        new TableHeaderItem({
-          data: this.translateService.instant('LIST_TABLE.HEADER_ITEMS'),
-          sortable: false, style: {}
-        }),
-        new TableHeaderItem({
-          data: this.translateService.instant('LIST_TABLE.HEADER_AVAILABILITY'),
-          sortable: true, style: {}
-        }),
-        new TableHeaderItem({
-          data: this.translateService.instant('LIST_TABLE.HEADER_DEMAND'),
-          sortable: true, style: {}
-        }),
-      ]
-    ];
-    this.refreshTable(response);
-  }
-
-
-  refreshTable(data) {
-    this.isScreenInitialized = false;
-    this.model.pageLength = this.pageSize;
-    this.model.currentPage = this.pageNumber;
-    this.model.data = data.map(item => this.createTableRow(item));
-    this.model.totalDataLength = data.length;
-    this.isScreenInitialized = true;
-  }
-
-
-  
-  createTableRow(item) {
-    const itemId = this._trimLineId(item.lineId);
-    const tableRow = [
-      {
-        data: itemId
-      },
-      {
-        /* Temporarily removing the following mapping - Calculating mapping from Nodes Availability */
-
-        // data: (item.shipNodeAvailability && item.shipNodeAvailability.length > 0) ?
-        //   this._calcTotalAvailability(item.shipNodeAvailability) : 0,
-        data: this._calcTotalAvailability(item.lineId, this.nodeAvailability),
-      },
-      {
-        data: item.demandData
-      }
-    ];
-    return tableRow;
-  }
-
-   
-
-  private _trimLineId(lineId) {
-    if (lineId) {
-      return lineId.split('_')[0];
-    }
-  }
-
-  private _calcTotalAvailability(lineId, nodes) {
-    let total = 0;
-    nodes.lines.forEach(line => {
-      if (line.lineId === lineId) {
-        line.shipNodeAvailability.forEach(node => {
-          total += Number(node.totalAvailableQuantity);
-        });
-      }
-    });
-    return total;
-  }
-
-
-  private async _getDemandTotalForItem(lineId, nodes) {
-    const nodeList = nodes.lines.filter(l => l.lineId === lineId);
-    const nodeIdNamePair = [];
-    const itemId = this._trimLineId(lineId);
-    nodeList[0].shipNodeAvailability.forEach(el => {
-      const nodeIdPair = { id: itemId, shipNode: el.shipNode };
-      nodeIdNamePair.push(nodeIdPair);
-    });
-    // tslint:disable-next-line: prefer-for-of
-    for (let index = 0; index < nodeIdNamePair.length; index++) {
-      const el = nodeIdNamePair[index];
-      const res = await this._getInvDemand(el.id, el.shipNode);
-      if (res && res.length > 0) {
-        let qty = 0;
-        res.forEach(r => {
-          qty += Number(r.quantity);
-        });
-        el.quantity = qty;
-      }
-    }
-    return this._getTotal(nodeIdNamePair);
-  }
-
-  private _getTotal(nodes) {
-    let totalQty = 0;
-    if (nodes && nodes[0].quantity) {
-      nodes.forEach(n => { if (n.quantity) { totalQty += n.quantity; } });
-    }
-    return totalQty;
-  }
-
-  public searchChange(value: string) {
-    this.searchValue = value;
-  }
-
-  public searchClear() {
-    this.searchValue = '';
-  }
-
-  public selectDG(event) {
-    this.selectedDG = event.item.id;
-
-    if (this.selectedDG !== '') {
-      this._getNetworkAvailability(this.selectedDG);
-      this.isDGSelected = true;
-    }
-  }
-  private async _getNetworkAvailability(dg) {
-    // Temporarily using Node Availability
-    try {
-      await this.initDGNodes();
-      let nodes: any[];
-      for (const currentdg of this.dgNodes) {
-        if (currentdg.distributionGroupId === dg) {
-          nodes = currentdg.shipNodes;
-          break;
-        }
-      }
-
-      const tempNodeData =
-        await this.invAvailService.getInventoryForNodes(this.topItemIds, nodes, this.uoms, []).toPromise();
-      console.log('DATA FROM NODES', tempNodeData);
-      this.nodeAvailability = tempNodeData;
-      // tslint:disable-next-line: prefer-for-of
-      for (let index = 0; index < tempNodeData.lines.length; index++) {
-        tempNodeData.lines[index].demandData = await this._getDemandTotalForItem(tempNodeData.lines[index].lineId, this.nodeAvailability);
-      }
-      this.initializeTable(tempNodeData);
-    } catch (err) {
-      console.log('Error fetching availability: ', err);
-    }
-  }
-
-  private async _getInvDemand(skuId, skuNode) {
-    try {
-      const demandData = await this.invDemandService.getDemandByAllTypes(skuId, skuNode, '', 'EACH', '').toPromise();
-      return demandData;
-    } catch (err) {
-      console.log('Error fetching demand data: ', err);
-    }
-  }
-
-
-  async initializeCategoriesListDropDown() {
+  async initializeCategoriesListDropDown() {   
     const responses4s = await this.invDistService.getAllCategories( ).toPromise();
     console.log('S4S response - getAllCategories '  , responses4s);
     const allCategories = [];
@@ -554,7 +353,7 @@ export class Homepage1Component implements OnInit {
 
     //2. Call IV 'Get Network Availability Product Breakup' for network (supplier) - returns list of all child items
     console.log('IV Network Availability Product Breakup for Selected Supplier ', this.selectedSupplierId , '& selected Product ' , this.selectedProductId);
-    const ivResponse = await this.invAvailService.getInventoryForNetwork( [this.selectedProductId], [this.selectedSupplierId] , ['EACH'], [] ).toPromise();
+    const ivResponse = await this.invAvailService.getInventoryForNetwork( [this.selectedProductId], [this.selectedSupplierId] , ['UNIT'], [] ).toPromise();
     console.log('IV response ',  ivResponse);
     this.availabilityByProductBreakUp = []; 
 
@@ -564,7 +363,7 @@ export class Homepage1Component implements OnInit {
         console.log('Child Item ', networkAvailability.itemId); 
         const responsesChildItem4s = await this.invDistService.getChildItemDetails(networkAvailability.itemId).toPromise();
         console.log('S4S response Child Item '  , responsesChildItem4s);
-        var unitOfMeasure ='EACH';
+        var unitOfMeasure ;
         if(responsesChildItem4s.unit_of_measure !== undefined ){
           unitOfMeasure = responsesChildItem4s.unit_of_measure ;
           this.availabilityByProductBreakUp.push(
@@ -653,19 +452,25 @@ export class Homepage1Component implements OnInit {
    
      //2. Call IV 'Get Network Availability Product Breakup' for network (supplier) - returns list of all child items
     console.log('Get IV Network Availability at ship node level For selected Child Item', this.userSelectedChildItemId);
-    const ivResponse = await this.invAvailService.getInventoryForNodes( [selectedProductId], shipNodeList , ['EACH'], [] ).toPromise();
+    const ivResponse = await this.invAvailService.getInventoryForNodes( [selectedProductId], shipNodeList , ['UNIT'], [] ).toPromise();
     console.log('IV  response ',  ivResponse);
     this.locationAvailabilityByProductBreakUp = []; 
     for(const line of ivResponse.lines){
       if(line.itemId == this.userSelectedChildItemId){
-        if(line.shipNodeAvailability.length > 0 ){
-          this.locationAvailabilityByProductBreakUp.push(
-            {
-              "shipNodeLocation" : line.shipNodes[0],
-              "productId" : line.itemId,
-              "availableQuantity" : line.shipNodeAvailability[0].totalAvailableQuantity 
-            }
-          );
+        console.log('Padman line.shipNodeAvailability.length', line.shipNodeAvailability.length)
+        if(line.shipNodeAvailability.length > 0 ){  
+          for(var i = 0 ; i < line.shipNodeAvailability.length; i++){
+            console.log('Padman line.shipNodeAvailability[i].length', line.shipNodeAvailability[i].shipNode)
+            
+            this.locationAvailabilityByProductBreakUp.push(
+              {
+                "shipNodeLocation" : line.shipNodeAvailability[i].shipNode, 
+                "productId" : line.itemId,
+                "availableQuantity" : line.shipNodeAvailability[i].totalAvailableQuantity 
+              }
+            );
+            
+          }
         }
       }
     }

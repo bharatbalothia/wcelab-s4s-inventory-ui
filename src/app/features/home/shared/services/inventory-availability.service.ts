@@ -107,7 +107,7 @@ export class InventoryAvailabilityService {
       };*/ 
       const reqPayload = {
         'deliveryMethod': 'SHP',
-        'unitOfMeasure': 'EACH'    
+        'unitOfMeasure': uoms[0]  
       }
         
         return this.availabilitySvc.postByTenantIdV1AvailabilityNetworkBySupplierAndProductId({
