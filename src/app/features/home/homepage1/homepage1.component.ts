@@ -677,12 +677,17 @@ export class Homepage1Component implements OnInit {
   
 
   OpenSupplierRecordOverlay(map,event){
-
- 
-   this.selectedSupplierId = event.originalTarget.textContent.substring(
-                              event.originalTarget.textContent.lastIndexOf("(") + 1, 
-                              event.originalTarget.textContent.lastIndexOf(")") 
-                              );
+    if (event.originalTarget != undefined) {
+      this.selectedSupplierId = event.originalTarget.textContent.substring(
+        event.originalTarget.textContent.lastIndexOf("(") + 1, 
+        event.originalTarget.textContent.lastIndexOf(")") 
+        );
+    }else{
+      this.selectedSupplierId = event.toElement.innerText.substring(
+        event.toElement.innerText.lastIndexOf("(") + 1, 
+        event.toElement.innerText.lastIndexOf(")") 
+        );
+    }
     console.log('Supplier Record to display for ',this.selectedSupplierId);
     this.allSuppliers.forEach(line => {
       if (line.supplier_id === this.selectedSupplierId) {
@@ -691,11 +696,20 @@ export class Homepage1Component implements OnInit {
     });
   }
 
-  OpenSupplierLocationOverlay(m,event){ 
-  this.userSelectedChildItemId = event.originalTarget.textContent.substring(
-                                  event.originalTarget.textContent.lastIndexOf("(") + 1, 
-                                  event.originalTarget.textContent.lastIndexOf(")") 
-                                );
+  OpenSupplierLocationOverlay(event){
+  
+    if (event.originalTarget != undefined) { //firefox
+      this.userSelectedChildItemId = event.originalTarget.textContent.substring(
+        event.originalTarget.textContent.lastIndexOf("(") + 1, 
+        event.originalTarget.textContent.lastIndexOf(")") 
+      );
+    }else{
+      this.userSelectedChildItemId = event.toElement.innerText.substring(
+        event.toElement.innerText.lastIndexOf("(") + 1,
+        event.toElement.innerText.lastIndexOf(")")
+      );
+    } 
+ 
     console.log('Selected Item to show up availability by Location ',this.userSelectedChildItemId);
     this.availabilityByProductBreakUp.forEach(line => {
       if (line.itemId === this.userSelectedChildItemId) {
