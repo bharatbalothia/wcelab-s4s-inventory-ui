@@ -33,6 +33,7 @@ export class Homepage1Component implements OnInit {
   };
   private supplierMap: { [ key: string ]: Supplier } = {};
   private skuMap: { [ key: string ]: SKU } = {};
+  private cat2ProdMap: { [ key: string ]: any } = {};
   private selectedCat: string;
   private selectedProd: string;
 
@@ -171,13 +172,21 @@ export class Homepage1Component implements OnInit {
     console.log('User selected Category ', cat);
     if (cat && cat !== this.selectedCat) {
       this.selectedCat = cat;
+      this.selectedProd = '';
+
       try {
         this.model.isLoading = true;
 
         // reset table
         this._refreshSupplierTable([]);
 
-        const responses4s = await this.invDistService.getAllProductsByCategoryId(cat).toPromise();
+        // try to use cache, otherwise fetch
+        let responses4s = this.cat2ProdMap[cat];
+        if (!responses4s) {
+          responses4s = await this.invDistService.getAllProductsByCategoryId(cat).toPromise();
+          this.cat2ProdMap[cat] = responses4s;
+        }
+
         console.log('S4S response of all products with in selected category id ', cat, responses4s);
         this.productListValues = getArray(responses4s).map((product) => ({
           content: `${product.description} (${product.item_id})`,
