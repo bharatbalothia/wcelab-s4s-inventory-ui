@@ -58,6 +58,12 @@ export class InventoryDistributionService {
     .pipe( map(r => r) );
   }
 
+  public fetchProductList(productIds : string[]): Observable<any> {
+    const tenantId = BucSvcAngularStaticAppInfoFacadeUtil.getInventoryTenantId();
+    const reqPayLoad = { item_id: productIds };
+    return this.s4sSvc.fetchProductList({tenantId : tenantId, body:reqPayLoad} )
+    .pipe( map(r => r) );
+  }
   
   public getContactDetailsOfSelectedSupplier(supplierId : string): Observable<any> {
     return this.s4sSvc.getContactDetailsOfSelectedSupplier({supplierId : supplierId} )

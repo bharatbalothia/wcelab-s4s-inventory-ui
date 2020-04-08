@@ -14,6 +14,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { HttpParams } from "@angular/common/http";
 
+import { catchError } from 'rxjs/operators';
+import { of as observableOf } from 'rxjs';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+
 import {
     AvailabilityService,
     GetNetworkAvailabilityRequest,
@@ -53,6 +58,34 @@ export class InventoryAvailabilityService {
          });
  
     }
+
+    public getConslidatedInventoryForDG(
+      items: string[],
+      dgIds: string[],
+      uoms: any[],
+      productClass: any[]
+    ) {
+      const lines = [];
+       
+    for(let idx=0; idx<dgIds.length; idx++){
+      lines.push( 
+        {
+          "deliveryMethod":"SHP","distributionGroupId":dgIds[idx],"itemId":items[0],"lineId":idx,"unitOfMeasure":"UNIT"
+        }
+      );
+    }
+ 
+      const reqPayload = { "lines": lines }
+
+      return this.availabilitySvc.postByTenantIdV1AvailabilityNetwork({
+           $queryParameters: {  },
+           tenantId: BucSvcAngularStaticAppInfoFacadeUtil.getInventoryTenantId(),
+           body: reqPayload
+         }).pipe( map(r => r) )
+         .pipe(catchError((err) => observableOf([])));
+    }
+
+    
 
     private _buildGetNetworkAvailabilityRequestLine(method, dgId, itemId, uom, productClass) {
         const line: GetNetworkAvailabilityRequestLine = {

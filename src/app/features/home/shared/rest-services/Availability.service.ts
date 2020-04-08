@@ -656,15 +656,21 @@ class AvailabilityService {
         useMocks ? : boolean,
         productId ? : string,
         supplierId ? : string ,
-        itemId : string, 
-        dgId : string
+        itemId ?: string, 
+        dgId ?: string
     }){
 
         let useMocks = false
         if (parameters.useMocks) {
             useMocks = true
         }
-        let path = '/{tenantId}/v1/availability/'+parameters['itemId'] +'/network/'+parameters['dgId'] ;
+        let path ;
+        if(parameters['itemId']  === undefined){
+            path = '/{tenantId}/v1/availability/network';
+        }else{
+            path = '/{tenantId}/v1/availability/'+parameters['itemId'] +'/network/'+parameters['dgId'] ;
+        }
+        
         const headers = parameters.$headers || {}
         headers['Accept'] = 'application/json';
         headers['Content-Type'] = 'application/json';
@@ -706,9 +712,7 @@ class AvailabilityService {
         if (!headers['Content-Type']) {
             headers['Content-Type'] = 'application/json; charset=utf-8';
         }
-//        console.log('Padman Before invoking the request' , url, body);
         const obsToReturn$ = this.http.post(url, this.resourceDomain, queryParameters, body, this.options);
-//        console.log('Padman Availability by N/w' , obsToReturn$);
         return obsToReturn$;
     }
     /**
