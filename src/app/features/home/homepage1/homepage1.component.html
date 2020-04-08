@@ -47,59 +47,48 @@
   <a (click)="onLocation(data.sku, data.supplier)" [innerHTML]="'common.LABEL_skuDisplay' | translate: { sku: data.sku }"></a>
 </ng-template>
 
+<!-- template for contact-card -->
+<ng-template #contactCard let-data="data">
+  <div class="bx--row">
+    <div class="bx--col padding-left-right--0 font-weight--600 padding-bottom--0_5rem product-name ">
+      <a>{{ data.description }}</a>
+    </div>
+  </div>
+
+  <div class="bx--row d--flex-jc-space-evenly">
+    <div class="bx--col padding-left--0 padding-right--0_5rem font-weight--600 max-width--8rem">
+      {{ 'common.LABEL_contactPerson' | translate }}
+    </div>
+    <div class="bx--col padding-left-right--0">
+      {{ data.contactPerson }}
+    </div>
+  </div>
+
+  <div class="bx--row d--flex-jc-space-evenly padding-bottom--1rem">
+    <div class="bx--col padding-left--0 padding-right--0_5rem font-weight--600 max-width--8rem">
+      {{ 'common.LABEL_contactNumber' | translate }}
+    </div>
+    <div class="bx--col padding-left-right--0">
+      {{ data.phoneNumber }}
+    </div>
+  </div>
+</ng-template>
+
 <!-- template for product-modal -->
 <ng-template #supplierTpl let-data="data">
-  <div class="bx--grid d--flex bx--no-gutter info-modal-grid min-height--30rem">
-    <div class="bx--row padding-bottom--1rem">
-      <div class="bx--col padding-left-right--0 font-weight--600">
-        {{ data.description }}
-      </div>
-    </div>
+  <div class="bx--grid d--flex bx--no-gutter padding-top--1rem info-modal-grid min-height--30rem">
+    <ng-container [ngTemplateOutlet]="contactCard" [ngTemplateOutletContext]="{ data: data.supplier }"></ng-container>
 
     <div class="bx--row d--flex-jc-space-evenly padding-bottom--0_5rem">
-      <div class="bx--col padding-left-right--0">
-        <div class="bx--label margin-bottom--0">
-          {{ 'common.LABEL_contactPerson' | translate }}
-        </div>
-        <div>
-          {{ data.name }}
-        </div>
-      </div>
-      <div class="bx--col padding-left-right--0">
-        <div class="bx--label margin-bottom--0">
-          {{ 'common.LABEL_contactNumber' | translate }}
-        </div>
-        <div>
-          {{ data.contactNumber }}
-        </div>
-      </div>
-      <div class="bx--col padding-left-right--0">
-      </div>
-    </div>
-
-    <div class="bx--row d--flex-jc-space-evenly padding-bottom--0_5rem">
-      <div class="bx--col padding-left-right--0">
-        <div class="bx--label margin-bottom--0">
-          {{ 'common.LABEL_modelNumber' | translate }}
-        </div>
-        <div>
+      <div class="bx--col d--flex-ai-center padding-left-right--0 product-name">
           {{ data.product.description }}
-        </div>
       </div>
-      <div class="bx--col padding-left-right--0">
-        <div class="bx--label margin-bottom--0">
-          {{ 'common.LABEL_availQuant' | translate }}
-        </div>
+      <div class="bx--col d--flex-ai-center padding-left-right--0 d--flex-jc-flex-end">
         <div>
-          {{ data.quantity }}
-        </div>
-      </div>
-      <div class="bx--col padding-left-right--0">
-        <div class="bx--label margin-bottom--0">
-          {{ 'common.LABEL_availDate' | translate }}
-        </div>
-        <div>
-          {{ data.date }}
+          <div class="d--flex-jc-flex-end product-quant">
+            {{ data.quantity }}
+          </div>
+          <div class="margin-bottom--0" [innerHTML]="'common.LABEL_availableDisplay' | translate: { date: data.date }"></div>
         </div>
       </div>
     </div>
@@ -129,32 +118,7 @@
 <!-- template for location-modal -->
 <ng-template #locationTpl let-data="data">
   <div class="bx--grid d--flex bx--no-gutter info-modal-grid min-height--30rem">
-    <div class="bx--row padding-bottom--1rem">
-      <div class="bx--col padding-left-right--0 font-weight--600">
-        {{ data.supplier.description }}
-      </div>
-    </div>
-
-    <div class="bx--row d--flex-jc-space-evenly padding-bottom--0_5rem">
-      <div class="bx--col padding-left-right--0">
-        <div class="bx--label margin-bottom--0">
-          {{ 'common.LABEL_contactPerson' | translate }}
-        </div>
-        <div>
-          {{ data.supplier.contactPerson }}
-        </div>
-      </div>
-      <div class="bx--col padding-left-right--0">
-        <div class="bx--label margin-bottom--0">
-          {{ 'common.LABEL_contactNumber' | translate }}
-        </div>
-        <div>
-          {{ data.supplier.phoneNumber }}
-        </div>
-      </div>
-      <div class="bx--col padding-left-right--0">
-      </div>
-    </div>
+    <ng-container [ngTemplateOutlet]="contactCard" [ngTemplateOutletContext]="{ data: data.supplier }"></ng-container>
 
     <div class="bx--row d--flex-jc-space-evenly padding-bottom--0_5rem">
       <div class="bx--col padding-left-right--0">
