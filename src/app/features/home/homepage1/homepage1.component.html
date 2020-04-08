@@ -7,7 +7,6 @@
 
     <buc-dropdown class="bx--col-md-4 bx--col-sm-6"
       [label]="'HOMEPAGE1.LABEL_PRODUCT' | translate" [theme]="'dark'" [disabled]="!isScreenInitialized"
-      [invalid]="!isDGSelected && errorMessage != ''" [invalidText]="errorMessage"
       placeholder="" (selected)="onProduct($event)"  [items]="productListValues">
     </buc-dropdown>
   </div>
@@ -18,7 +17,6 @@
       [class.no-data]="model.totalDataLength===0"
       [model]='model'
       [skeleton]="!isScreenInitialized || model.isLoading"
-      [(selectedItems)]="selected"
       [hasSearch]=false
       [size]="'sm'"
       (selectPage)="onSelectPage($event)"

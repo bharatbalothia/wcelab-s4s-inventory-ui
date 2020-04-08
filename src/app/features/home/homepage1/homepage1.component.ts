@@ -38,8 +38,6 @@ export class Homepage1Component implements OnInit {
   private selectedProd: string;
 
   public isScreenInitialized = false;
-  public toolBarAction;
-  public toolBarContent;
   model = new BucTableModel();
 
   // Page settings start
@@ -48,20 +46,6 @@ export class Homepage1Component implements OnInit {
   public searchValue = '';
   public categoryListValues = [];
   public productListValues = [];
-  public allSuppliersSearchByProductId = [];
-
-  public dgNodes = [];
-  public errorMessage = '';
-
-  public nodeAvailability: any;
-
-  // added
-  public selectedSupplierId ;
-  public userSelectedChildItemId;
-  // for AOT compiler -- template should probably remove mention of this double-binding (unused)
-  private records: string[] = [];
-  set selected(records) { this.records = records; }
-  get selected() { return this.records; }
 
   constructor(
     private translateService: TranslateService,
@@ -75,7 +59,6 @@ export class Homepage1Component implements OnInit {
     this._init();
   }
 
-
   onSelectPage(e) { this._selectPage(e, this.model); }
   onSort(e) { this._sort(e, this.model); }
 
@@ -85,7 +68,7 @@ export class Homepage1Component implements OnInit {
   }
 
   private async _initTranslations() {
-    const keys = Object.keys(this.nlsMap).filter(k => k !== 'safetyStock.LABEL_nNodes');
+    const keys = Object.keys(this.nlsMap);
     const json = await this.translateSvc.get(keys).toPromise();
     keys.forEach(k => this.nlsMap[k] = json[k]);
   }
