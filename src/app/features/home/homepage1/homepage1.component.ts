@@ -277,6 +277,7 @@ export class Homepage1Component implements OnInit {
         data: record.Date
       }
     ]);
+    (this.model as any).customSort = { 0: 'name' };
     this.model.totalDataLength = data.length;
     this.model.isLoading = false;
   }
@@ -295,7 +296,13 @@ export class Homepage1Component implements OnInit {
     ];
     const makeRows = (records) => records
     .map(sku => ([
-      { data: { sku, supplier: data.supplier }, template: this.supplierLocationLink, id: sku.itemId },
+      { data: {
+          sort: `${sku.itemDescription}:${sku.itemId}`,
+          sku,
+          supplier: data.supplier
+        },
+        template: this.supplierLocationLink, id: sku.itemId
+      },
       { data: sku.unitOfMeasure, },
       { data: sku.availableQuantity }
     ]));
@@ -310,6 +317,7 @@ export class Homepage1Component implements OnInit {
     templateData.model = new BucTableModel();
     templateData.model.pageLength = BucTableModel.DEFAULT_PAGE_LEN;
     templateData.model.currentPage = 1;
+    templateData.model.customSort = { 0: 'sort' };
     templateData.onSelectPage = (e) => { this._selectPage(e, templateData.model); };
     templateData.onSort = (e) => { this._sort(e, templateData.model); };
 
@@ -409,7 +417,6 @@ export class Homepage1Component implements OnInit {
     templateData.model.pageLength = BucTableModel.DEFAULT_PAGE_LEN;
     templateData.model.currentPage = 1;
     templateData.onSelectPage = (e) => { this._selectPage(e, templateData.model); };
-    templateData.onSort = (e) => { this._sort(e, templateData.model); };
 
     const resp = await this.invDistService.getByTenantIdV1ConfigurationShipNodes().toPromise();
     const shipNodeList = resp.map(n => n.shipNode);
@@ -458,6 +465,12 @@ export class Homepage1Component implements OnInit {
   private _selectPage(pg, model) {
   }
 
-  private _sort(e, model) {
+  private _sort(idx, model) {
+    const customSort = model.customSort;
+    if (customSort && customSort[idx]) {
+      const field = customSort[idx];
+      const s = model.getHeader(idx).ascending ? 1 : -1;
+      model.data.sort((l, r) => s * l[idx].data[field].localeCompare(r[idx].data[field]));
+    }
   }
 }
