@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { DatePipe } from '@angular/common';
 
-import { BucTableModel } from '@buc/common-components';
+import { BucTableModel, COMMON } from '@buc/common-components';
 import { TableHeaderItem, ModalService } from 'carbon-components-angular';
 import { InventoryAvailabilityService } from '../shared/services/inventory-availability.service';
 import { InventoryDistributionService } from '../shared/services/inventory-distribution.service';
@@ -89,27 +89,28 @@ export class Homepage1Component implements OnInit {
   }
 
   private async _fetchAllSuppliers() {
-    const getAttrValue = (raw: any[], name, def = '-') => {
-      const attrs = getArray(raw);
-      const names = attrs.filter(a => a.name === name);
-      return names.length > 0 ? names[0].value : def;
+    const getValue = (attr, def = '-') => {
+      return attr ? attr.value : def;
     };
     const responses4s = await this.invDistService.fetchAllSuppliers().toPromise();
-    console.log('S4S response -  fetchAllSuppliers',  responses4s);
+    console.log('S4S response - fetchAllSuppliers', responses4s);
+
     getArray(responses4s).forEach((supplier) => {
+      const attrMap: { [ key: string ]: { value: string } } = COMMON.toMap(supplier.address_attributes, 'name');
       const s: Supplier = {
         _id: supplier._id,
         supplier_id: supplier.supplier_id,
         description: supplier.description,
         descAndNode: '',
         supplier_type: supplier.supplier_type,
-        address_line_1: getAttrValue(supplier.address_attributes, 'address_line_1'),
-        city: getAttrValue(supplier.address_attributes, 'city'),
-        state: getAttrValue(supplier.address_attributes, 'state'),
-        zipcode: getAttrValue(supplier.address_attributes, 'zipcode'),
-        country: getAttrValue(supplier.address_attributes, 'country'),
-        contactPerson: getAttrValue(supplier.address_attributes, 'contactPerson', this.nlsMap['common.LABEL_noContact']),
-        phoneNumber: getAttrValue(supplier.address_attributes, 'phoneNumber', this.nlsMap['common.LABEL_noPhone'])
+        address_line_1: getValue(attrMap.address_line_1),
+        city: getValue(attrMap.city),
+        state: getValue(attrMap.state),
+        zipcode: getValue(attrMap.zipcode),
+        country: getValue(attrMap.country),
+        url: getValue(attrMap.url, ''),
+        contactPerson: getValue(attrMap.contactPerson, this.nlsMap['common.LABEL_noContact']),
+        phoneNumber: getValue(attrMap.phoneNumber, this.nlsMap['common.LABEL_noPhone'])
       };
 
       this.supplierMap[s.supplier_id] = s;

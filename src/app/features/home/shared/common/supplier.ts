@@ -11,4 +11,5 @@ export interface Supplier {
   country: string;
   contactPerson: string;
   phoneNumber: string;
+  url: string;
 }
