@@ -12,9 +12,6 @@
 
 /* tslint:disable */
 import { HttpClient } from '@angular/common/http';
-import { HttpParams } from "@angular/common/http";
-import { retry, catchError } from 'rxjs/operators';
- 
 
 import {
     Injectable
@@ -25,7 +22,8 @@ import {
     Observable
 } from 'rxjs';
 
-import { BucCommBEHttpWrapperService } from '@buc/svc-angular';
+import { BucCommBEHttpWrapperService, BucSvcAngularStaticAppInfoFacadeUtil } from '@buc/svc-angular';
+import { Constants } from '../classes/constants';
 
 type AuthenticationError = {
     'error' ? : string
@@ -608,7 +606,7 @@ type CreateDemandType = {
 };
 
 @Injectable()
-class S4SSearchService { 
+class S4SSearchService {
 
     private domain: string
     private resourceDomain: string
@@ -619,7 +617,7 @@ class S4SSearchService {
         this.domain = BucCommBEHttpWrapperService.getPathPrefix(this.resourceDomain)
         this.options = BucCommBEHttpWrapperService.getRequestOptions(this.resourceDomain)
     }
-     
+
     /**
     * Retrieves all products present in S4S
 
@@ -633,105 +631,110 @@ class S4SSearchService {
         'tenantId' ?: string,
         'distributionGroupId' ?: string,
         'transactionId' ? : string,
-        $queryParameters ? : any, 
+        $queryParameters ? : any,
         $headers ? : any,
         $cache ? : any,
         $refresh ? : any,
         useMocks ? : boolean
     }): Observable < any > {
-        
-
-        const headers = { 'Authorization': 'Basic N21jNGZyN2tqdzh6cnE3a2loYmZpYTV5cThkOHJxNjU6dDg5czk1amJqbm1lZmQyZHhzNDN1bmwxcjJwNnp1ZjA=', 'Content-Type': 'application/json',  'Accept': 'application/json' }
-    
-        const obsToReturn$  = this._httpClient.get("https://s4s-supplement-service-dev.mybluemix.net/products",  { headers }); 
-        console.log('Custom Rest call to get all Countries '+ obsToReturn$);
-        return obsToReturn$;
+      return this.invoke(`products`, parameters);
     }
- 
+
     /**
     * Retrieves all categories present in S4S
-
     * @method
     * @name S4SSearch#getAllCategories
-         * @param {string} tenantId - The tenant ID provided by IBM to access your APIs.
+    * @param {string} tenantId - The tenant ID provided by IBM to access your APIs.
     */
     public getAllCategories(parameters: {
         'tenantId' ?: string,
         'distributionGroupId' ?: string,
         'transactionId' ? : string,
-        $queryParameters ? : any, 
+        $queryParameters ? : any,
         $headers ? : any,
         $cache ? : any,
         $refresh ? : any,
         useMocks ? : boolean
     }): Observable < any > {
-        const headers = { 'Authorization': 'Basic N21jNGZyN2tqdzh6cnE3a2loYmZpYTV5cThkOHJxNjU6dDg5czk1amJqbm1lZmQyZHhzNDN1bmwxcjJwNnp1ZjA=', 'Content-Type': 'application/json',  'Accept': 'application/json' }
-        const obsToReturn$  = this._httpClient.get("https://s4s-supplement-service-dev.mybluemix.net/product/categories", { headers });
-        return obsToReturn$;
+      return this.invoke(`product/categories`, parameters);
     }
 
     /**
     * Retrieves all products present with in the passed category present in S4S
-
     * @method
     * @name S4SSearch#getAllProductsByCategoryId
-         * @param {string} categoryId - The selected Category ID .
+    * @param {string} categoryId - The selected Category ID .
     */
     public getAllProductsByCategoryId(parameters: {
         'categoryId' : string,
         'transactionId' ? : string,
-        $queryParameters ? : any, 
+        $queryParameters ? : any,
         $headers ? : any,
         $cache ? : any,
         $refresh ? : any,
         useMocks ? : boolean
     }): Observable < any > {
-        const headers = { 'Authorization': 'Basic N21jNGZyN2tqdzh6cnE3a2loYmZpYTV5cThkOHJxNjU6dDg5czk1amJqbm1lZmQyZHhzNDN1bmwxcjJwNnp1ZjA=', 'Content-Type': 'application/json',  'Accept': 'application/json' }
-        const obsToReturn$  = this._httpClient.get("https://s4s-supplement-service-dev.mybluemix.net/products/category/"+parameters['categoryId'] , { headers });
-        return obsToReturn$;
+      return this.invoke(`products/category/${parameters['categoryId']}`, parameters);
     }
 
     public fetchAllSuppliers(parameters: {
         'transactionId' ? : string,
-        $queryParameters ? : any, 
+        $queryParameters ? : any,
         $headers ? : any,
         $cache ? : any,
         $refresh ? : any,
         useMocks ? : boolean
     }): Observable < any > {
-        const headers = { 'Authorization': 'Basic N21jNGZyN2tqdzh6cnE3a2loYmZpYTV5cThkOHJxNjU6dDg5czk1amJqbm1lZmQyZHhzNDN1bmwxcjJwNnp1ZjA=', 'Content-Type': 'application/json',  'Accept': 'application/json' }
-        const obsToReturn$  = this._httpClient.get("https://s4s-supplement-service-dev.mybluemix.net/suppliers", { headers });
-        return obsToReturn$;
+      return this.invoke(`suppliers`, parameters);
     }
 
     public getContactDetailsOfSelectedSupplier(parameters: {
         'supplierId'  : string,
-        $queryParameters ? : any, 
+        $queryParameters ? : any,
         $headers ? : any,
         $cache ? : any,
         $refresh ? : any,
         useMocks ? : boolean
     }): Observable < any > {
-        const headers = { 'Authorization': 'Basic N21jNGZyN2tqdzh6cnE3a2loYmZpYTV5cThkOHJxNjU6dDg5czk1amJqbm1lZmQyZHhzNDN1bmwxcjJwNnp1ZjA=', 'Content-Type': 'application/json',  'Accept': 'application/json' }
-        const obsToReturn$  = this._httpClient.get("https://s4s-supplement-service-dev.mybluemix.net/suppliers/"+ parameters['supplierId'], { headers });
-        return obsToReturn$;
+      return this.invoke(`suppliers/${parameters['supplierId']}`, parameters);
     }
-
-    
 
     public getItemDetails(parameters: {
         'childItemId'  : string,
-        $queryParameters ? : any, 
+        $queryParameters ? : any,
         $headers ? : any,
         $cache ? : any,
         $refresh ? : any,
         useMocks ? : boolean
     }): Observable < any > {
-        const headers = { 'Authorization': 'Basic N21jNGZyN2tqdzh6cnE3a2loYmZpYTV5cThkOHJxNjU6dDg5czk1amJqbm1lZmQyZHhzNDN1bmwxcjJwNnp1ZjA=', 'Content-Type': 'application/json',  'Accept': 'application/json' }
-        return  this._httpClient.get("https://s4s-supplement-service-dev.mybluemix.net/products/"+ parameters['childItemId'], { headers });
+      return this.invoke(`products/${parameters['childItemId']}`, parameters);
     }
 
- 
+    private invoke(api: string, parameters: SvcParameters, type: string = Constants.GET): Observable<any> {
+      const headers = {
+        Authorization: 'Basic N21jNGZyN2tqdzh6cnE3a2loYmZpYTV5cThkOHJxNjU6dDg5czk1amJqbm1lZmQyZHhzNDN1bmwxcjJwNnp1ZjA=',
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      };
+      const hostPrefix = 'https://s4s-supplement-service-dev.mybluemix.net/s4s';
+      const tenantId = BucSvcAngularStaticAppInfoFacadeUtil.getInventoryTenantId();
+
+      // everything is GET for now
+      const obs = this._httpClient.get(`${hostPrefix}/${tenantId}/${api}`, { headers });
+      return obs;
+    }
+}
+
+interface SvcParameters {
+  childItemId?: string;
+  supplierId?: string;
+  transactionId?: string;
+  categoryId? : string;
+  $queryParameters?: any;
+  $headers?: any;
+  $cache?: any;
+  $refresh?: any;
+  useMocks?: boolean;
 }
 
 export {
