@@ -45,6 +45,34 @@ export class InventoryAvailabilityService {
         });
     }
 
+    public getConslidatedInventoryForDG(
+      items: string[],
+      dgIds: string[],
+      uoms: any[],
+      productClass: any[]
+    ) {
+      const lines = [];
+       
+    for(let idx=0; idx<dgIds.length; idx++){
+      lines.push( 
+        {
+          "deliveryMethod":"SHP","distributionGroupId":dgIds[idx],"itemId":items[0],"lineId":idx,"unitOfMeasure":"UNIT"
+        }
+      );
+    }
+ 
+      const reqPayload = { "lines": lines }
+
+      return this.availabilitySvc.postByTenantIdV1AvailabilityNetwork({
+           $queryParameters: {  },
+           tenantId: BucSvcAngularStaticAppInfoFacadeUtil.getInventoryTenantId(),
+           body: reqPayload
+         }).pipe( map(r => r) )
+         .pipe(catchError((err) => observableOf([])));
+    }
+
+    
+
     private _buildGetNetworkAvailabilityRequestLine(method, dgId, itemId, uom, productClass) {
         const line: GetNetworkAvailabilityRequestLine = {
             deliveryMethod: method,
