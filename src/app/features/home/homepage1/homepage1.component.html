@@ -1,120 +1,113 @@
-<div class="pt-32"></div>
+<div class="bx--grid bx--no-gutter">
+  <div class="bx--row">
+    <buc-dropdown class="bx--col-md-4 bx--col-sm-6"
+      [label]="'HOMEPAGE1.LABEL_CATEGORY' | translate" [theme]="'dark'" [disabled]="!isScreenInitialized"
+      placeholder="" (selected)="onCategory($event)" [items]="categoryListValues">
+    </buc-dropdown>
 
-<div class="bx--row">
-  <div class="bx--col">
-    <div class="bx--row">
+    <buc-dropdown class="bx--col-md-4 bx--col-sm-6"
+      [label]="'HOMEPAGE1.LABEL_PRODUCT' | translate" [theme]="'dark'" [disabled]="!isScreenInitialized"
+      [invalid]="!isDGSelected && errorMessage != ''" [invalidText]="errorMessage"
+      placeholder="" (selected)="onProduct($event)"  [items]="productListValues">
+    </buc-dropdown>
+  </div>
 
-
-      <buc-dropdown class="bx--col-md-4 bx--col-sm-6"
-        [label]="'HOMEPAGE1.LABEL_CATEGORY' | translate" [theme]="'dark'" [disabled]="!isScreenInitialized"
-        placeholder="" [disabled]="false" (selected)="fetchAllProductsByCategoryId($event)" [items]="categoryListValues">
-      </buc-dropdown>
-
-      <buc-dropdown class="bx--col-md-4 bx--col-sm-6"
-        [label]="'HOMEPAGE1.LABEL_PRODUCT' | translate" [theme]="'dark'" [disabled]="!isScreenInitialized"
-        [invalid]="!isDGSelected && errorMessage != ''" [invalidText]="errorMessage"
-        placeholder="" [disabled]="false"  (selected)="fetchAllSuppliersByProductId($event)"  [items]="productListValues">
-      </buc-dropdown>
+  <div class="bx--row d--flex-1 d--flex-fd-column">
+    <div class="bx--col">
+      <buc-table
+      [class.no-data]="model.totalDataLength===0"
+      [model]='model'
+      [skeleton]="!isScreenInitialized || model.isLoading"
+      [(selectedItems)]="selected"
+      [hasSearch]=false
+      [size]="'sm'"
+      (selectPage)="onSelectPage($event)"
+      (sort)="onSort($event)"
+      [showSelectionColumn]="true"
+      [searchValue]="searchValue">
+        <tbody>
+          <tr>
+            <td class="no-data" colspan="4">
+              <div>
+                <buc-empty-state stateMessage="{{'common.LABEL_noData' | translate}}"></buc-empty-state>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </buc-table>
     </div>
-    <div class="bx--row">
-      <div class="bx--col">
-        <buc-table
-        [class.no-data]="model.totalDataLength===0 && !isScreenInitialized"
-        [model]='model'
-        [(selectedItems)]="selected"
-        [hasSearch]=false [size]="'sm'"
-        [tableToolbarModel]="tableToolbarModel"
-        (selectPage)="onSelectPage($event)"
-        (selectedItemsChange)="onSelectedItems($event)"
-        (sort)="onSort($event)"
-        (click)="OpenSupplierRecordOverlay(model.data.map,$event)"
-        (rowsSelectedChange)="selectRows($event)"
-        class="bx--data-table bx--data-table--short bx--data-table--no-border"
-        [showSelectionColumn]=false
-        [searchValue]="searchValue">
-          <tbody>
-            <tr>
-              <td class="no-data" colspan="3">
-                <!--<div>
-                  <buc-empty-state stateMessage="{{'HOMEPAGE1.LABEL_SELECT_DG' | translate}}"></buc-empty-state>
-                </div>-->
-              </td>
-            </tr>
-          </tbody>
-        </buc-table>
-      </div>
-    </div>
-
   </div>
 </div>
 
+<ng-template #supplierLink let-data="data">
+  <a (click)="onSupplier(data.descriptor)" [innerHTML]="data.name"></a>
+</ng-template>
 
+<ng-template #supplierTpl let-data="data">
+  <div class="bx--grid d--flex bx--no-gutter info-modal-grid min-height--30rem">
+    <div class="bx--row padding-bottom--1rem">
+      <div class="bx--col padding-left-right--0 font-weight--600">
+        {{ data.description }}
+      </div>
+    </div>
 
-
-<!-- customization -->
-<div class="bx--grid" *ngIf="displayFirstOverlay" >
-  <ibm-modal (overlaySelected)="back()" [attr.tid]="componentId + '-modal'">
-    <ibm-modal-header (closeSelect)="back()" [attr.tid]="componentId + '-modal-header'">
-
-      <!-- <div class="bx--row">
-        <div class="bx--col"><h2><span>{{'Supplier Record Details' | translate}}</span></h2></div>
-      </div> -->
-
-      <div class="bx--row">
-        <div class="bx--col-lg-16">
-        <nav>
-          <ul >
-              <li style="font-size: large;">
-                &nbsp;  &nbsp;  <a [routerLink]="'/home/homepage1'" >{{selectedSupplier.description}} </a>
-              </li>
-          </ul>
-          </nav>
+    <div class="bx--row d--flex-jc-space-evenly padding-bottom--0_5rem">
+      <div class="bx--col padding-left-right--0">
+        <div class="bx--label margin-bottom--0">
+          {{ 'common.LABEL_contactPerson' | translate }}
+        </div>
+        <div>
+          {{ data.name }}
         </div>
       </div>
-      <div class="bx--row">
-        <div class="bx--col-lg-8">
-            <p class="bx--label">{{'Contact Person : ' | translate}} {{selectedSupplier.supplierName}}</p>
+      <div class="bx--col padding-left-right--0">
+        <div class="bx--label margin-bottom--0">
+          {{ 'common.LABEL_contactNumber' | translate }}
+        </div>
+        <div>
+          {{ data.contactNumber }}
         </div>
       </div>
-      <div class="bx--row">
-          <div class="bx--col-lg-8">
-              <p class="bx--label">{{selectedSupplier.supplierContactNumber}}</p>
-          </div>
+      <div class="bx--col padding-left-right--0">
       </div>
+    </div>
 
-    </ibm-modal-header>
-
-    <section class="bx--modal-content" [attr.tid]="componentId + '-modal-content'">
-      <div class="bx--grid bx--no-gutter">
-
-            <div class="bx--row">
-              <div class="bx--col" style="font-weight: bold; font-size: x-large;">
-                {{selectedSupplier.selectedProductIdModelNumber}}
-              </div>
-              <div class="bx--col"  style="font-weight: bold; font-size: x-large;">
-                {{selectedSupplier.productTotalAvailableQuantity}}
-              </div>
-            </div>
-            <div class="bx--row">
-              <div class="bx--col">
-                &nbsp;
-              </div>
-              <div class="bx--col">
-                {{'Available : ' | translate}}  {{selectedSupplier.productTotalAvailableDate}}
-              </div>
-            </div>
+    <div class="bx--row d--flex-jc-space-evenly padding-bottom--0_5rem">
+      <div class="bx--col padding-left-right--0">
+        <div class="bx--label margin-bottom--0">
+          {{ 'common.LABEL_modelNumber' | translate }}
         </div>
-        <br>
-</section>
+        <div>
+          {{ 'common.LABEL_productDisplay' | translate: { product: data.product } }}
+        </div>
+      </div>
+      <div class="bx--col padding-left-right--0">
+        <div class="bx--label margin-bottom--0">
+          {{ 'common.LABEL_availQuant' | translate }}
+        </div>
+        <div>
+          {{ data.quantity }}
+        </div>
+      </div>
+      <div class="bx--col padding-left-right--0">
+        <div class="bx--label margin-bottom--0">
+          {{ 'common.LABEL_availDate' | translate }}
+        </div>
+        <div>
+          {{ data.date }}
+        </div>
+      </div>
+    </div>
 
-  <div class="bx--col">
-    <buc-table [class.no-data]="model.totalDataLength===0 && !isScreenInitialized" style="border: mediumblue;"
-     [model]='modelFirstOverylay' [(selectedItems)]="selected" [size]="'sm'" [tableToolbarModel]="tableToolbarModel" _batchText="items selected"
-            (selectPage)="onSelectPage($event)" (selectedItemsChange)="onSelectedItems($event)" (sort)="onSort($event)"
-            (click)=OpenSupplierLocationOverlay(model,$event)
-            (rowsSelectedChange)="selectRows($event)"
-            class="bx--data-table bx--data-table--short bx--data-table--no-border" [showSelectionColumn]="false" [searchValue]="searchValue">
-
+    <div class="bx--row d--flex-1 d--flex-jc-space-evenly padding-top--1rem">
+      <div class="bx--col padding-left-right--0">
+        <buc-table
+          [class.no-data]="data.model.totalDataLength===0"
+          [model]="data.model"
+          [size]="'sm'"
+          (selectPage)="data.onSelectPage($event)"
+          (sort)="data.onSort($event)"
+          [showSelectionColumn]="false">
             <tbody>
               <tr>
                 <td class="no-data" colspan="3">
@@ -124,120 +117,119 @@
                 </td>
               </tr>
             </tbody>
-    </buc-table>
-  </div>
-<br>
-<ibm-modal-footer>
-
-  <button class="bx--btn bx--btn--primary  bx--btn--sm"
-  [attr.tid]="componentId + '-cancel-btn'"
-  modal-primary-focus (click)="back()">
-      {{'Back'}}
-  </button>
-
-</ibm-modal-footer>
-</ibm-modal>
-</div>
-
-<!-- 2nd table -->
-<div class="bx--grid" *ngIf="displaySecondOverlay">
-  <ibm-modal (overlaySelected)="backSupplierLocation()" [attr.tid]="componentId + '-modal'">
-    <ibm-modal-header (closeSelect)="backSupplierLocation()" [attr.tid]="componentId + '-modal-header'">
-      <!-- {{'Supplier location record' | translate}} -->
-      <div class="bx--row">
-        <div class="bx--col-lg-16">
-        <nav>
-          <ul >
-              <li style="font-size: large;">
-                &nbsp;  &nbsp;  <a [routerLink]="'/home/homepage1'" >{{selectedSupplier.description}} </a>
-              </li>
-          </ul>
-          </nav>
-        </div>
-      </div>
-      <div class="bx--row">
-        <div class="bx--col-lg-8">
-            <p class="bx--label">{{'Contact Person : ' | translate}} {{selectedSupplier.supplierName}}</p>
-        </div>
-      </div>
-      <div class="bx--row">
-          <div class="bx--col-lg-8">
-              <p class="bx--label">{{selectedSupplier.supplierContactNumber}}</p>
-          </div>
-      </div>
-    </ibm-modal-header>
-
-    <section class="bx--modal-content" [attr.tid]="componentId + '-modal-content'">
-      <div class="bx--grid bx--no-gutter">
-
-
-        <div class="bx--row">
-              <div class="bx--col" style="font-weight: bold; font-size: x-large;">
-                  {{selectedSupplier.supplier_id}}{{' '}}{{selectedSupplier.selectedProductId}}
-              </div>
-              <div class="bx--col"  style="font-weight: bold; font-size: x-large;">
-                {{selectedSupplier.productTotalAvailableQuantity}}
-              </div>
-            </div>
-            <div class="bx--row">
-              <div class="bx--col">
-                &nbsp;
-              </div>
-              <div class="bx--col">
-                {{'Available : ' | translate}}  {{selectedSupplier.productTotalAvailableDate}}
-              </div>
-            </div>
-
-              <div class="bx--row">
-              <div class="bx--col">
-              {{'Unit of Measure : ' | translate}}{{selectedSupplier.itemUOM}}
-              </div>
-              </div>
-                <div class="bx--row">
-                <div class="bx--col">
-                  {{'Model No : ' | translate}} {{selectedSupplier.selectedItemId}}
-                </div>
-                </div>
-                <div class="bx--row">
-                <div class="bx--col">
-                  {{'Item total :' | translate}}{{selectedSupplier.itemTotalAvailableQuantity}}
-                </div>
-                </div>
-      </div>
-    </section>
-
-    <div class="bx--row" >
-      <div class="bx--col">
-        <buc-table [class.no-data]="model.totalDataLength===0 && !isScreenInitialized"
-         [model]='modelSecondOverylay' [(selectedItems)]="selected" [size]="'sm'" [tableToolbarModel]="tableToolbarModel" _batchText="items selected"
-                (selectPage)="onSelectPage($event)" (selectedItemsChange)="onSelectedItems($event)" (sort)="onSort($event)"
-
-                (rowsSelectedChange)="selectRows($event)"
-                class="bx--data-table bx--data-table--short bx--data-table--no-border" [showSelectionColumn]="false" [searchValue]="searchValue">
-
-                <tbody>
-                  <tr>
-                    <td class="no-data" colspan="3">
-                      <!--<div>
-                        <buc-empty-state stateMessage="{{'HOMEPAGE1.LABEL_SELECT_DG' | translate}}"></buc-empty-state>
-                      </div>-->
-                    </td>
-                  </tr>
-                </tbody>
         </buc-table>
       </div>
     </div>
+  </div>
+</ng-template>
 
-<ibm-modal-footer>
-  <button class="bx--btn bx--btn--primary"
-  [attr.tid]="componentId + '-cancel-btn'"
-  modal-primary-focus (click)="backSupplierLocation()">
-      {{'Back'}}
-  </button>
+<ng-template #supplierLocationLink let-data="data">
+  <a (click)="onLocation(data.sku, data.supplier)" [innerHTML]="'common.LABEL_skuDisplay' | translate: { sku: data.sku }"></a>
+</ng-template>
 
-</ibm-modal-footer>
-</ibm-modal>
-</div>
+<ng-template #locationTpl let-data="data">
+  <div class="bx--grid d--flex bx--no-gutter info-modal-grid min-height--30rem">
+    <div class="bx--row padding-bottom--1rem">
+      <div class="bx--col padding-left-right--0 font-weight--600">
+        {{ data.supplier.description }}
+      </div>
+    </div>
 
-<!-- end -->
+    <div class="bx--row d--flex-jc-space-evenly padding-bottom--0_5rem">
+      <div class="bx--col padding-left-right--0">
+        <div class="bx--label margin-bottom--0">
+          {{ 'common.LABEL_contactPerson' | translate }}
+        </div>
+        <div>
+          {{ data.supplier.contactPerson }}
+        </div>
+      </div>
+      <div class="bx--col padding-left-right--0">
+        <div class="bx--label margin-bottom--0">
+          {{ 'common.LABEL_contactNumber' | translate }}
+        </div>
+        <div>
+          {{ data.supplier.phoneNumber }}
+        </div>
+      </div>
+      <div class="bx--col padding-left-right--0">
+      </div>
+    </div>
 
+    <div class="bx--row d--flex-jc-space-evenly padding-bottom--0_5rem">
+      <div class="bx--col padding-left-right--0">
+        <div class="bx--label margin-bottom--0">
+          {{ 'common.LABEL_mfrProduct' | translate }}
+        </div>
+        <div>
+          {{ 'common.LABEL_mfrProductDisplay' | translate: { product: data.sku.parentData.product, supplier: data.supplier } }}
+        </div>
+      </div>
+      <div class="bx--col padding-left-right--0">
+        <div class="bx--label margin-bottom--0">
+          {{ 'common.LABEL_availQuant' | translate }}
+        </div>
+        <div>
+          {{ data.sku.parentData.quantity }}
+        </div>
+      </div>
+      <div class="bx--col padding-left-right--0">
+        <div class="bx--label margin-bottom--0">
+          {{ 'common.LABEL_availDate' | translate }}
+        </div>
+        <div>
+          {{ data.sku.parentData.date }}
+        </div>
+      </div>
+    </div>
+
+    <div class="bx--row d--flex-jc-space-evenly padding-bottom--0_5rem">
+      <div class="bx--col padding-left-right--0">
+        <div class="bx--label margin-bottom--0">
+          {{ 'common.LABEL_sku' | translate }}
+        </div>
+        <div>
+          {{ data.sku.itemId }}
+        </div>
+      </div>
+      <div class="bx--col padding-left-right--0">
+        <div class="bx--label margin-bottom--0">
+          {{ 'common.LABEL_uom' | translate }}
+        </div>
+        <div>
+          {{ data.sku.unitOfMeasure }}
+        </div>
+      </div>
+      <div class="bx--col padding-left-right--0">
+        <div class="bx--label margin-bottom--0">
+          {{ 'common.LABEL_skuQuantity' | translate }}
+        </div>
+        <div>
+          {{ data.sku.availableQuantity }}
+        </div>
+      </div>
+    </div>
+
+    <div class="bx--row d--flex-1 d--flex-jc-space-evenly padding-top--1rem">
+      <div class="bx--col padding-left-right--0">
+        <buc-table
+          [class.no-data]="data.model.totalDataLength===0"
+          [model]="data.model"
+          [size]="'sm'"
+          (selectPage)="data.onSelectPage($event)"
+          (sort)="data.onSort($event)"
+          [showSelectionColumn]="false">
+            <tbody>
+              <tr>
+                <td class="no-data" colspan="3">
+                  <!--<div>
+                    <buc-empty-state stateMessage="{{'HOMEPAGE1.LABEL_SELECT_DG' | translate}}"></buc-empty-state>
+                  </div>-->
+                </td>
+              </tr>
+            </tbody>
+        </buc-table>
+      </div>
+    </div>
+  </div>
+</ng-template>

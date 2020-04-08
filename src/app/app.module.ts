@@ -18,6 +18,7 @@ import {
 
 import { AppComponent } from './app.component';
 import { ContentSwitcherModule } from 'carbon-components-angular';
+import { BucCommonComponentsModule, BucIconsModule } from '@buc/common-components';
 
 export class BucIVCovidPOCAppModuleBundles {
   static bundles: Array<any> = [{
@@ -49,6 +50,7 @@ export function bucIVCovidPOCAppModuleHttpLoaderFactory(http: HttpClient) {
       },
       isolate: true
     }),
+    BucCommonComponentsModule,
     AppRoutingModule
   ],
   providers: [

@@ -7,3 +7,7 @@
 export const getArray = (raw: any) => {
   return Array.isArray(raw) ? raw : raw ? [ raw ] : [];
 };
+
+export const getString = (raw: string, def: string = '') => {
+  return raw || def;
+};

@@ -35,20 +35,27 @@ import { InventoryAvailabilityService } from './shared/services/inventory-availa
 import { InventoryDemandService } from './shared/services/inventory-demand.service';
 
 import { S4SSearchService } from './shared/rest-services/S4SSearch.service';
+import { HomeSharedModule } from './shared/home-shared.module';
 
 export class BucIVCovidPOCHomeModuleBundles {
-  static bundles: Array<any> = [{
-    prefix: './assets/buc-iv-covid-poc/i18n/home/homepage1/',
-    suffix: '.json'
-  },
-  {
-    prefix: './assets/buc-iv-covid-poc/i18n/home/upload/',
-    suffix: '.json'
-  },
-  {
-    prefix: './assets/buc-iv-covid-poc/i18n/home/findinventory/',
-    suffix: '.json'
-  }];
+  static bundles: Array<any> = [
+    {
+      prefix: './assets/buc-iv-covid-poc/i18n/',
+      suffix: '.json'
+    },
+    {
+      prefix: './assets/buc-iv-covid-poc/i18n/home/homepage1/',
+      suffix: '.json'
+    },
+    {
+      prefix: './assets/buc-iv-covid-poc/i18n/home/upload/',
+      suffix: '.json'
+    },
+    {
+      prefix: './assets/buc-iv-covid-poc/i18n/home/findinventory/',
+      suffix: '.json'
+    }
+  ];
 }
 
 export function bucIVCovidPOCHomeModuleHttpLoaderFactory(http: HttpClient) {
@@ -61,8 +68,7 @@ export function bucIVCovidPOCHomeModuleHttpLoaderFactory(http: HttpClient) {
     UploadPageComponent,
     FindInventoryComponent,
     ItemSummaryComponent,
-    ItemDGAvailabilityComponent,
-    InfoModalComponent,
+    ItemDGAvailabilityComponent
   ],
   imports: [
     CommonModule,
@@ -76,10 +82,9 @@ export function bucIVCovidPOCHomeModuleHttpLoaderFactory(http: HttpClient) {
       },
       isolate: true
     }),
-    BucCommonComponentsModule, BucIconsModule,
+    HomeSharedModule,
     HomeRoutingModule
   ],
-  exports: [InfoModalComponent],
   providers: [
     BUCInvAvailabilityService,
     AvailabilityService,
@@ -90,11 +95,11 @@ export function bucIVCovidPOCHomeModuleHttpLoaderFactory(http: HttpClient) {
     StatisticalAvailabilityService,
     SupplyService,
     DistributionGroupService,
+
     S4SSearchService,
     InventoryDistributionService,
     InventoryAvailabilityService,
     InventoryDemandService],
-  entryComponents: [InfoModalComponent]
 })
 export class HomeModule extends BucCommonClassesAllModuleClazz {
   constructor(translateService: TranslateService) {

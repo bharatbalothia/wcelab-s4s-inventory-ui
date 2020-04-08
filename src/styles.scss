@@ -7,6 +7,10 @@ $carbon--theme: $carbon--theme--g10;
 @include carbon--theme();
 body {
   background-color: $ui-background;
+
+  a:hover {
+    cursor: pointer;
+  }
 }
 
 .page-component {
@@ -119,11 +123,13 @@ ul.bx--list-box__menu.bx--multi-select {
 
 /* Backgrounds */
 .bg-color {
-    background-color: $ui-background;
+  background-color: $ui-background;
 }
+
 .bg-white {
   background-color: $ui-01;
 }
+
 .bg-ltgray {
   background-color: $ui-02;
 }
@@ -166,4 +172,78 @@ ul.bx--list-box__menu.bx--multi-select {
   .bx--row.margin-left--1rem {
     margin-left: 1rem;
   }
+}
+
+
+.no-data {
+  table {
+    height: 100%;
+    td {
+      vertical-align: middle;
+    }
+  }
+}
+
+
+// descriptive classes
+
+.font-weight--600 {
+  font-weight: 600;
+}
+
+
+.min-height--30rem {
+  min-height: 30rem;
+}
+
+
+.padding-bottom--0_5rem {
+  padding-bottom: 0.5rem;
+}
+
+.padding-bottom--1rem {
+  padding-bottom: 1rem;
+}
+
+.padding-top--1rem {
+  padding-top: 1rem;
+}
+
+.padding-left-right--0 {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+
+.margin-bottom--0 {
+  margin-bottom: 0;
+}
+
+.d--flex {
+  display: flex;
+}
+
+.d--flex-1 {
+  display: flex;
+  flex: 1;
+}
+
+.d--flex-fd-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.d--flex-jc-space-evenly {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.d--flex-jc-flex-end {
+  display: flex;
+  justify-content: flex-end;
+}
+
+
+.border-bottom--1px-solid-ui01 {
+  border-bottom: 1px solid $ui-01;
 }
