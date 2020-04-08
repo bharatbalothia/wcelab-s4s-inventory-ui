@@ -23,7 +23,7 @@ import {
 } from 'rxjs';
 
 import { BucCommBEHttpWrapperService, BucSvcAngularStaticAppInfoFacadeUtil } from '@buc/svc-angular';
-import { Constants } from '../classes/constants';
+import { Constants } from '../common/constants';
 
 type AuthenticationError = {
     'error' ? : string

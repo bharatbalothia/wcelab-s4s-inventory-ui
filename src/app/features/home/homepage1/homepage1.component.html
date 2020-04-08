@@ -18,24 +18,33 @@
     </div>
     <div class="bx--row">
       <div class="bx--col">
-        <buc-table [class.no-data]="model.totalDataLength===0 && !isScreenInitialized"
-        [model]='model' [(selectedItems)]="selected" [hasSearch]=false [size]="'sm'" [tableToolbarModel]="tableToolbarModel" _batchText="items selected"
-            (selectPage)="onSelectPage($event)" (selectedItemsChange)="onSelectedItems($event)" (sort)="onSort($event)" 
-            (click)="OpenSupplierRecordOverlay(model.data.map,$event)" (rowsSelectedChange)="selectRows($event)"
-                class="bx--data-table bx--data-table--short bx--data-table--no-border" [showSelectionColumn]=false [searchValue]="searchValue">  
-                <tbody>
-                  <tr>
-                    <td class="no-data" colspan="3">
-                      <!--<div>
-                        <buc-empty-state stateMessage="{{'HOMEPAGE1.LABEL_SELECT_DG' | translate}}"></buc-empty-state>
-                      </div>-->
-                    </td>
-                  </tr>
-                </tbody>
+        <buc-table
+        [class.no-data]="model.totalDataLength===0 && !isScreenInitialized"
+        [model]='model'
+        [(selectedItems)]="selected"
+        [hasSearch]=false [size]="'sm'"
+        [tableToolbarModel]="tableToolbarModel"
+        (selectPage)="onSelectPage($event)"
+        (selectedItemsChange)="onSelectedItems($event)"
+        (sort)="onSort($event)"
+        (click)="OpenSupplierRecordOverlay(model.data.map,$event)"
+        (rowsSelectedChange)="selectRows($event)"
+        class="bx--data-table bx--data-table--short bx--data-table--no-border"
+        [showSelectionColumn]=false
+        [searchValue]="searchValue">
+          <tbody>
+            <tr>
+              <td class="no-data" colspan="3">
+                <!--<div>
+                  <buc-empty-state stateMessage="{{'HOMEPAGE1.LABEL_SELECT_DG' | translate}}"></buc-empty-state>
+                </div>-->
+              </td>
+            </tr>
+          </tbody>
         </buc-table>
       </div>
-    </div> 
-     
+    </div>
+
   </div>
 </div>
 
@@ -46,7 +55,7 @@
 <div class="bx--grid" *ngIf="displayFirstOverlay" >
   <ibm-modal (overlaySelected)="back()" [attr.tid]="componentId + '-modal'">
     <ibm-modal-header (closeSelect)="back()" [attr.tid]="componentId + '-modal-header'">
-    
+
       <!-- <div class="bx--row">
         <div class="bx--col"><h2><span>{{'Supplier Record Details' | translate}}</span></h2></div>
       </div> -->
@@ -60,7 +69,7 @@
               </li>
           </ul>
           </nav>
-        </div>             
+        </div>
       </div>
       <div class="bx--row">
         <div class="bx--col-lg-8">
@@ -69,21 +78,21 @@
       </div>
       <div class="bx--row">
           <div class="bx--col-lg-8">
-              <p class="bx--label">{{selectedSupplier.supplierContactNumber}}</p> 
+              <p class="bx--label">{{selectedSupplier.supplierContactNumber}}</p>
           </div>
       </div>
 
     </ibm-modal-header>
-    
+
     <section class="bx--modal-content" [attr.tid]="componentId + '-modal-content'">
-      <div class="bx--grid bx--no-gutter">            
-        
+      <div class="bx--grid bx--no-gutter">
+
             <div class="bx--row">
               <div class="bx--col" style="font-weight: bold; font-size: x-large;">
-                {{selectedSupplier.selectedProductIdModelNumber}}  
+                {{selectedSupplier.selectedProductIdModelNumber}}
               </div>
               <div class="bx--col"  style="font-weight: bold; font-size: x-large;">
-                {{selectedSupplier.productTotalAvailableQuantity}}  
+                {{selectedSupplier.productTotalAvailableQuantity}}
               </div>
             </div>
             <div class="bx--row">
@@ -91,7 +100,7 @@
                 &nbsp;
               </div>
               <div class="bx--col">
-                {{'Available : ' | translate}}  {{selectedSupplier.productTotalAvailableDate}}  
+                {{'Available : ' | translate}}  {{selectedSupplier.productTotalAvailableDate}}
               </div>
             </div>
         </div>
@@ -101,7 +110,7 @@
   <div class="bx--col">
     <buc-table [class.no-data]="model.totalDataLength===0 && !isScreenInitialized" style="border: mediumblue;"
      [model]='modelFirstOverylay' [(selectedItems)]="selected" [size]="'sm'" [tableToolbarModel]="tableToolbarModel" _batchText="items selected"
-            (selectPage)="onSelectPage($event)" (selectedItemsChange)="onSelectedItems($event)" (sort)="onSort($event)"  
+            (selectPage)="onSelectPage($event)" (selectedItemsChange)="onSelectedItems($event)" (sort)="onSort($event)"
             (click)=OpenSupplierLocationOverlay(model,$event)
             (rowsSelectedChange)="selectRows($event)"
             class="bx--data-table bx--data-table--short bx--data-table--no-border" [showSelectionColumn]="false" [searchValue]="searchValue">
@@ -119,8 +128,8 @@
   </div>
 <br>
 <ibm-modal-footer>
-  
-  <button class="bx--btn bx--btn--primary  bx--btn--sm" 
+
+  <button class="bx--btn bx--btn--primary  bx--btn--sm"
   [attr.tid]="componentId + '-cancel-btn'"
   modal-primary-focus (click)="back()">
       {{'Back'}}
@@ -144,7 +153,7 @@
               </li>
           </ul>
           </nav>
-        </div>             
+        </div>
       </div>
       <div class="bx--row">
         <div class="bx--col-lg-8">
@@ -155,19 +164,19 @@
           <div class="bx--col-lg-8">
               <p class="bx--label">{{selectedSupplier.supplierContactNumber}}</p>
           </div>
-      </div>  
+      </div>
     </ibm-modal-header>
 
     <section class="bx--modal-content" [attr.tid]="componentId + '-modal-content'">
-      <div class="bx--grid bx--no-gutter">            
-             
+      <div class="bx--grid bx--no-gutter">
+
 
         <div class="bx--row">
               <div class="bx--col" style="font-weight: bold; font-size: x-large;">
                   {{selectedSupplier.supplier_id}}{{' '}}{{selectedSupplier.selectedProductId}}
               </div>
               <div class="bx--col"  style="font-weight: bold; font-size: x-large;">
-                {{selectedSupplier.productTotalAvailableQuantity}}  
+                {{selectedSupplier.productTotalAvailableQuantity}}
               </div>
             </div>
             <div class="bx--row">
@@ -175,34 +184,34 @@
                 &nbsp;
               </div>
               <div class="bx--col">
-                {{'Available : ' | translate}}  {{selectedSupplier.productTotalAvailableDate}}  
+                {{'Available : ' | translate}}  {{selectedSupplier.productTotalAvailableDate}}
               </div>
             </div>
 
               <div class="bx--row">
               <div class="bx--col">
-              {{'Unit of Measure : ' | translate}}{{selectedSupplier.itemUOM}}  
+              {{'Unit of Measure : ' | translate}}{{selectedSupplier.itemUOM}}
               </div>
-              </div>            
+              </div>
                 <div class="bx--row">
                 <div class="bx--col">
-                  {{'Model No : ' | translate}} {{selectedSupplier.selectedItemId}}  
+                  {{'Model No : ' | translate}} {{selectedSupplier.selectedItemId}}
                 </div>
-                </div>              
+                </div>
                 <div class="bx--row">
                 <div class="bx--col">
-                  {{'Item total :' | translate}}{{selectedSupplier.itemTotalAvailableQuantity}}  
+                  {{'Item total :' | translate}}{{selectedSupplier.itemTotalAvailableQuantity}}
                 </div>
-                </div>              
+                </div>
       </div>
     </section>
-    
+
     <div class="bx--row" >
       <div class="bx--col">
         <buc-table [class.no-data]="model.totalDataLength===0 && !isScreenInitialized"
          [model]='modelSecondOverylay' [(selectedItems)]="selected" [size]="'sm'" [tableToolbarModel]="tableToolbarModel" _batchText="items selected"
                 (selectPage)="onSelectPage($event)" (selectedItemsChange)="onSelectedItems($event)" (sort)="onSort($event)"
-                
+
                 (rowsSelectedChange)="selectRows($event)"
                 class="bx--data-table bx--data-table--short bx--data-table--no-border" [showSelectionColumn]="false" [searchValue]="searchValue">
 
@@ -217,10 +226,10 @@
                 </tbody>
         </buc-table>
       </div>
-    </div>  
+    </div>
 
 <ibm-modal-footer>
-  <button class="bx--btn bx--btn--primary" 
+  <button class="bx--btn bx--btn--primary"
   [attr.tid]="componentId + '-cancel-btn'"
   modal-primary-focus (click)="backSupplierLocation()">
       {{'Back'}}
@@ -232,4 +241,3 @@
 
 <!-- end -->
 
-<ibm-placeholder></ibm-placeholder>
