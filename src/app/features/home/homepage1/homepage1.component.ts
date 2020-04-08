@@ -32,6 +32,9 @@ export class Homepage1Component implements OnInit {
   };
   private supplierMap: { [ key: string ]: Supplier } = {};
   private skuMap: { [ key: string ]: SKU } = {};
+  private selectedCat: string;
+  private selectedProd: string;
+
   public isScreenInitialized = false;
   public toolBarAction;
   public toolBarContent;
@@ -165,9 +168,14 @@ export class Homepage1Component implements OnInit {
   public async onCategory(event) {
     const cat = event.item.id;
     console.log('User selected Category ', cat);
-    if (cat) {
+    if (cat && cat !== this.selectedCat) {
+      this.selectedCat = cat;
       try {
         this.model.isLoading = true;
+
+        // reset table
+        this._refreshSupplierTable([]);
+
         const responses4s = await this.invDistService.getAllProductsByCategoryId(cat).toPromise();
         console.log('S4S response of all products with in selected category id ', cat, responses4s);
         this.productListValues = getArray(responses4s).map((product) => ({
@@ -192,7 +200,8 @@ export class Homepage1Component implements OnInit {
     const id = event.item.id;
     const product: Product = { item_id: id, description: event.item.content };
     console.log('User selected Product ', id);
-    if (id) {
+    if (id && id !== this.selectedProd) {
+      this.selectedProd = id;
       try {
         this.model.isLoading = true;
 
