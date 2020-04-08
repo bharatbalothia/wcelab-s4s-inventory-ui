@@ -29,7 +29,9 @@ export class Homepage1Component implements OnInit {
   private nlsMap: any = {
     'common.LABEL_supplierDetails': '',
     'common.LABEL_supplierLocation': '',
-    'common.LABEL_ok': ''
+    'common.LABEL_ok': '',
+    'common.LABEL_noContact': '',
+    'common.LABEL_noPhone': ''
   };
   private supplierMap: { [ key: string ]: Supplier } = {};
   private skuMap: { [ key: string ]: SKU } = {};
@@ -88,10 +90,10 @@ export class Homepage1Component implements OnInit {
   }
 
   private async _fetchAllSuppliers() {
-    const getAttrValue = (raw: any[], name) => {
+    const getAttrValue = (raw: any[], name, def = '-') => {
       const attrs = getArray(raw);
       const names = attrs.filter(a => a.name === name);
-      return names.length > 0 ? names[0].value : '-';
+      return names.length > 0 ? names[0].value : def;
     };
     const responses4s = await this.invDistService.fetchAllSuppliers().toPromise();
     console.log('S4S response -  fetchAllSuppliers',  responses4s);
@@ -107,8 +109,8 @@ export class Homepage1Component implements OnInit {
         state: getAttrValue(supplier.address_attributes, 'state'),
         zipcode: getAttrValue(supplier.address_attributes, 'zipcode'),
         country: getAttrValue(supplier.address_attributes, 'country'),
-        contactPerson: getAttrValue(supplier.address_attributes, 'contactPerson'),
-        phoneNumber: getAttrValue(supplier.address_attributes, 'phoneNumber')
+        contactPerson: getAttrValue(supplier.address_attributes, 'contactPerson', this.nlsMap['common.LABEL_noContact']),
+        phoneNumber: getAttrValue(supplier.address_attributes, 'phoneNumber', this.nlsMap['common.LABEL_noPhone'])
       };
 
       this.supplierMap[s.supplier_id] = s;
@@ -294,9 +296,7 @@ export class Homepage1Component implements OnInit {
     ]));
 
     const templateData: any = {
-      description: data.supplier.description,
-      name: data.supplier.contactPerson,
-      contactNumber: data.supplier.phoneNumber,
+      supplier: data.supplier,
       product: data.product,
       quantity: data.Availability,
       date: data.Date

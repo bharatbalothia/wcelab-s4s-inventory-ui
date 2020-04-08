@@ -15,6 +15,7 @@
       "LABEL_modelNumber": "Model number",
       "LABEL_availQuant": "Available quantity",
       "LABEL_availDate": "Available as of",
+      "LABEL_availableDisplay": "<span class='font-weight--600'>Available:</span> {{ date }}",
       "LABEL_ok": "OK",
       "LABEL_noData": "No data available",
       "LABEL_supplierDisplay": "{{ supplier.description }} ({{ supplier.supplier_id }})",
@@ -24,6 +25,8 @@
       "LABEL_mfrProductDisplay": "{{ supplier.supplier_id }} {{ product.item_id }}",
       "LABEL_uom": "Unit of measure",
       "LABEL_sku": "SKU",
-      "LABEL_skuQuantity": "SKU available quantity"
+      "LABEL_skuQuantity": "SKU available quantity",
+      "LABEL_noContact": "Point of contact not provided",
+      "LABEL_noPhone":"Phone number not provided"
     }
 }
