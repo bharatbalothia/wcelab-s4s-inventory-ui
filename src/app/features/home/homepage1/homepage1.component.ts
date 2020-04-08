@@ -696,7 +696,7 @@ export class Homepage1Component implements OnInit {
     });
   }
 
-  OpenSupplierLocationOverlay(event){
+  OpenSupplierLocationOverlay(map,event){
   
     if (event.originalTarget != undefined) { //firefox
       this.userSelectedChildItemId = event.originalTarget.textContent.substring(
