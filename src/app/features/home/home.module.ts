@@ -11,14 +11,13 @@ import {
   BucCommonClassesAllModuleClazz,
   BucMultiTranslateHttpLoader
 } from '@buc/svc-angular';
-import { BucCommonComponentsModule, BucIconsModule } from '@buc/common-components';
+import { BucCommonComponentsModule } from '@buc/common-components';
 
 import { Homepage1Component } from './homepage1/homepage1.component';
 import { UploadPageComponent } from './upload/upload-page.component';
 import { FindInventoryComponent } from './find-inventory/find-inventory.component';
 import { ItemSummaryComponent } from './find-inventory/item-summary/item-summary.component';
 import { ItemDGAvailabilityComponent } from './find-inventory/item-dg-availability/item-dg-availability.component';
-import { InfoModalComponent } from './shared/components/info-modal/info-modal.component';
 
 import { BUCInvAvailabilityService } from './shared/rest-services/inventory-buc/Availability.service';
 import { AvailabilityService } from './shared/rest-services/Availability.service';
@@ -36,6 +35,7 @@ import { InventoryDemandService } from './shared/services/inventory-demand.servi
 
 import { S4SSearchService } from './shared/rest-services/S4SSearch.service';
 import { HomeSharedModule } from './shared/home-shared.module';
+import { Image32Module } from '@carbon/icons-angular/lib/image/32';
 
 export class BucIVCovidPOCHomeModuleBundles {
   static bundles: Array<any> = [
@@ -82,6 +82,7 @@ export function bucIVCovidPOCHomeModuleHttpLoaderFactory(http: HttpClient) {
       },
       isolate: true
     }),
+    Image32Module,
     HomeSharedModule,
     HomeRoutingModule
   ],

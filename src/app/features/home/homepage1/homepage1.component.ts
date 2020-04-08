@@ -14,7 +14,6 @@ import { Product } from '../shared/common/product';
 import { SKU } from '../shared/common/sku';
 
 // PENDING - 1 - Need additonal logic to see the logged in users timezone
-// TODO -2  : Code Change to make on IV call to pass array of Supplier, instead of multiple IV calls.
 @Component({
   selector: 'app-homepage1',
   templateUrl: './homepage1.component.html',
@@ -149,6 +148,7 @@ export class Homepage1Component implements OnInit {
   }
 
   /**
+   * Called when category selected from category dropdown
    * Padman: Fetch All Products By Category
    * @param event category-id container
    */
@@ -187,6 +187,7 @@ export class Homepage1Component implements OnInit {
   }
 
   /**
+   * Called when product selected from product dropdown
    * Fetch Supplier for searched product id starts
    * Padman: Get Availability & Date Group by Supplier For user selected ProductId
    * @param event product-id container
@@ -280,6 +281,10 @@ export class Homepage1Component implements OnInit {
     this.model.isLoading = false;
   }
 
+  /**
+   * Called when supplier clicked in supplier-table from main page
+   * @param data data-passed in from template
+   */
   async onSupplier(data) {
     const makeHeaders = () => [
       [
@@ -377,6 +382,11 @@ export class Homepage1Component implements OnInit {
     });
   }
 
+  /**
+   * Called when SKU clicked supplier modal table
+   * @param sku SKU whose location to fetch
+   * @param supplier Supplier to fetch location for
+   */
   public async onLocation(sku, supplier) {
     const makeHeaders = () => [
       [

@@ -80,10 +80,10 @@
     <ng-container [ngTemplateOutlet]="contactCard" [ngTemplateOutletContext]="{ data: data.supplier }"></ng-container>
 
     <div class="bx--row d--flex-jc-space-evenly padding-bottom--0_5rem">
-      <div class="bx--col d--flex-ai-center padding-left-right--0 product-name">
+      <div class="bx--col d--flex-ai-center padding-left-right--0 d--flex-1 product-name">
           {{ data.product.description }}
       </div>
-      <div class="bx--col d--flex-ai-center padding-left-right--0 d--flex-jc-flex-end">
+      <div class="bx--col d--flex-ai-center padding-left-right--0 d--flex-0_4 d--flex-jc-flex-end">
         <div>
           <div class="d--flex-jc-flex-end product-quant">
             {{ data.quantity }}
@@ -121,55 +121,41 @@
     <ng-container [ngTemplateOutlet]="contactCard" [ngTemplateOutletContext]="{ data: data.supplier }"></ng-container>
 
     <div class="bx--row d--flex-jc-space-evenly padding-bottom--0_5rem">
-      <div class="bx--col padding-left-right--0">
-        <div class="bx--label margin-bottom--0">
-          {{ 'common.LABEL_mfrProduct' | translate }}
-        </div>
-        <div>
-          {{ 'common.LABEL_mfrProductDisplay' | translate: { product: data.sku.parentData.product, supplier: data.supplier } }}
-        </div>
+      <div class="bx--col d--flex-ai-center d--flex-jc-space-evenly padding-left-right--0 max-width--8rem d--flex-0_4">
+        <ibm-icon-image32></ibm-icon-image32>
+        <!-- <img class="object-fit--contain max-height--10rem max--width-8rem" src="unknown.npg"> -->
       </div>
-      <div class="bx--col padding-left-right--0">
-        <div class="bx--label margin-bottom--0">
-          {{ 'common.LABEL_availQuant' | translate }}
-        </div>
-        <div>
-          {{ data.sku.parentData.quantity }}
-        </div>
-      </div>
-      <div class="bx--col padding-left-right--0">
-        <div class="bx--label margin-bottom--0">
-          {{ 'common.LABEL_availDate' | translate }}
-        </div>
-        <div>
-          {{ data.sku.parentData.date }}
-        </div>
-      </div>
-    </div>
 
-    <div class="bx--row d--flex-jc-space-evenly padding-bottom--0_5rem">
-      <div class="bx--col padding-left-right--0">
-        <div class="bx--label margin-bottom--0">
-          {{ 'common.LABEL_sku' | translate }}
-        </div>
+      <div class="bx--col d--flex-ai-center padding-left-right--0 d--flex-1">
         <div>
-          {{ data.sku.itemId }}
+          <div class="product-name">
+            {{ 'common.LABEL_mfrProductDisplay' | translate: { product: data.sku.parentData.product, supplier: data.supplier } }}
+          </div>
+          <div class="bx--row">
+            <div class="bx--col padding-left--0 padding-right--0_5rem font-weight--600 max-width--8rem">
+              {{ 'common.LABEL_uom' | translate }}
+            </div>
+            <div class="bx--col padding-left-right--0">
+              {{ data.sku.unitOfMeasure }}
+            </div>
+          </div>
+          <div class="bx--row">
+            <div class="bx--col padding-left--0 padding-right--0_5rem font-weight--600 max-width--8rem">
+              {{ 'common.LABEL_sku' | translate }}
+            </div>
+            <div class="bx--col padding-left-right--0">
+              {{ data.sku.itemId }}
+            </div>
+          </div>
         </div>
       </div>
-      <div class="bx--col padding-left-right--0">
-        <div class="bx--label margin-bottom--0">
-          {{ 'common.LABEL_uom' | translate }}
-        </div>
+
+      <div class="bx--col d--flex-ai-center padding-left-right--0 d--flex-0_4 d--flex-jc-flex-end">
         <div>
-          {{ data.sku.unitOfMeasure }}
-        </div>
-      </div>
-      <div class="bx--col padding-left-right--0">
-        <div class="bx--label margin-bottom--0">
-          {{ 'common.LABEL_skuQuantity' | translate }}
-        </div>
-        <div>
-          {{ data.sku.availableQuantity }}
+          <div class="d--flex-jc-flex-end product-quant">
+            {{ data.sku.availableQuantity }}
+          </div>
+          <div class="margin-bottom--0" [innerHTML]="'common.LABEL_availableDisplay' | translate: { date: data.sku.parentData.date }"></div>
         </div>
       </div>
     </div>
