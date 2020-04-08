@@ -28,6 +28,7 @@ export class Homepage1Component implements OnInit {
 
   private nlsMap: any = {
     'common.LABEL_supplierDetails': '',
+    'common.LABEL_supplierLocation': '',
     'common.LABEL_ok': ''
   };
   private supplierMap: { [ key: string ]: Supplier } = {};
