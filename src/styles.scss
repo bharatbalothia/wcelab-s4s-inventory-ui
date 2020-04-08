@@ -212,8 +212,18 @@ ul.bx--list-box__menu.bx--multi-select {
 }
 
 
+.max-height--10rem {
+  max-height: 10rem;
+}
+
+
 .max-width--8rem {
   max-width: 8rem;
+}
+
+
+img.object-fit--contain {
+  object-fit: contain;
 }
 
 .padding-bottom--0_5rem {
@@ -261,6 +271,11 @@ ul.bx--list-box__menu.bx--multi-select {
 .d--flex-1 {
   display: flex;
   flex: 1;
+}
+
+.d--flex-0_4 {
+  display: flex;
+  flex: 0.4;
 }
 
 .d--flex-fd-column {
