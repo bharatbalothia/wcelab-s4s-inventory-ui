@@ -29,7 +29,7 @@
           <tr>
             <td class="no-data" colspan="3">
               <div>
-                <buc-empty-state stateMessage="{{'common.LABEL_noData' | translate}}"></buc-empty-state>
+                <buc-empty-state stateMessage="{{ 'common.LABEL_noData' | translate }}"></buc-empty-state>
               </div>
             </td>
           </tr>
@@ -39,10 +39,17 @@
   </div>
 </div>
 
+<!-- template for supplier column in item-list table -->
 <ng-template #supplierLink let-data="data">
   <a (click)="onSupplier(data.descriptor)" [innerHTML]="data.name"></a>
 </ng-template>
 
+<!-- template for product column in product-modal table -->
+<ng-template #supplierLocationLink let-data="data">
+  <a (click)="onLocation(data.sku, data.supplier)" [innerHTML]="'common.LABEL_skuDisplay' | translate: { sku: data.sku }"></a>
+</ng-template>
+
+<!-- template for product-modal -->
 <ng-template #supplierTpl let-data="data">
   <div class="bx--grid d--flex bx--no-gutter info-modal-grid min-height--30rem">
     <div class="bx--row padding-bottom--1rem">
@@ -111,9 +118,7 @@
             <tbody>
               <tr>
                 <td class="no-data" colspan="3">
-                  <!--<div>
-                    <buc-empty-state stateMessage="{{'HOMEPAGE1.LABEL_SELECT_DG' | translate}}"></buc-empty-state>
-                  </div>-->
+                  <buc-empty-state stateMessage="{{ 'common.LABEL_noData' | translate }}"></buc-empty-state>
                 </td>
               </tr>
             </tbody>
@@ -123,10 +128,7 @@
   </div>
 </ng-template>
 
-<ng-template #supplierLocationLink let-data="data">
-  <a (click)="onLocation(data.sku, data.supplier)" [innerHTML]="'common.LABEL_skuDisplay' | translate: { sku: data.sku }"></a>
-</ng-template>
-
+<!-- template for location-modal -->
 <ng-template #locationTpl let-data="data">
   <div class="bx--grid d--flex bx--no-gutter info-modal-grid min-height--30rem">
     <div class="bx--row padding-bottom--1rem">
@@ -221,10 +223,8 @@
           [showSelectionColumn]="false">
             <tbody>
               <tr>
-                <td class="no-data" colspan="3">
-                  <!--<div>
-                    <buc-empty-state stateMessage="{{'HOMEPAGE1.LABEL_SELECT_DG' | translate}}"></buc-empty-state>
-                  </div>-->
+                <td class="no-data" colspan="2">
+                  <buc-empty-state stateMessage="{{ 'common.LABEL_noData' | translate }}"></buc-empty-state>
                 </td>
               </tr>
             </tbody>
