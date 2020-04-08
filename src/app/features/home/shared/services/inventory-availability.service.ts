@@ -17,6 +17,8 @@ import {
     GetNodeAvailabilityProductBreakupRequest
 } from '../rest-services/Availability.service';
 import { BucSvcAngularStaticAppInfoFacadeUtil } from '@buc/svc-angular';
+import { catchError } from 'rxjs/operators';
+import { of as observableOf } from 'rxjs';
 
 @Injectable()
 export class InventoryAvailabilityService {
@@ -52,26 +54,30 @@ export class InventoryAvailabilityService {
       productClass: any[]
     ) {
       const lines = [];
-       
-    for(let idx=0; idx<dgIds.length; idx++){
-      lines.push( 
-        {
-          "deliveryMethod":"SHP","distributionGroupId":dgIds[idx],"itemId":items[0],"lineId":idx,"unitOfMeasure":"UNIT"
-        }
-      );
-    }
- 
-      const reqPayload = { "lines": lines }
 
+      dgIds.forEach((dgId, idx) => {
+        lines.push(
+          {
+            deliveryMethod: 'SHP',
+            distributionGroupId: dgId,
+            itemId: items[0],
+            lineId: idx,
+            unitOfMeasure: 'UNIT'
+          }
+        );
+      });
+
+      const reqPayload = { lines };
       return this.availabilitySvc.postByTenantIdV1AvailabilityNetwork({
-           $queryParameters: {  },
-           tenantId: BucSvcAngularStaticAppInfoFacadeUtil.getInventoryTenantId(),
-           body: reqPayload
-         }).pipe( map(r => r) )
-         .pipe(catchError((err) => observableOf([])));
+        $queryParameters: {},
+        tenantId: BucSvcAngularStaticAppInfoFacadeUtil.getInventoryTenantId(),
+        body: reqPayload
+      })
+      .pipe(catchError((err) => observableOf([])));
     }
 
-    
+
+
 
     private _buildGetNetworkAvailabilityRequestLine(method, dgId, itemId, uom, productClass) {
         const line: GetNetworkAvailabilityRequestLine = {

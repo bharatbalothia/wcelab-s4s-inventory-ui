@@ -11,6 +11,7 @@ import { getArray, getString } from '../shared/common/functions';
 import { InfoModalComponent } from '../shared/components/info-modal/info-modal.component';
 import { Supplier } from '../shared/common/supplier';
 import { Product } from '../shared/common/product';
+import { SKU } from '../shared/common/sku';
 
 // PENDING - 1 - Need additonal logic to see the logged in users timezone
 // TODO -2  : Code Change to make on IV call to pass array of Supplier, instead of multiple IV calls.
@@ -30,6 +31,7 @@ export class Homepage1Component implements OnInit {
     'common.LABEL_ok': ''
   };
   private supplierMap: { [ key: string ]: Supplier } = {};
+  private skuMap: { [ key: string ]: SKU } = {};
   public isScreenInitialized = false;
   public toolBarAction;
   public toolBarContent;
@@ -67,6 +69,10 @@ export class Homepage1Component implements OnInit {
   ngOnInit() {
     this._init();
   }
+
+
+  onSelectPage(e) { this._selectPage(e, this.model); }
+  onSort(e) { this._sort(e, this.model); }
 
   private async _init() {
     await this._initTranslations();
@@ -106,29 +112,46 @@ export class Homepage1Component implements OnInit {
         _id: supplier._id,
         supplier_id: supplier.supplier_id,
         description: supplier.description,
+        descAndNode: '',
         supplier_type: supplier.supplier_type,
-        address_line_1 : getAttrValue(supplier.address_attributes, 'address_line_1'),
-        city : getAttrValue(supplier.address_attributes, 'city'),
-        state : getAttrValue(supplier.address_attributes, 'state'),
-        zipcode : getAttrValue(supplier.address_attributes, 'zipcode'),
-        country : getAttrValue(supplier.address_attributes, 'country'),
-        contactPerson : getAttrValue(supplier.address_attributes, 'contactPerson'),
-        phoneNumber : getAttrValue(supplier.address_attributes, 'phoneNumber')
+        address_line_1: getAttrValue(supplier.address_attributes, 'address_line_1'),
+        city: getAttrValue(supplier.address_attributes, 'city'),
+        state: getAttrValue(supplier.address_attributes, 'state'),
+        zipcode: getAttrValue(supplier.address_attributes, 'zipcode'),
+        country: getAttrValue(supplier.address_attributes, 'country'),
+        contactPerson: getAttrValue(supplier.address_attributes, 'contactPerson'),
+        phoneNumber: getAttrValue(supplier.address_attributes, 'phoneNumber')
       };
 
-      this.supplierMap[s._id] = s;
+      this.supplierMap[s.supplier_id] = s;
     });
 
     console.log('Model - S4S allSuppliers List ' , this.supplierMap);
   }
 
+  private async _fetchProductLists(childItems: string[]) {
+    const responses4s = await this.invDistService.fetchProductList( childItems ).toPromise();
+    console.log('S4S response -  fetchAllProducts',  responses4s);
+    const products = getArray(responses4s);
+    products.forEach(product => {
+      const s: SKU = {
+        unit_of_measure: product.unit_of_measure,
+        _id: product._id,
+        item_id: product.item_id,
+        description: product.description,
+        category: product.category
+      };
+      this.skuMap[s.item_id] = s;
+    });
+    console.log('Model - S4S allProducts List ', this.skuMap);
+  }
 
   private async _initCategories() {
     const responses4s = await this.invDistService.getAllCategories().toPromise();
     console.log('S4S response - getAllCategories '  , responses4s);
     this.categoryListValues = getArray(responses4s).map((c) => ({
-      content: c.category_id,
-      id: c._id,
+      content: c.category_description,
+      id: c.category_id,
       selected: false
     }));
     console.log('Model - category List ' , this.categoryListValues);
@@ -140,7 +163,7 @@ export class Homepage1Component implements OnInit {
    * @param event category-id container
    */
   public async onCategory(event) {
-    const cat = event.item.content;
+    const cat = event.item.id;
     console.log('User selected Category ', cat);
     if (cat) {
       try {
@@ -148,7 +171,7 @@ export class Homepage1Component implements OnInit {
         const responses4s = await this.invDistService.getAllProductsByCategoryId(cat).toPromise();
         console.log('S4S response of all products with in selected category id ', cat, responses4s);
         this.productListValues = getArray(responses4s).map((product) => ({
-          content: product.description,
+          content: `${product.description} (${product.item_id})`,
           id: product.item_id,
           selected: false
         }));
@@ -174,35 +197,33 @@ export class Homepage1Component implements OnInit {
         this.model.isLoading = true;
 
         const allSuppliersHavingSelectedProduct = [];
-        const suppliers = Object.values(this.supplierMap);
-        // TODO -2  : Code Change to make on IV call to pass array of Supplier, instead of multiple IV calls.
-        for (const supplier of suppliers) {
-          const supplierName = supplier.supplier_id;
-          console.log('Making IV call with all Available Supplier Name', supplierName, 'And selected Product Id ', id);
+        const suppliers = Object.keys(this.supplierMap);
 
-          const resp = await this.invAvailService.getInventoryForDG([ id ], supplierName, [ 'UNIT' ], [ 'GOOD' ]).toPromise();
-          console.log('IV response ', resp);
+        const resp = await this.invAvailService.getConslidatedInventoryForDG( [ id ], suppliers, ['UNIT'], [ 'GOOD' ]).toPromise();
+        console.log('IV response ',  resp);
 
-          const lines = getArray(resp.lines);
-          if (lines.length > 0) {
-            const availabilityGroupBySupplier = lines[0];
-            const netAvails = getArray(availabilityGroupBySupplier.networkAvailabilities);
-            if (netAvails.length > 0 && netAvails[0].totalAvailableQuantity > 0) {
-              const avail = netAvails[0];
-              lines.filter(l => l.itemId === id).forEach(line => {
-                const availableDate = avail.thresholdType === 'ONHAND' ?
-                                      'Now' :
-                                      new DatePipe('en-US').transform(avail.earliestShipTs, 'MM/dd/yyyy');
+        const lines = getArray(resp.lines)
+        .filter(l => l.networkAvailabilities.length > 0 && l.networkAvailabilities[0].totalAvailableQuantity > 0);
 
-                allSuppliersHavingSelectedProduct.push({
-                  supplier,
-                  Availability: avail.totalAvailableQuantity,
-                  Date: availableDate,
-                  product
-                });
-              });
-            }
+        for (const line of lines) {
+          console.log('line', line, line.networkAvailabilities[0].distributionGroupId );
+          const supplier = this.supplierMap[line.networkAvailabilities[0].distributionGroupId];
+          supplier.descAndNode = `${supplier.description} (${line.networkAvailabilities[0].distributionGroupId})`;
+
+          let availableDate = 'Now';
+          if (line.networkAvailabilities[0].thresholdType === 'ONHAND') {
+            availableDate = 'Now';
+          } else {
+            availableDate = new DatePipe('en-US').transform(line.networkAvailabilities[0].earliestShipTs, 'MM/dd/yyyy');
           }
+
+          allSuppliersHavingSelectedProduct.push({
+            supplier,
+            product,
+            Availability: line.networkAvailabilities[0].totalAvailableQuantity,
+            Date: availableDate
+            // TODO PENDING - 1
+          });
         }
 
         this.model.isLoading = false;
@@ -292,19 +313,35 @@ export class Homepage1Component implements OnInit {
       []
     ).toPromise();
 
+    const children = [];
     const collection = [];
     const lines = getArray(resp.lines);
-    for (const line of lines) {
-      if (line.networkAvailabilities.length > 0 && (lines.length < 2 || line.itemId !== data.product.item_id)) {
-        const child = await this.invDistService.getChildItemDetails(line.itemId).toPromise();
-        console.log('S4S response Child Item '  , child);
-        if (child.unit_of_measure !== undefined ) {
+    lines.forEach(line => {
+      if (line.networkAvailabilities.length > 0 &&
+          line.networkAvailabilities[0].totalAvailableQuantity > 0 &&
+          (lines.length < 2 || line.itemId !== data.product.item_id) &&
+          !this.skuMap[line.itemId]) {
+        children.push(line.itemId);
+      }
+    });
+
+    if (children.length > 0) {
+      await this._fetchProductLists(children);
+    }
+
+    lines.forEach(line => {
+      if (line.networkAvailabilities.length > 0 &&
+          line.networkAvailabilities[0].totalAvailableQuantity > 0 &&
+          (lines.length < 2 || line.itemId !== data.product.item_id)) {
+        const sku = this.skuMap[line.itemId];
+        console.log('S4S response Child Item ', sku);
+        if (sku && sku.unit_of_measure !== undefined) {
           collection.push(
             {
-              itemId : child.item_id,
+              itemId : sku.item_id,
               parentData: { product: data.product, quantity: data.Availability, date: data.Date },
-              itemDescription : child.description,
-              unitOfMeasure: child.unit_of_measure,
+              itemDescription : sku.description,
+              unitOfMeasure: sku.unit_of_measure,
               shipNodes : line.networkAvailabilities[0].distributionGroupId ,
               availableQuantity : line.networkAvailabilities[0].totalAvailableQuantity ,
               itemAvailableDate : line
@@ -312,7 +349,7 @@ export class Homepage1Component implements OnInit {
           );
         }
       }
-    }
+    });
 
     templateData.model.header = makeHeaders();
     templateData.model.data = makeRows(collection);
@@ -409,8 +446,4 @@ export class Homepage1Component implements OnInit {
 
   private _sort(e, model) {
   }
-
-  onSelectPage(e) { this._selectPage(e, this.model); }
-  onSort(e) { this._sort(e, this.model); }
-
 }
