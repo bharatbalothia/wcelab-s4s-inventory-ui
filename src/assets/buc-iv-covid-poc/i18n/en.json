@@ -6,5 +6,24 @@
         "TOPITEMS": "Top items",
         "ITEMSEARCH": "Find inventory",
         "IVUPLOAD": "Upload inventory"
+    },
+    "common": {
+      "LABEL_supplierDetails": "Supplier record details",
+      "LABEL_supplierLocation": "Supplier location details",
+      "LABEL_contactPerson": "Contact person",
+      "LABEL_contactNumber": "Contact number",
+      "LABEL_modelNumber": "Model number",
+      "LABEL_availQuant": "Available quantity",
+      "LABEL_availDate": "Available as of",
+      "LABEL_ok": "OK",
+      "LABEL_noData": "No data available",
+      "LABEL_supplierDisplay": "{{ supplier.description }} ({{ supplier.supplier_id }})",
+      "LABEL_productDisplay": "{{ product.description }} ({{ product.item_id }})",
+      "LABEL_skuDisplay": "{{ sku.itemDescription }} ({{ sku.itemId }})",
+      "LABEL_mfrProduct": "Manufacturer/Product",
+      "LABEL_mfrProductDisplay": "{{ supplier.supplier_id }} {{ product.item_id }}",
+      "LABEL_uom": "Unit of measure",
+      "LABEL_sku": "SKU",
+      "LABEL_skuQuantity": "SKU available quantity"
     }
 }

@@ -583,14 +583,14 @@ class AvailabilityService {
         $refresh ? : any,
         useMocks ? : boolean,
         productId ? : string,
-        supplierId ? : string 
+        supplierId ? : string
     }){
         let useMocks = false
         if (parameters.useMocks) {
             useMocks = true
         }
         let path = '/{tenantId}/v1/availability/'+parameters['productId']+'/network/'+parameters['supplierId'];
-       
+
 
         const headers = parameters.$headers || {}
         headers['Accept'] = 'application/json';
@@ -638,13 +638,13 @@ class AvailabilityService {
         //console.log('Padman Availability by N/w' , obsToReturn$);
         return obsToReturn$;
     }
+
     /**
     * Provides the current availability picture, including non-expired reservations, at the network level. Responds with availability based on configured distribution groups.
-
     * @method
     * @name Availability#postByTenantIdV1AvailabilityNetwork
-         * @param {} body - Input JSON
-         * @param {string} tenantId - The IBM provided tenant ID to access your APIs.
+    * @param {} body - Input JSON
+    * @param {string} tenantId - The IBM provided tenant ID to access your APIs.
     */
     public postByTenantIdV1AvailabilityNetwork(parameters: {
         'body': any,
@@ -738,9 +738,9 @@ class AvailabilityService {
         if (parameters.useMocks) {
             useMocks = true
         }
-        
+
         let path = '/us-4474f893/v1/availability/'+parameters['productId']+'/node'
-         
+
         const headers = parameters.$headers || {}
         headers['Accept'] = 'application/json';
         headers['Content-Type'] = 'application/json';
@@ -783,7 +783,7 @@ class AvailabilityService {
             headers['Content-Type'] = 'application/json; charset=utf-8';
         }
         console.log('url body', url, body, this.options, queryParameters);
-        
+
         const obsToReturn$ = this.http.post(url, this.resourceDomain, queryParameters, body, this.options);
 
         return obsToReturn$;

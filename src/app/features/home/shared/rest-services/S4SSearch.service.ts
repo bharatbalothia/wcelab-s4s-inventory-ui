@@ -685,32 +685,33 @@ class S4SSearchService {
         $refresh ? : any,
         useMocks ? : boolean
     }): Observable < any > {
-      return this.invoke(`suppliers`, parameters); 
+      return this.invoke(`suppliers`, parameters);
     }
 
     public fetchProductList(parameters: {
         'tenantId' : string,
         'transactionId' ? : string,
-        $queryParameters ? : any, 
+        $queryParameters ? : any,
         $headers ? : any,
         $cache ? : any,
         $refresh ? : any,
         useMocks ? : boolean,
         'body': any,
     }): Observable < any > {
-        let body = {};
-        // allow use of param with or without underscore
-        parameters['body'] = parameters['body'] || parameters['body'];
+      let body = {};
+      // allow use of param with or without underscore
+      parameters['body'] = parameters['body'] || parameters['body'];
 
-        if (parameters['body'] !== undefined) {
-            body = parameters['body'];
-        }
+      if (parameters['body'] !== undefined) {
+        body = parameters['body'];
+      }
 
-        if (parameters['body'] === undefined) {
-            return throwError(new Error('Missing required  parameter: body'));
-        }
-        return this.post(`productslist`, body, parameters);
+      if (parameters['body'] === undefined) {
+        return throwError(new Error('Missing required  parameter: body'));
+      }
+      return this.post(`productslist`, body, parameters);
     }
+
     public getContactDetailsOfSelectedSupplier(parameters: {
         'supplierId'  : string,
         $queryParameters ? : any,
@@ -746,20 +747,19 @@ class S4SSearchService {
       const obs = this._httpClient.get(`${hostPrefix}/${tenantId}/${api}`, { headers });
       return obs;
     }
-    private post(api: string, body:any, parameters: SvcParameters, type: string = Constants.POST): Observable<any> {
 
-        const headers = {
-          Authorization: 'Basic N21jNGZyN2tqdzh6cnE3a2loYmZpYTV5cThkOHJxNjU6dDg5czk1amJqbm1lZmQyZHhzNDN1bmwxcjJwNnp1ZjA=',
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        };
-        const hostPrefix = 'https://s4s-supplement-service-dev.mybluemix.net/s4s';
-        const tenantId = BucSvcAngularStaticAppInfoFacadeUtil.getInventoryTenantId();
-  
-        // everything is GET for now
-        const obs = this._httpClient.post(`${hostPrefix}/${tenantId}/${api}`, body, { headers });
-        return obs;
-      }
+    private post(api: string, body:any, parameters: SvcParameters, type: string = Constants.POST): Observable<any> {
+      const headers = {
+        Authorization: 'Basic N21jNGZyN2tqdzh6cnE3a2loYmZpYTV5cThkOHJxNjU6dDg5czk1amJqbm1lZmQyZHhzNDN1bmwxcjJwNnp1ZjA=',
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      };
+      const hostPrefix = 'https://s4s-supplement-service-dev.mybluemix.net/s4s';
+      const tenantId = BucSvcAngularStaticAppInfoFacadeUtil.getInventoryTenantId();
+
+      const obs = this._httpClient.post(`${hostPrefix}/${tenantId}/${api}`, body, { headers });
+      return obs;
+    }
 }
 
 interface SvcParameters {

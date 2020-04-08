@@ -37,7 +37,7 @@ export class InventoryDistributionService {
       map(r => ({ distributionGroups: r.map(dg => ({ dgId: dg.distributionGroupId, dgName: dg.distributionGroupId })) }))
     );
   }
- 
+
   public getProducts(): Observable<any> {
     return this.s4sSvc.getProducts(  {} )
     .pipe( map(r => r) );
@@ -47,7 +47,7 @@ export class InventoryDistributionService {
     return this.s4sSvc.getAllCategories({})
     .pipe( map(r => r) );
   }
-  
+
   public getAllProductsByCategoryId(selectedCategoryId : string): Observable<any> {
     return this.s4sSvc.getAllProductsByCategoryId({categoryId : selectedCategoryId})
     .pipe( map(r => r) );
@@ -58,33 +58,32 @@ export class InventoryDistributionService {
     .pipe( map(r => r) );
   }
 
-  public fetchProductList(productIds : string[]): Observable<any> {
+  public fetchProductList(productIds: string[]): Observable<any> {
     const tenantId = BucSvcAngularStaticAppInfoFacadeUtil.getInventoryTenantId();
     const reqPayLoad = { item_id: productIds };
-    return this.s4sSvc.fetchProductList({tenantId : tenantId, body:reqPayLoad} )
-    .pipe( map(r => r) );
+    return this.s4sSvc.fetchProductList({ tenantId, body: reqPayLoad});
   }
-  
+
   public getContactDetailsOfSelectedSupplier(supplierId : string): Observable<any> {
-    return this.s4sSvc.getContactDetailsOfSelectedSupplier({supplierId : supplierId} )
+    return this.s4sSvc.getContactDetailsOfSelectedSupplier({supplierId} )
     .pipe( map(r => r) );
   }
-   
-  public getChildItemDetails(childItemId : string): Observable<any> { 
-    return this.s4sSvc.getItemDetails({childItemId : childItemId} )
+
+  public getChildItemDetails(childItemId : string): Observable<any> {
+    return this.s4sSvc.getItemDetails({childItemId} )
     .pipe( map(r => r) )
     .pipe(catchError((err) => observableOf([])));
   }
 
-  public getByTenantIdV1ConfigurationShipNodes(): Observable<any> {  
+  public getByTenantIdV1ConfigurationShipNodes(): Observable<any> {
     const tenantId = BucSvcAngularStaticAppInfoFacadeUtil.getInventoryTenantId();
-    return this.shipNodeSvc.getByTenantIdV1ConfigurationShipNodes({ tenantId : tenantId } )
+    return this.shipNodeSvc.getByTenantIdV1ConfigurationShipNodes({ tenantId } )
     .pipe( map(r => r) );
   }
-  
-  
-  
-  
+
+
+
+
 }
 
 export interface DistributionRuleListApiResponse {
@@ -105,5 +104,5 @@ export interface DistributionGroup {
   dgPurpose: string;
   itemShipNodes: {
     ItemShipNode: any[]
-  }; 
+  };
 }

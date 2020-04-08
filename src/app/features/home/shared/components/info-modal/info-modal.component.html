@@ -13,7 +13,7 @@
 -->
 
 <ibm-modal (overlaySelected)="closeModal()" [size]="displayData.size">
-    <ibm-modal-header (closeSelect)="closeModal()">{{ displayData.header }}</ibm-modal-header>
+    <ibm-modal-header (closeSelect)="closeModal()" [class]="displayData.headerClass || ''">{{ displayData.header }}</ibm-modal-header>
     <section class="bx--modal-content">
       <ng-container
         *ngIf="displayData.template"
