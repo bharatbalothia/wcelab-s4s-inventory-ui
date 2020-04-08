@@ -370,6 +370,7 @@ export class Homepage1Component implements OnInit {
       inputs: {
         displayData: {
           header: this.nlsMap['common.LABEL_supplierDetails'],
+          headerClass: 'modal-header-class',
           template: this.supplierTpl,
           templateData
         },
@@ -437,6 +438,7 @@ export class Homepage1Component implements OnInit {
       inputs: {
         displayData: {
           header: this.nlsMap['common.LABEL_supplierLocation'],
+          headerClass: 'modal-header-class',
           template: this.locationTpl,
           templateData
         },
