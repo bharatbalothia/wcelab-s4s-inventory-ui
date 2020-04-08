@@ -22,7 +22,7 @@ import {
     Observable
 } from 'rxjs';
 
-import { BucCommBEHttpWrapperService } from '@buc/svc-angular';
+import { BucCommBEHttpWrapperService, BucSvcAngularStaticAppInfoFacadeUtil } from '@buc/svc-angular';
 import { Constants } from '../classes/constants';
 
 type AuthenticationError = {
@@ -637,7 +637,7 @@ class S4SSearchService {
         $refresh ? : any,
         useMocks ? : boolean
     }): Observable < any > {
-      return this.invoke(`products`);
+      return this.invoke(`products`, parameters);
     }
 
     /**
@@ -656,7 +656,7 @@ class S4SSearchService {
         $refresh ? : any,
         useMocks ? : boolean
     }): Observable < any > {
-      return this.invoke(`product/categories`);
+      return this.invoke(`product/categories`, parameters);
     }
 
     /**
@@ -674,7 +674,7 @@ class S4SSearchService {
         $refresh ? : any,
         useMocks ? : boolean
     }): Observable < any > {
-      return this.invoke(`products/category/${parameters['categoryId']}`);
+      return this.invoke(`products/category/${parameters['categoryId']}`, parameters);
     }
 
     public fetchAllSuppliers(parameters: {
@@ -685,7 +685,7 @@ class S4SSearchService {
         $refresh ? : any,
         useMocks ? : boolean
     }): Observable < any > {
-      return this.invoke(`suppliers`);
+      return this.invoke(`suppliers`, parameters);
     }
 
     public getContactDetailsOfSelectedSupplier(parameters: {
@@ -696,10 +696,8 @@ class S4SSearchService {
         $refresh ? : any,
         useMocks ? : boolean
     }): Observable < any > {
-      return this.invoke(`suppliers/${parameters['supplierId']}`);
+      return this.invoke(`suppliers/${parameters['supplierId']}`, parameters);
     }
-
-
 
     public getItemDetails(parameters: {
         'childItemId'  : string,
@@ -709,22 +707,34 @@ class S4SSearchService {
         $refresh ? : any,
         useMocks ? : boolean
     }): Observable < any > {
-      return this.invoke(`products/${parameters['childItemId']}`);
+      return this.invoke(`products/${parameters['childItemId']}`, parameters);
     }
 
-    private invoke(api: string, type: string = Constants.GET): Observable<any> {
+    private invoke(api: string, parameters: SvcParameters, type: string = Constants.GET): Observable<any> {
       const headers = {
         Authorization: 'Basic N21jNGZyN2tqdzh6cnE3a2loYmZpYTV5cThkOHJxNjU6dDg5czk1amJqbm1lZmQyZHhzNDN1bmwxcjJwNnp1ZjA=',
         Accept: 'application/json',
         'Content-Type': 'application/json',
       };
       const hostPrefix = 'https://s4s-supplement-service-dev.mybluemix.net/s4s';
-      const tenantId = 'us-6fd57b71';
+      const tenantId = BucSvcAngularStaticAppInfoFacadeUtil.getInventoryTenantId();
 
       // everything is GET for now
       const obs = this._httpClient.get(`${hostPrefix}/${tenantId}/${api}`, { headers });
       return obs;
     }
+}
+
+interface SvcParameters {
+  childItemId?: string;
+  supplierId?: string;
+  transactionId?: string;
+  categoryId? : string;
+  $queryParameters?: any;
+  $headers?: any;
+  $cache?: any;
+  $refresh?: any;
+  useMocks?: boolean;
 }
 
 export {
