@@ -48,6 +48,8 @@ export class Homepage1Component implements OnInit {
   categoryListValues = [];
   productListValues = [];
 
+  public supplierSingleton : { [key : string] : number } = {};
+  public supplierSkuSingleton : { [key : string] : number } = {};
   constructor(
     private translateService: TranslateService,
     private invAvailService: InventoryAvailabilityService,
@@ -286,6 +288,16 @@ export class Homepage1Component implements OnInit {
    * @param data data-passed in from template
    */
   async onSupplier(data) {
+    if(this.supplierSingleton[data.supplier.supplier_id] === undefined){
+      this.supplierSingleton[data.supplier.supplier_id] = 1;
+    }else{
+      this.supplierSingleton[data.supplier.supplier_id] ++;
+    }
+    
+    console.log('supplierSingleton value on click for supplier id ',data.supplier.supplier_id, this.supplierSingleton[data.supplier.supplier_id]);
+    if(this.supplierSingleton[data.supplier.supplier_id] >= 2){
+      return;
+    }
     const makeHeaders = () => [
       [
         new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.PRODUCT_MODEL_NUMBER') }),
@@ -380,6 +392,10 @@ export class Homepage1Component implements OnInit {
           templateData
         },
         buttonData: {
+          callback: () => { 
+            this.supplierSingleton[data.supplier.supplier_id] = 0;
+            console.log('supplierSingleton value on close for supplier id ', data.supplier.supplier_id, this.supplierSingleton[data.supplier.supplier_id]);
+          } ,
           primary: '',
           class: {
             primary: true
@@ -396,6 +412,17 @@ export class Homepage1Component implements OnInit {
    * @param supplier Supplier to fetch location for
    */
   public async onLocation(sku: any, supplier: Supplier) {
+    if(this.supplierSkuSingleton[`supplier.supplier_id::sku.itemId`] === undefined){
+      this.supplierSkuSingleton[`supplier.supplier_id::sku.itemId`] = 1;
+    }else{
+      this.supplierSkuSingleton[`supplier.supplier_id::sku.itemId`] ++;
+    }
+    console.log('supplierSingleton value on click for supplier id sku',supplier.supplier_id, sku.itemId 
+    , this.supplierSkuSingleton[`supplier.supplier_id::sku.itemId`]);
+
+    if(this.supplierSkuSingleton[`supplier.supplier_id::sku.itemId`] >= 2){
+      return;
+    }
     const makeHeaders = () => [
       [
         new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.LOCATION') }),
@@ -474,6 +501,11 @@ export class Homepage1Component implements OnInit {
           templateData
         },
         buttonData: {
+          callback: () => { 
+            this.supplierSkuSingleton[`supplier.supplier_id::sku.itemId`] =0;
+            console.log('supplierSingleton value on close for supplier id skuId', supplier.supplier_id, sku.itemId, 
+            this.supplierSkuSingleton[`supplier.supplier_id::sku.itemId`]);
+          } ,
           primary: '',
           class: {
             primary: true
