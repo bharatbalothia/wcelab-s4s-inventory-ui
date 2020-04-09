@@ -10,6 +10,7 @@ import { getArray } from '../shared/common/functions';
 
 import { InfoModalComponent } from '../shared/components/info-modal/info-modal.component';
 import { Supplier } from '../shared/common/supplier';
+import { SupplierLocation } from '../shared/common/supplierLocation';
 import { Product } from '../shared/common/product';
 import { SKU } from '../shared/common/sku';
 import { S4STableModel } from '../shared/common/table-model';
@@ -35,6 +36,8 @@ export class Homepage1Component implements OnInit {
   };
   private supplierMap: { [ key: string ]: Supplier } = {};
   private skuMap: { [ key: string ]: SKU } = {};
+  private supplierLocationMap: { [ key: string ]: SupplierLocation } = {};
+  
   private cat2ProdMap: { [ key: string ]: any } = {};
   private selectedCat: string;
   private selectedProd: string;
@@ -126,6 +129,8 @@ export class Homepage1Component implements OnInit {
     });
     console.log('Model - S4S allProducts List ', this.skuMap);
   }
+
+  
 
   private async _initCategories() {
     const responses4s = await this.invDistService.getAllCategories().toPromise();
@@ -258,7 +263,7 @@ export class Homepage1Component implements OnInit {
 
     const records = data.map((record, i) => [
       {
-        data: { name: record.supplier.supplier_id, descriptor: record },
+        data: { name: record.supplier.description, descriptor: record },
         template: this.supplierLink,
         id: i
       },
@@ -318,6 +323,8 @@ export class Homepage1Component implements OnInit {
       []
     ).toPromise();
 
+    
+
     const children = [];
     const collection = [];
     const lines = getArray(resp.lines);
@@ -333,6 +340,7 @@ export class Homepage1Component implements OnInit {
     if (children.length > 0) {
       await this._fetchProductLists(children);
     }
+  
 
     lines.forEach(line => {
       if (line.networkAvailabilities.length > 0 &&
@@ -410,8 +418,23 @@ export class Homepage1Component implements OnInit {
 
     const resp = await this.invDistService.getShipNodesForSupplier(supplier.supplier_id).toPromise();
     const shipNodeList = resp.map(n => n.shipnode_id);
+
     const locData = [];
     console.log('Model - shipNodes List ' , shipNodeList);
+
+    const shipNodes = getArray(resp);
+    shipNodes.forEach(shipNode => {
+      const sn : SupplierLocation = {
+        shipnode_id: shipNode.shipnode_id,
+        _id: shipNode._id,
+        shipnode_name: shipNode.shipnode_name,
+        latitude: shipNode.latitude,
+        longitude: shipNode.longitude,
+        supplier_id: shipNode.supplier_id
+      };
+      this.supplierLocationMap[sn.shipnode_id] = sn;
+    });
+    console.log('Model - S4S supplierLocationMap ', this.supplierLocationMap);
 
      // 2. Call IV 'Get Network Availability Product Breakup' for network (supplier) - returns list of all child items
     console.log('Get IV Network Availability at ship node level For selected Child Item', sku.itemId );
@@ -423,10 +446,19 @@ export class Homepage1Component implements OnInit {
     const lines = getArray(ivResponse.lines);
     lines.filter(l => l.itemId === sku.itemId).forEach(line => {
       const iv = getArray(line.shipNodeAvailability);
-      iv.forEach(nodeIv =>
-        locData.push({ shipNodeLocation: nodeIv.shipNode, sku: line.itemId, availableQuantity: nodeIv.totalAvailableQuantity })
+      iv.forEach(nodeIv =>{
+        if(nodeIv.totalAvailableQuantity > 0){
+          if(this.supplierLocationMap[nodeIv.shipNode] && 
+            this.supplierLocationMap[nodeIv.shipNode].shipnode_name !== undefined){
+            locData.push({ shipNodeLocation: this.supplierLocationMap[nodeIv.shipNode].shipnode_name, sku: line.itemId, availableQuantity: nodeIv.totalAvailableQuantity })
+          }else{
+            locData.push({ shipNodeLocation: nodeIv.shipNode, sku: line.itemId, availableQuantity: nodeIv.totalAvailableQuantity })
+          }
+        }
+      }
       );
     });
+   
 
     templateData.model.header = makeHeaders();
     S4STableModel.populate(templateData.model, makeRows(locData), {});
