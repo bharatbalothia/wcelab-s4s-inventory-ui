@@ -1,19 +1,19 @@
 <div class="bx--grid bx--no-gutter">
   <div class="bx--row">
     <div class="bx--col-md-4 bx--col-sm-6">
-      <buc-combobox  [attr.tid]=" +'Category-selection'"
+      <buc-combobox  [attr.tid]="'Category-selection'"
         placeholder="{{'HOMEPAGE1.LABEL_CATEGORY' | translate}}" [disabled]="categoryListValues.length === 0"
         label="{{'HOMEPAGE1.LABEL_CATEGORY' | translate}}" [items]="categoryListValues"
         (selectItemAction)="onCategory($event)">
-      </buc-combobox>  
+      </buc-combobox>
 
     </div>
     <div class="bx--col-md-4 bx--col-sm-6">
-      <buc-combobox  [attr.tid]=" +'Product-selection'"
+      <buc-combobox [attr.tid]="'Product-selection'"
         placeholder="{{'HOMEPAGE1.LABEL_PRODUCT' | translate}}" [disabled]="productListValues.length === 0"
         label="{{'HOMEPAGE1.LABEL_PRODUCT' | translate}}" [items]="productListValues"
         (selectItemAction)="onProduct($event)">
-      </buc-combobox>        
+      </buc-combobox>
     </div>
   </div>
 
@@ -133,7 +133,7 @@
 
       <div class="bx--col d--flex-ai-center padding-left--1rem padding-right--0 d--flex-1">
         <div class="width--100p">
-          <div class="product-name">
+          <div class="sku-name">
             {{ 'common.LABEL_mfrProductDisplay' | translate: { sku: data.sku, supplier: data.supplier } }}
           </div>
           <div class="bx--row">
@@ -149,7 +149,7 @@
               {{ 'common.LABEL_sku' | translate }}
             </div>
             <div class="bx--col padding-left-right--0">
-              {{ data.sku.itemId }}
+              {{ data.sku.itemIdDisplay }}
             </div>
           </div>
         </div>
