@@ -123,12 +123,12 @@
     <ng-container [ngTemplateOutlet]="contactCard" [ngTemplateOutletContext]="{ data: data.supplier }"></ng-container>
 
     <div class="bx--row d--flex-jc-space-evenly padding-bottom--0_5rem">
-      <div class="bx--col d--flex-ai-center d--flex-jc-space-evenly padding-left-right--0 max-width--8rem d--flex-0_4">
-        <ibm-icon-image32></ibm-icon-image32>
-        <!-- <img class="object-fit--contain max-height--10rem max--width-8rem" src="unknown.npg"> -->
+      <div class="bx--col d--flex-ai-center d--flex-jc-space-evenly padding-left-right--0 max-width--8rem d--flex-0_6">
+        <ibm-icon-image32 *ngIf="!data.sku.imgUrl"></ibm-icon-image32>
+        <img *ngIf="data.sku.imgUrl" class="object-fit--contain max-height--10rem max--width-8rem" [src]="data.sku.imgUrl">
       </div>
 
-      <div class="bx--col d--flex-ai-center padding-left-right--0 d--flex-1">
+      <div class="bx--col d--flex-ai-center padding-left--1rem padding-right--0 d--flex-1">
         <div class="width--100p">
           <div class="product-name">
             {{ 'common.LABEL_mfrProductDisplay' | translate: { product: data.sku.parentData.product, supplier: data.supplier } }}

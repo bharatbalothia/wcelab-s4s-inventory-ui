@@ -81,9 +81,9 @@ export class InventoryDistributionService {
     .pipe( map(r => r) );
   }
 
-
-
-
+  public getShipNodesForSupplier(supplierId: string): Observable<any> {
+    return this.s4sSvc.getShipNodesForSupplier({ supplierId });
+  }
 }
 
 export interface DistributionRuleListApiResponse {
