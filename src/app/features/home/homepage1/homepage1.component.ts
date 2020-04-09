@@ -1,17 +1,18 @@
-import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef, HostBinding } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { DatePipe } from '@angular/common';
 
-import { BucTableModel, COMMON } from '@buc/common-components';
+import { COMMON } from '@buc/common-components';
 import { TableHeaderItem, ModalService } from 'carbon-components-angular';
 import { InventoryAvailabilityService } from '../shared/services/inventory-availability.service';
 import { InventoryDistributionService } from '../shared/services/inventory-distribution.service';
-import { getArray, getString } from '../shared/common/functions';
+import { getArray } from '../shared/common/functions';
 
 import { InfoModalComponent } from '../shared/components/info-modal/info-modal.component';
 import { Supplier } from '../shared/common/supplier';
 import { Product } from '../shared/common/product';
 import { SKU } from '../shared/common/sku';
+import { S4STableModel } from '../shared/common/table-model';
 
 // PENDING - 1 - Need additonal logic to see the logged in users timezone
 @Component({
@@ -38,15 +39,11 @@ export class Homepage1Component implements OnInit {
   private selectedCat: string;
   private selectedProd: string;
 
-  public isScreenInitialized = false;
-  model = new BucTableModel();
-
-  // Page settings start
-  private pageSize;
-  private pageNumber;
-  public searchValue = '';
-  public categoryListValues = [];
-  public productListValues = [];
+  @HostBinding('class') page = 'page-component';
+  isScreenInitialized = false;
+  model = new S4STableModel();
+  categoryListValues = [];
+  productListValues = [];
 
   constructor(
     private translateService: TranslateService,
@@ -60,8 +57,8 @@ export class Homepage1Component implements OnInit {
     this._init();
   }
 
-  onSelectPage(e) { this._selectPage(e, this.model); }
-  onSort(e) { this._sort(e, this.model); }
+  onSelectPage(e) { S4STableModel.selectPage(e, this.model); }
+  onSort(e) { S4STableModel.sortColumn(e, this.model); }
 
   private async _init() {
     await this._initTranslations();
@@ -75,17 +72,10 @@ export class Homepage1Component implements OnInit {
   }
 
   private _initializePage() {
-    this.model = new BucTableModel();
-    this.model.pageLength = BucTableModel.DEFAULT_PAGE_LEN;
-    this.model.currentPage = 1;
-    this.pageSize = this.model.pageLength;
-    this.pageNumber = this.model.currentPage;
-
-    if (!this.isScreenInitialized) {
-      this._initCategories();
-      this._fetchAllSuppliers();
-      this._refreshSupplierTableHeader();
-    }
+    S4STableModel.setPgDefaults(this.model);
+    this._initCategories();
+    this._fetchAllSuppliers();
+    this._refreshSupplierTableHeader();
   }
 
   private async _fetchAllSuppliers() {
@@ -159,6 +149,7 @@ export class Homepage1Component implements OnInit {
     if (cat && cat !== this.selectedCat) {
       this.selectedCat = cat;
       this.selectedProd = '';
+      this.productListValues = [];
 
       try {
         this.model.isLoading = true;
@@ -176,9 +167,9 @@ export class Homepage1Component implements OnInit {
         console.log('S4S response of all products with in selected category id ', cat, responses4s);
         this.productListValues = getArray(responses4s).map((product) => ({
           content: `${product.description} (${product.item_id})`,
-          id: product.item_id,
-          selected: false
+          id: product.item_id
         }));
+
         this.model.isLoading = false;
         console.log('Model - Product List ' , this.productListValues);
       } catch (err) {
@@ -263,9 +254,8 @@ export class Homepage1Component implements OnInit {
 
   private _refreshSupplierTable(data) {
     this.model.isLoading = true;
-    this.model.pageLength = this.pageSize;
-    this.model.currentPage = this.pageNumber;
-    this.model.data = data.map((record, i) => [
+
+    const records = data.map((record, i) => [
       {
         data: { name: record.supplier.supplier_id, descriptor: record },
         template: this.supplierLink,
@@ -278,8 +268,10 @@ export class Homepage1Component implements OnInit {
         data: record.Date
       }
     ]);
-    (this.model as any).customSort = { 0: 'name' };
-    this.model.totalDataLength = data.length;
+
+    S4STableModel.setPgDefaults(this.model);
+    S4STableModel.populate(this.model, records, { 0: 'name' });
+
     this.model.isLoading = false;
   }
 
@@ -315,12 +307,8 @@ export class Homepage1Component implements OnInit {
       date: data.Date
     };
 
-    templateData.model = new BucTableModel();
-    templateData.model.pageLength = BucTableModel.DEFAULT_PAGE_LEN;
-    templateData.model.currentPage = 1;
-    templateData.model.customSort = { 0: 'sort' };
-    templateData.onSelectPage = (e) => { this._selectPage(e, templateData.model); };
-    templateData.onSort = (e) => { this._sort(e, templateData.model); };
+    templateData.model = new S4STableModel();
+    S4STableModel.setPgDefaults(templateData.model);
 
     const resp = await this.invAvailService.getInventoryForNetwork(
       [ data.product.item_id ],
@@ -368,8 +356,9 @@ export class Homepage1Component implements OnInit {
     });
 
     templateData.model.header = makeHeaders();
-    templateData.model.data = makeRows(collection);
-    templateData.model.totalDataLength = data.length;
+    S4STableModel.populate(templateData.model, makeRows(collection), { 0: 'sort' });
+    templateData.onSelectPage = (e) => { S4STableModel.selectPage(e, templateData.model); };
+    templateData.onSort = (e) => { S4STableModel.sortColumn(e, templateData.model); };
 
     this.modalSvc.create({
       component: InfoModalComponent,
@@ -414,10 +403,8 @@ export class Homepage1Component implements OnInit {
       sku
     };
 
-    templateData.model = new BucTableModel();
-    templateData.model.pageLength = BucTableModel.DEFAULT_PAGE_LEN;
-    templateData.model.currentPage = 1;
-    templateData.onSelectPage = (e) => { this._selectPage(e, templateData.model); };
+    templateData.model = new S4STableModel();
+    S4STableModel.setPgDefaults(templateData.model);
 
     const resp = await this.invDistService.getByTenantIdV1ConfigurationShipNodes().toPromise();
     const shipNodeList = resp.map(n => n.shipNode);
@@ -438,10 +425,10 @@ export class Homepage1Component implements OnInit {
         locData.push({ shipNodeLocation: nodeIv.shipNode, sku: line.itemId, availableQuantity: nodeIv.totalAvailableQuantity })
       );
     });
-    templateData.model.header = makeHeaders();
-    templateData.model.data = makeRows(locData);
-    templateData.model.totalDataLength = locData.length;
 
+    templateData.model.header = makeHeaders();
+    S4STableModel.populate(templateData.model, makeRows(locData), {});
+    templateData.onSelectPage = (e) => { S4STableModel.selectPage(e, templateData.model); };
 
     this.modalSvc.create({
       component: InfoModalComponent,
@@ -461,17 +448,5 @@ export class Homepage1Component implements OnInit {
         }
       }
     });
-  }
-
-  private _selectPage(pg, model) {
-  }
-
-  private _sort(idx, model) {
-    const customSort = model.customSort;
-    if (customSort && customSort[idx]) {
-      const field = customSort[idx];
-      const s = model.getHeader(idx).ascending ? 1 : -1;
-      model.data.sort((l, r) => s * l[idx].data[field].localeCompare(r[idx].data[field]));
-    }
   }
 }

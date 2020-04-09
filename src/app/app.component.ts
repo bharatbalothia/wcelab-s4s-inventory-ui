@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostBinding } from '@angular/core';
 import {
   BucCommonClassesAppComponentClazz,
   BucSvcAngularStaticAppInfoFacadeUtil
@@ -10,6 +10,7 @@ import {
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent extends BucCommonClassesAppComponentClazz implements OnInit {
+  @HostBinding('class') page = 'bg-color page-component';
 
   // Obtained from superclass: isBucTenantChangeSuccess, isBucJwtRefreshSuccess, isInitialState
 

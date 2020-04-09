@@ -1,11 +1,9 @@
-<div class="app-root-buc-app-fulfillment bg-color">
-  <div class="app-region-header p-16">
-    <h1 class="productive-heading-01 p-16" [translate]="'APP_COMPONENT.APP_NAME' | translate"></h1>
-  </div>
-  <div class="app-region-body bg-white p-16">
-    <router-outlet *ngIf="isBucTenantChangeSuccess && isBucJwtRefreshSuccess"></router-outlet>
-    <h1 *ngIf="isInitialState" [translate]="'APP_COMPONENT.MSG_LOADING'"></h1>
-    <h1 *ngIf="!isInitialState && !(isBucTenantChangeSuccess || isBucJwtRefreshSuccess)"[translate]="'APP_COMPONENT.MSG_ERROR'"></h1>
-  </div>
+<div class="app-region-header p-16">
+  <h1 class="productive-heading-01 p-16" [translate]="'APP_COMPONENT.APP_NAME' | translate"></h1>
+</div>
+<div class="app-region-body bg-white p-16">
+  <router-outlet *ngIf="isBucTenantChangeSuccess && isBucJwtRefreshSuccess"></router-outlet>
+  <h1 *ngIf="isInitialState" [translate]="'APP_COMPONENT.MSG_LOADING'"></h1>
+  <h1 *ngIf="!isInitialState && !(isBucTenantChangeSuccess || isBucJwtRefreshSuccess)"[translate]="'APP_COMPONENT.MSG_ERROR'"></h1>
 </div>
 <ibm-placeholder></ibm-placeholder>
