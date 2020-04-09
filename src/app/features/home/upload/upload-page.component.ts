@@ -78,8 +78,8 @@ export class UploadPageComponent implements OnInit {
         new TableHeaderItem({ data: this.nlsMap['UPLOAD.SKUID'] }),
         new TableHeaderItem({ data: this.nlsMap['UPLOAD.NODEID'] }),
         new TableHeaderItem({ data: this.nlsMap['UPLOAD.QUANTITY'] }),
-        new TableHeaderItem({ data: this.nlsMap['UPLOAD.PRODUCTCLASS'] }),
-        new TableHeaderItem({ data: this.nlsMap['UPLOAD.UOM'] })
+        new TableHeaderItem({ data: this.nlsMap['UPLOAD.UOM'] }),
+        new TableHeaderItem({ data: this.nlsMap['UPLOAD.PRODUCTCLASS'] })
       ]
     ];
     this.model.data = [];
