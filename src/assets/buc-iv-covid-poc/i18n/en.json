@@ -22,7 +22,7 @@
       "LABEL_productDisplay": "{{ product.description }} ({{ product.item_id }})",
       "LABEL_skuDisplay": "{{ sku.itemDescription }} ({{ sku.itemId }})",
       "LABEL_mfrProduct": "Manufacturer/Product",
-      "LABEL_mfrProductDisplay": "{{ supplier.supplier_id }} {{ product.item_id }}",
+      "LABEL_mfrProductDisplay": "{{ supplier.supplier_id }} {{ sku.itemDescription }}",
       "LABEL_uom": "Unit of measure",
       "LABEL_sku": "SKU",
       "LABEL_skuQuantity": "SKU available quantity",
