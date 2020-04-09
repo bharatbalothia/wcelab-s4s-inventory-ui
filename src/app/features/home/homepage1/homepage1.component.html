@@ -1,14 +1,17 @@
 <div class="bx--grid bx--no-gutter">
   <div class="bx--row">
-    <buc-dropdown class="bx--col-md-4 bx--col-sm-6"
-      [label]="'HOMEPAGE1.LABEL_CATEGORY' | translate" [theme]="'dark'" [disabled]="!isScreenInitialized"
-      placeholder="" (selected)="onCategory($event)" [items]="categoryListValues">
-    </buc-dropdown>
-
-    <buc-dropdown class="bx--col-md-4 bx--col-sm-6"
-      [label]="'HOMEPAGE1.LABEL_PRODUCT' | translate" [theme]="'dark'" [disabled]="!isScreenInitialized"
-      placeholder="" (selected)="onProduct($event)"  [items]="productListValues">
-    </buc-dropdown>
+    <div class="bx--col-md-4 bx--col-sm-6">
+      <buc-dropdown
+        [label]="'HOMEPAGE1.LABEL_CATEGORY' | translate" [theme]="'dark'" [disabled]="categoryListValues === 0"
+        placeholder="" (selected)="onCategory($event)" [items]="categoryListValues">
+      </buc-dropdown>
+    </div>
+    <div class="bx--col-md-4 bx--col-sm-6">
+      <buc-dropdown
+        [label]="'HOMEPAGE1.LABEL_PRODUCT' | translate" [theme]="'dark'" [disabled]="productListValues.length === 0"
+        placeholder="" (selected)="onProduct($event)"  [items]="productListValues">
+      </buc-dropdown>
+    </div>
   </div>
 
   <div class="bx--row d--flex-1 d--flex-fd-column">
