@@ -1,9 +1,7 @@
 @import "~@carbon/layout/scss/layout";
 
-.app-root-buc-app-fulfillment {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
+:host {
+  height: 100%;
 
   .app-region-header {
     padding: 0px 15px;

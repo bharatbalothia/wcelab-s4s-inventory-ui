@@ -6,7 +6,6 @@ import { BucSvcAngularModule } from '@buc/svc-angular';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
-
 import { TranslateService } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
 import {
@@ -18,7 +17,7 @@ import {
 
 import { AppComponent } from './app.component';
 import { ContentSwitcherModule } from 'carbon-components-angular';
-import { BucCommonComponentsModule, BucIconsModule } from '@buc/common-components';
+import { BucCommonComponentsModule } from '@buc/common-components';
 
 export class BucIVCovidPOCAppModuleBundles {
   static bundles: Array<any> = [{
