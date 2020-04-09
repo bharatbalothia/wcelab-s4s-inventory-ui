@@ -12,8 +12,8 @@
  =================================================================
 -->
 
-<ibm-modal (overlaySelected)="closeModal()" [size]="displayData.size">
-    <ibm-modal-header (closeSelect)="closeModal()" [class]="displayData.headerClass || ''">{{ displayData.header }}</ibm-modal-header>
+<ibm-modal (overlaySelected)="onButton()" [size]="displayData.size">
+    <ibm-modal-header (closeSelect)="onButton()" [class]="displayData.headerClass || ''">{{ displayData.header }}</ibm-modal-header>
     <section class="bx--modal-content">
       <ng-container
         *ngIf="displayData.template"

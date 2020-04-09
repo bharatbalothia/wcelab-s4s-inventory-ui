@@ -739,7 +739,7 @@ class AvailabilityService {
             useMocks = true
         }
 
-        let path = '/us-4474f893/v1/availability/'+parameters['productId']+'/node'
+        let path = '/{tenantId}/v1/availability/'+parameters['productId']+'/node'
 
         const headers = parameters.$headers || {}
         headers['Accept'] = 'application/json';

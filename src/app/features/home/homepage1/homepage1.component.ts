@@ -47,7 +47,8 @@ export class Homepage1Component implements OnInit {
   model = new S4STableModel();
   categoryListValues = [];
   productListValues = [];
-
+  public supplierSingleton: number = 0;
+  public supplierSkuSingleton : number = 0;
   constructor(
     private translateService: TranslateService,
     private invAvailService: InventoryAvailabilityService,
@@ -286,108 +287,125 @@ export class Homepage1Component implements OnInit {
    * @param data data-passed in from template
    */
   async onSupplier(data) {
-    const makeHeaders = () => [
-      [
-        new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.PRODUCT_MODEL_NUMBER') }),
-        new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.UOM') }),
-        new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.HEADER_AVAILABILITY') }),
-      ]
-    ];
-    const makeRows = (records) => records
-    .map(sku => ([
-      { data: {
-          sort: `${sku.itemDescription}:${sku.itemId}`,
-          sku,
-          supplier: data.supplier
-        },
-        template: this.supplierLocationLink, id: sku.itemId
-      },
-      { data: sku.unitOfMeasure, },
-      { data: sku.availableQuantity }
-    ]));
+    try {
 
-    const templateData: any = {
-      supplier: data.supplier,
-      product: data.product,
-      quantity: data.Availability,
-      date: data.Date
-    };
+      this.supplierSingleton++;
+      console.log('supplierSingleton value on click for supplier ', this.supplierSingleton);
+      if (this.supplierSingleton >= 2) {
+        return;
+      }
+      const makeHeaders = () => [
+        [
+          new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.PRODUCT_MODEL_NUMBER') }),
+          new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.UOM') }),
+          new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.HEADER_AVAILABILITY') }),
+        ]
+      ];
+      const makeRows = (records) => records
+        .map(sku => ([
+          {
+            data: {
+              sort: `${sku.itemDescription}:${sku.itemId}`,
+              sku,
+              supplier: data.supplier
+            },
+            template: this.supplierLocationLink, id: sku.itemId
+          },
+          { data: sku.unitOfMeasure, },
+          { data: sku.availableQuantity }
+        ]));
 
-    templateData.model = new S4STableModel();
-    S4STableModel.setPgDefaults(templateData.model);
+      const templateData: any = {
+        supplier: data.supplier,
+        product: data.product,
+        quantity: data.Availability,
+        date: data.Date
+      };
 
-    const resp = await this.invAvailService.getInventoryForNetwork(
-      [ data.product.item_id ],
-      [ data.supplier.supplier_id ],
-      ['UNIT'],
-      []
-    ).toPromise();
+      templateData.model = new S4STableModel();
+      S4STableModel.setPgDefaults(templateData.model);
 
-    
+      const resp = await this.invAvailService.getInventoryForNetwork(
+        [data.product.item_id],
+        [data.supplier.supplier_id],
+        ['UNIT'],
+        []
+      ).toPromise();
 
-    const children = [];
-    const collection = [];
-    const lines = getArray(resp.lines);
-    lines.forEach(line => {
-      if (line.networkAvailabilities.length > 0 &&
+
+
+      const children = [];
+      const collection = [];
+      const lines = getArray(resp.lines);
+      lines.forEach(line => {
+        if (line.networkAvailabilities.length > 0 &&
           line.networkAvailabilities[0].totalAvailableQuantity > 0 &&
           (lines.length < 2 || line.itemId !== data.product.item_id) &&
           !this.skuMap[line.itemId]) {
-        children.push(line.itemId);
+          children.push(line.itemId);
+        }
+      });
+
+      if (children.length > 0) {
+        await this._fetchProductLists(children);
       }
-    });
 
-    if (children.length > 0) {
-      await this._fetchProductLists(children);
-    }
-  
 
-    lines.forEach(line => {
-      if (line.networkAvailabilities.length > 0 &&
+      lines.forEach(line => {
+        if (line.networkAvailabilities.length > 0 &&
           line.networkAvailabilities[0].totalAvailableQuantity > 0 &&
           (lines.length < 2 || line.itemId !== data.product.item_id)) {
-        const sku = this.skuMap[line.itemId];
-        console.log('S4S response Child Item ', sku);
-        if (sku && sku.unit_of_measure !== undefined) {
-          collection.push(
-            {
-              itemId : sku.item_id,
-              imgUrl: sku.image_url,
-              parentData: { product: data.product, quantity: data.Availability, date: data.Date },
-              itemDescription : sku.description,
-              unitOfMeasure: sku.unit_of_measure,
-              shipNodes : line.networkAvailabilities[0].distributionGroupId ,
-              availableQuantity : line.networkAvailabilities[0].totalAvailableQuantity ,
-              itemAvailableDate : line
-            }
-          );
+          const sku = this.skuMap[line.itemId];
+          console.log('S4S response Child Item ', sku);
+          if (sku && sku.unit_of_measure !== undefined) {
+            collection.push(
+              {
+                itemId: sku.item_id,
+                imgUrl: sku.image_url,
+                parentData: { product: data.product, quantity: data.Availability, date: data.Date },
+                itemDescription: sku.description,
+                unitOfMeasure: sku.unit_of_measure,
+                shipNodes: line.networkAvailabilities[0].distributionGroupId,
+                availableQuantity: line.networkAvailabilities[0].totalAvailableQuantity,
+                itemAvailableDate: line
+              }
+            );
+          }
         }
-      }
-    });
+      });
 
-    templateData.model.header = makeHeaders();
-    S4STableModel.populate(templateData.model, makeRows(collection), { 0: 'sort' });
-    templateData.onSelectPage = (e) => { S4STableModel.selectPage(e, templateData.model); };
-    templateData.onSort = (e) => { S4STableModel.sortColumn(e, templateData.model); };
+      templateData.model.header = makeHeaders();
+      S4STableModel.populate(templateData.model, makeRows(collection), { 0: 'sort' });
+      templateData.onSelectPage = (e) => { S4STableModel.selectPage(e, templateData.model); };
+      templateData.onSort = (e) => { S4STableModel.sortColumn(e, templateData.model); };
 
-    this.modalSvc.create({
-      component: InfoModalComponent,
-      inputs: {
-        displayData: {
-          header: this.nlsMap['common.LABEL_supplierDetails'],
-          headerClass: 'modal-header-class',
-          template: this.supplierTpl,
-          templateData
-        },
-        buttonData: {
-          primary: '',
-          class: {
-            primary: true
+      this.modalSvc.create({
+        component: InfoModalComponent,
+        inputs: {
+          displayData: {
+            header: this.nlsMap['common.LABEL_supplierDetails'],
+            headerClass: 'modal-header-class',
+            template: this.supplierTpl,
+            templateData
           },
-          text: this.nlsMap['common.LABEL_ok']
+          buttonData: {
+            callback: () => {
+              this.supplierSingleton = 0;
+              console.log('supplierSingleton value on close for supplier ', this.supplierSingleton);
+            },
+            primary: '',
+            class: {
+              primary: true
+            },
+            text: this.nlsMap['common.LABEL_ok']
+          }
         }
-      }
-    });
+      });
+    } catch (err) {
+      console.log('Error fetching on Supplier click: ', err);
+      this.supplierSingleton = 0;
+      console.log('Reset supplierSingleton on Error', this.supplierSingleton);
+    }
   }
 
   /**
@@ -396,91 +414,106 @@ export class Homepage1Component implements OnInit {
    * @param supplier Supplier to fetch location for
    */
   public async onLocation(sku: any, supplier: Supplier) {
-    const makeHeaders = () => [
-      [
-        new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.LOCATION') }),
-        new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.HEADER_AVAILABILITY') })
-      ]
-    ];
-    const makeRows = (records) => records
-    .map(loc => ([
-      { data: loc.shipNodeLocation, id: loc.sku },
-      { data: loc.availableQuantity }
-    ]));
+    try {
+      this.supplierSkuSingleton++;
+      console.log('supplierSkuSingleton value on click for SKU ', this.supplierSkuSingleton);
+      if (this.supplierSkuSingleton >= 2) {
+        return;
+      }
+      const makeHeaders = () => [
+        [
+          new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.LOCATION') }),
+          new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.HEADER_AVAILABILITY') })
+        ]
+      ];
+      const makeRows = (records) => records
+        .map(loc => ([
+          { data: loc.shipNodeLocation, id: loc.sku },
+          { data: loc.availableQuantity }
+        ]));
 
-    const templateData: any = {
-      supplier,
-      sku
-    };
-
-    templateData.model = new S4STableModel();
-    S4STableModel.setPgDefaults(templateData.model);
-
-    const resp = await this.invDistService.getShipNodesForSupplier(supplier.supplier_id).toPromise();
-    const shipNodeList = resp.map(n => n.shipnode_id);
-
-    const locData = [];
-    console.log('Model - shipNodes List ' , shipNodeList);
-
-    const shipNodes = getArray(resp);
-    shipNodes.forEach(shipNode => {
-      const sn : SupplierLocation = {
-        shipnode_id: shipNode.shipnode_id,
-        _id: shipNode._id,
-        shipnode_name: shipNode.shipnode_name,
-        latitude: shipNode.latitude,
-        longitude: shipNode.longitude,
-        supplier_id: shipNode.supplier_id
+      const templateData: any = {
+        supplier,
+        sku
       };
-      this.supplierLocationMap[sn.shipnode_id] = sn;
-    });
-    console.log('Model - S4S supplierLocationMap ', this.supplierLocationMap);
 
-     // 2. Call IV 'Get Network Availability Product Breakup' for network (supplier) - returns list of all child items
-    console.log('Get IV Network Availability at ship node level For selected Child Item', sku.itemId );
-    const ivResponse = await this.invAvailService.getInventoryForNodes(
-      [ sku.itemId ], shipNodeList , ['UNIT'], []
-    ).toPromise();
+      templateData.model = new S4STableModel();
+      S4STableModel.setPgDefaults(templateData.model);
 
-    console.log('IV response', ivResponse);
-    const lines = getArray(ivResponse.lines);
-    lines.filter(l => l.itemId === sku.itemId).forEach(line => {
-      const iv = getArray(line.shipNodeAvailability);
-      iv.forEach(nodeIv =>{
-        if(nodeIv.totalAvailableQuantity > 0){
-          if(this.supplierLocationMap[nodeIv.shipNode] && 
-            this.supplierLocationMap[nodeIv.shipNode].shipnode_name !== undefined){
-            locData.push({ shipNodeLocation: this.supplierLocationMap[nodeIv.shipNode].shipnode_name, sku: line.itemId, availableQuantity: nodeIv.totalAvailableQuantity })
-          }else{
-            locData.push({ shipNodeLocation: nodeIv.shipNode, sku: line.itemId, availableQuantity: nodeIv.totalAvailableQuantity })
+      const resp = await this.invDistService.getShipNodesForSupplier(supplier.supplier_id).toPromise();
+      const shipNodeList = resp.map(n => n.shipnode_id);
+
+      const locData = [];
+      console.log('Model - shipNodes List ', shipNodeList);
+
+      const shipNodes = getArray(resp);
+      shipNodes.forEach(shipNode => {
+        const sn: SupplierLocation = {
+          shipnode_id: shipNode.shipnode_id,
+          _id: shipNode._id,
+          shipnode_name: shipNode.shipnode_name,
+          latitude: shipNode.latitude,
+          longitude: shipNode.longitude,
+          supplier_id: shipNode.supplier_id
+        };
+        this.supplierLocationMap[sn.shipnode_id] = sn;
+      });
+      console.log('Model - S4S supplierLocationMap ', this.supplierLocationMap);
+
+      // 2. Call IV 'Get Network Availability Product Breakup' for network (supplier) - returns list of all child items
+      console.log('Get IV Network Availability at ship node level For selected Child Item', sku.itemId);
+      const ivResponse = await this.invAvailService.getInventoryForNodes(
+        [sku.itemId], shipNodeList, ['UNIT'], []
+      ).toPromise();
+
+      console.log('IV response', ivResponse);
+      const lines = getArray(ivResponse.lines);
+      lines.filter(l => l.itemId === sku.itemId).forEach(line => {
+        const iv = getArray(line.shipNodeAvailability);
+        iv.forEach(nodeIv => {
+          if (nodeIv.totalAvailableQuantity > 0) {
+            if (this.supplierLocationMap[nodeIv.shipNode] &&
+              this.supplierLocationMap[nodeIv.shipNode].shipnode_name !== undefined) {
+              locData.push({ shipNodeLocation: this.supplierLocationMap[nodeIv.shipNode].shipnode_name, sku: line.itemId, availableQuantity: nodeIv.totalAvailableQuantity })
+            } else {
+              locData.push({ shipNodeLocation: nodeIv.shipNode, sku: line.itemId, availableQuantity: nodeIv.totalAvailableQuantity })
+            }
           }
         }
-      }
-      );
-    });
-   
+        );
+      });
 
-    templateData.model.header = makeHeaders();
-    S4STableModel.populate(templateData.model, makeRows(locData), {});
-    templateData.onSelectPage = (e) => { S4STableModel.selectPage(e, templateData.model); };
 
-    this.modalSvc.create({
-      component: InfoModalComponent,
-      inputs: {
-        displayData: {
-          header: this.nlsMap['common.LABEL_supplierLocation'],
-          headerClass: 'modal-header-class',
-          template: this.locationTpl,
-          templateData
-        },
-        buttonData: {
-          primary: '',
-          class: {
-            primary: true
+      templateData.model.header = makeHeaders();
+      S4STableModel.populate(templateData.model, makeRows(locData), {});
+      templateData.onSelectPage = (e) => { S4STableModel.selectPage(e, templateData.model); };
+
+      this.modalSvc.create({
+        component: InfoModalComponent,
+        inputs: {
+          displayData: {
+            header: this.nlsMap['common.LABEL_supplierLocation'],
+            headerClass: 'modal-header-class',
+            template: this.locationTpl,
+            templateData
           },
-          text: this.nlsMap['common.LABEL_ok']
+          buttonData: {
+            callback: () => {
+              this.supplierSkuSingleton = 0;
+              console.log('supplierSkuSingleton value on close for SKU', this.supplierSkuSingleton);
+            },
+            primary: '',
+            class: {
+              primary: true
+            },
+            text: this.nlsMap['common.LABEL_ok']
+          }
         }
-      }
-    });
+      });
+    } catch (err) {
+      console.log('Error fetching on SKU click: ', err);
+      this.supplierSkuSingleton = 0;
+      console.log('Reset supplierSkuSingleton on Error', this.supplierSkuSingleton);
+    }
   }
 }
