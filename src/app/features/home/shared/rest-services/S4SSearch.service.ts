@@ -734,6 +734,17 @@ class S4SSearchService {
       return this.invoke(`products/${parameters['childItemId']}`, parameters);
     }
 
+    public getShipNodesForSupplier(parameters: {
+      supplierId: string,
+      $queryParameters?: any,
+      $headers? : any,
+      $cache?: any,
+      $refresh?: any,
+      useMocks?: boolean
+    }): Observable<any> {
+      return this.invoke(`supplier/${parameters['supplierId']}/shipnodes`, parameters);
+    }
+
     private invoke(api: string, parameters: SvcParameters, type: string = Constants.GET): Observable<any> {
       const headers = {
         Authorization: 'Basic N21jNGZyN2tqdzh6cnE3a2loYmZpYTV5cThkOHJxNjU6dDg5czk1amJqbm1lZmQyZHhzNDN1bmwxcjJwNnp1ZjA=',

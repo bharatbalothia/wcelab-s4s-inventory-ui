@@ -230,6 +230,8 @@ ul.bx--list-box__menu.bx--multi-select {
 
 img.object-fit--contain {
   object-fit: contain;
+  max-width: 8rem;
+  max-height: 10rem;
 }
 
 .padding-bottom--0_5rem {
@@ -282,6 +284,11 @@ img.object-fit--contain {
 .d--flex-0_4 {
   display: flex;
   flex: 0.4;
+}
+
+.d--flex-0_6 {
+  display: flex;
+  flex: 0.6;
 }
 
 .d--flex-fd-column {

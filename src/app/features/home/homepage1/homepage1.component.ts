@@ -100,7 +100,7 @@ export class Homepage1Component implements OnInit {
         country: getValue(attrMap.country),
         url: getValue(attrMap.url, ''),
         contactPerson: getValue(attrMap.contactPerson, this.nlsMap['common.LABEL_noContact']),
-        phoneNumber: getValue(attrMap.phoneNumber, this.nlsMap['common.LABEL_noPhone'])
+        phoneNumber: getValue(attrMap.phone_number, this.nlsMap['common.LABEL_noPhone'])
       };
 
       this.supplierMap[s.supplier_id] = s;
@@ -119,7 +119,8 @@ export class Homepage1Component implements OnInit {
         _id: product._id,
         item_id: product.item_id,
         description: product.description,
-        category: product.category
+        category: product.category,
+        image_url: product.image_url
       };
       this.skuMap[s.item_id] = s;
     });
@@ -343,6 +344,7 @@ export class Homepage1Component implements OnInit {
           collection.push(
             {
               itemId : sku.item_id,
+              imgUrl: sku.image_url,
               parentData: { product: data.product, quantity: data.Availability, date: data.Date },
               itemDescription : sku.description,
               unitOfMeasure: sku.unit_of_measure,
@@ -385,7 +387,7 @@ export class Homepage1Component implements OnInit {
    * @param sku SKU whose location to fetch
    * @param supplier Supplier to fetch location for
    */
-  public async onLocation(sku, supplier) {
+  public async onLocation(sku: any, supplier: Supplier) {
     const makeHeaders = () => [
       [
         new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.LOCATION') }),
@@ -406,8 +408,8 @@ export class Homepage1Component implements OnInit {
     templateData.model = new S4STableModel();
     S4STableModel.setPgDefaults(templateData.model);
 
-    const resp = await this.invDistService.getByTenantIdV1ConfigurationShipNodes().toPromise();
-    const shipNodeList = resp.map(n => n.shipNode);
+    const resp = await this.invDistService.getShipNodesForSupplier(supplier.supplier_id).toPromise();
+    const shipNodeList = resp.map(n => n.shipnode_id);
     const locData = [];
     console.log('Model - shipNodes List ' , shipNodeList);
 
