@@ -97,7 +97,7 @@ export class Homepage1Component implements OnInit {
         description: supplier.description,
         descAndNode: '',
         supplier_type: supplier.supplier_type,
-        url: supplier.url || '',
+        url: supplier.supplier_url || '',
         contactPerson: supplier.contact_person || this.nlsMap['common.LABEL_noContact'],
         address_line_1: getValue(attrMap.address_line_1),
         city: getValue(attrMap.city),
