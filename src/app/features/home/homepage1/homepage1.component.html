@@ -86,11 +86,11 @@
           {{ data.product.description }}
       </div>
       <div class="bx--col d--flex-ai-center padding-left-right--0 d--flex-0_4 d--flex-jc-flex-end">
-        <div>
+        <div class="width--100p">
           <div class="d--flex-jc-flex-end product-quant">
             {{ data.quantity }}
           </div>
-          <div class="margin-bottom--0" [innerHTML]="'common.LABEL_availableDisplay' | translate: { date: data.date }"></div>
+          <div class="d--flex-jc-flex-end margin-bottom--0" [innerHTML]="'common.LABEL_availableDisplay' | translate: { date: data.date }"></div>
         </div>
       </div>
     </div>
@@ -129,7 +129,7 @@
       </div>
 
       <div class="bx--col d--flex-ai-center padding-left-right--0 d--flex-1">
-        <div>
+        <div class="width--100p">
           <div class="product-name">
             {{ 'common.LABEL_mfrProductDisplay' | translate: { product: data.sku.parentData.product, supplier: data.supplier } }}
           </div>
@@ -153,11 +153,11 @@
       </div>
 
       <div class="bx--col d--flex-ai-center padding-left-right--0 d--flex-0_4 d--flex-jc-flex-end">
-        <div>
+        <div class="width--100p">
           <div class="d--flex-jc-flex-end product-quant">
             {{ data.sku.availableQuantity }}
           </div>
-          <div class="margin-bottom--0" [innerHTML]="'common.LABEL_availableDisplay' | translate: { date: data.sku.parentData.date }"></div>
+          <div class="d--flex-jc-flex-end margin-bottom--0" [innerHTML]="'common.LABEL_availableDisplay' | translate: { date: data.sku.parentData.date }"></div>
         </div>
       </div>
     </div>
