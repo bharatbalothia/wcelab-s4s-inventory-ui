@@ -37,7 +37,7 @@ export class Homepage1Component implements OnInit {
   private supplierMap: { [ key: string ]: Supplier } = {};
   private skuMap: { [ key: string ]: SKU } = {};
   private supplierLocationMap: { [ key: string ]: SupplierLocation } = {};
-  
+
   private cat2ProdMap: { [ key: string ]: any } = {};
   private selectedCat: string;
   private selectedProd: string;
@@ -48,7 +48,7 @@ export class Homepage1Component implements OnInit {
   categoryListValues = [];
   productListValues = [];
   public supplierSingleton: number = 0;
-  public supplierSkuSingleton : number = 0;
+  public supplierSkuSingleton: number = 0;
   constructor(
     private translateService: TranslateService,
     private invAvailService: InventoryAvailabilityService,
@@ -97,13 +97,13 @@ export class Homepage1Component implements OnInit {
         description: supplier.description,
         descAndNode: '',
         supplier_type: supplier.supplier_type,
+        url: supplier.url || '',
+        contactPerson: supplier.contact_person || this.nlsMap['common.LABEL_noContact'],
         address_line_1: getValue(attrMap.address_line_1),
         city: getValue(attrMap.city),
         state: getValue(attrMap.state),
         zipcode: getValue(attrMap.zipcode),
         country: getValue(attrMap.country),
-        url: getValue(attrMap.url, ''),
-        contactPerson: getValue(attrMap.contactPerson, this.nlsMap['common.LABEL_noContact']),
         phoneNumber: getValue(attrMap.phone_number, this.nlsMap['common.LABEL_noPhone'])
       };
 
@@ -131,7 +131,7 @@ export class Homepage1Component implements OnInit {
     console.log('Model - S4S allProducts List ', this.skuMap);
   }
 
-  
+
 
   private async _initCategories() {
     const responses4s = await this.invDistService.getAllCategories().toPromise();
@@ -332,45 +332,36 @@ export class Homepage1Component implements OnInit {
         []
       ).toPromise();
 
-
-
-      const children = [];
       const collection = [];
-      const lines = getArray(resp.lines);
-      lines.forEach(line => {
-        if (line.networkAvailabilities.length > 0 &&
-          line.networkAvailabilities[0].totalAvailableQuantity > 0 &&
-          (lines.length < 2 || line.itemId !== data.product.item_id) &&
-          !this.skuMap[line.itemId]) {
-          children.push(line.itemId);
-        }
-      });
+      const lines = getArray(resp.lines)
+      .filter((line, i, self) =>
+        line.networkAvailabilities.length > 0 &&
+        line.networkAvailabilities[0].totalAvailableQuantity > 0 &&
+        (self.length < 2 || line.itemId !== data.product.item_id)
+      );
 
+      const children = lines.filter(line => !this.skuMap[line.itemId]).map(line => line.itemId);
       if (children.length > 0) {
         await this._fetchProductLists(children);
       }
 
-
       lines.forEach(line => {
-        if (line.networkAvailabilities.length > 0 &&
-          line.networkAvailabilities[0].totalAvailableQuantity > 0 &&
-          (lines.length < 2 || line.itemId !== data.product.item_id)) {
-          const sku = this.skuMap[line.itemId];
-          console.log('S4S response Child Item ', sku);
-          if (sku && sku.unit_of_measure !== undefined) {
-            collection.push(
-              {
-                itemId: sku.item_id,
-                imgUrl: sku.image_url,
-                parentData: { product: data.product, quantity: data.Availability, date: data.Date },
-                itemDescription: sku.description,
-                unitOfMeasure: sku.unit_of_measure,
-                shipNodes: line.networkAvailabilities[0].distributionGroupId,
-                availableQuantity: line.networkAvailabilities[0].totalAvailableQuantity,
-                itemAvailableDate: line
-              }
-            );
-          }
+        const sku = this.skuMap[line.itemId];
+        console.log('S4S response Child Item ', sku);
+        if (sku && sku.unit_of_measure !== undefined) {
+          collection.push(
+            {
+              itemId: sku.item_id,
+              itemIdDisplay: sku.item_id.replace(/^.+?::/, ''),
+              imgUrl: sku.image_url,
+              parentData: { product: data.product, quantity: data.Availability, date: data.Date },
+              itemDescription: sku.description,
+              unitOfMeasure: sku.unit_of_measure,
+              shipNodes: line.networkAvailabilities[0].distributionGroupId,
+              availableQuantity: line.networkAvailabilities[0].totalAvailableQuantity,
+              itemAvailableDate: line
+            }
+          );
         }
       });
 
@@ -441,10 +432,6 @@ export class Homepage1Component implements OnInit {
       S4STableModel.setPgDefaults(templateData.model);
 
       const resp = await this.invDistService.getShipNodesForSupplier(supplier.supplier_id).toPromise();
-      const shipNodeList = resp.map(n => n.shipnode_id);
-
-      const locData = [];
-      console.log('Model - shipNodes List ', shipNodeList);
 
       const shipNodes = getArray(resp);
       shipNodes.forEach(shipNode => {
@@ -463,24 +450,19 @@ export class Homepage1Component implements OnInit {
       // 2. Call IV 'Get Network Availability Product Breakup' for network (supplier) - returns list of all child items
       console.log('Get IV Network Availability at ship node level For selected Child Item', sku.itemId);
       const ivResponse = await this.invAvailService.getInventoryForNodes(
-        [sku.itemId], shipNodeList, ['UNIT'], []
+        [sku.itemId], shipNodes.map(n => n.shipnode_id), ['UNIT'], []
       ).toPromise();
-
       console.log('IV response', ivResponse);
+
+      const locData = [];
       const lines = getArray(ivResponse.lines);
       lines.filter(l => l.itemId === sku.itemId).forEach(line => {
-        const iv = getArray(line.shipNodeAvailability);
+        const iv = getArray(line.shipNodeAvailability).filter(l => l.totalAvailableQuantity > 0);
         iv.forEach(nodeIv => {
-          if (nodeIv.totalAvailableQuantity > 0) {
-            if (this.supplierLocationMap[nodeIv.shipNode] &&
-              this.supplierLocationMap[nodeIv.shipNode].shipnode_name !== undefined) {
-              locData.push({ shipNodeLocation: this.supplierLocationMap[nodeIv.shipNode].shipnode_name, sku: line.itemId, availableQuantity: nodeIv.totalAvailableQuantity })
-            } else {
-              locData.push({ shipNodeLocation: nodeIv.shipNode, sku: line.itemId, availableQuantity: nodeIv.totalAvailableQuantity })
-            }
-          }
-        }
-        );
+          const name = this.supplierLocationMap[nodeIv.shipNode] ? this.supplierLocationMap[nodeIv.shipNode].shipnode_name : undefined;
+          const shipNodeLocation = name || nodeIv.shipNode;
+          locData.push({ shipNodeLocation, sku: line.itemId, availableQuantity: nodeIv.totalAvailableQuantity });
+        });
       });
 
 
