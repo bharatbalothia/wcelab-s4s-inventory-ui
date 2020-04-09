@@ -193,13 +193,15 @@ ul.bx--list-box__menu.bx--multi-select {
 }
 
 .sku-name {
-  font-size: calc(100% + 0.9vw);
+  font-size: calc(100% + 0.8vw);
   font-weight: 600;
+  line-height: 1;
 }
 
 .product-name {
-  font-size: calc(100% + 1.5vw);
+  font-size: calc(100% + 1.3vw);
   font-weight: 600;
+  line-height: 1;
 }
 
 .product-quant {
