@@ -53,7 +53,7 @@
 <ng-template #contactCard let-data="data">
   <div class="bx--row">
     <div class="bx--col padding-left-right--0 font-weight--600 padding-bottom--0_5rem product-name">
-      <a target="_blank" [attr.routerLink]="data.url || null">{{ data.description }}</a>
+      <a target="_blank" [attr.href]="data.url || null">{{ data.description }}</a>
     </div>
   </div>
 
