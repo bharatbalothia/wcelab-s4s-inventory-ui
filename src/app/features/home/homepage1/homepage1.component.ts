@@ -34,21 +34,23 @@ export class Homepage1Component implements OnInit {
     'common.LABEL_noContact': '',
     'common.LABEL_noPhone': ''
   };
+
   private supplierMap: { [ key: string ]: Supplier } = {};
   private skuMap: { [ key: string ]: SKU } = {};
   private supplierLocationMap: { [ key: string ]: SupplierLocation } = {};
-
   private cat2ProdMap: { [ key: string ]: any } = {};
+
   private selectedCat: string;
   private selectedProd: string;
+  private supplierSingleton: number = 0;
+  private supplierSkuSingleton: number = 0;
 
   @HostBinding('class') page = 'page-component';
   isScreenInitialized = false;
   model = new S4STableModel();
   categoryListValues = [];
   productListValues = [];
-  public supplierSingleton: number = 0;
-  public supplierSkuSingleton: number = 0;
+
   constructor(
     private translateService: TranslateService,
     private invAvailService: InventoryAvailabilityService,
@@ -60,9 +62,6 @@ export class Homepage1Component implements OnInit {
   ngOnInit() {
     this._init();
   }
-
-  onSelectPage(e) { S4STableModel.selectPage(e, this.model); }
-  onSort(e) { S4STableModel.sortColumn(e, this.model); }
 
   private async _init() {
     await this._initTranslations();
@@ -76,7 +75,7 @@ export class Homepage1Component implements OnInit {
   }
 
   private _initializePage() {
-    S4STableModel.setPgDefaults(this.model);
+    this.model.setPgDefaults();
     this._initCategories();
     this._fetchAllSuppliers();
     this._refreshSupplierTableHeader();
@@ -276,8 +275,8 @@ export class Homepage1Component implements OnInit {
       }
     ]);
 
-    S4STableModel.setPgDefaults(this.model);
-    S4STableModel.populate(this.model, records, { 0: 'name' });
+    this.model.setPgDefaults();
+    this.model.populate(records, { 0: 'name' });
 
     this.model.isLoading = false;
   }
@@ -322,8 +321,6 @@ export class Homepage1Component implements OnInit {
         date: data.Date
       };
 
-      templateData.model = new S4STableModel();
-      S4STableModel.setPgDefaults(templateData.model);
 
       const resp = await this.invAvailService.getInventoryForNetwork(
         [data.product.item_id],
@@ -365,10 +362,11 @@ export class Homepage1Component implements OnInit {
         }
       });
 
-      templateData.model.header = makeHeaders();
-      S4STableModel.populate(templateData.model, makeRows(collection), { 0: 'sort' });
-      templateData.onSelectPage = (e) => { S4STableModel.selectPage(e, templateData.model); };
-      templateData.onSort = (e) => { S4STableModel.sortColumn(e, templateData.model); };
+      const tModel = new S4STableModel();
+      tModel.header = makeHeaders();
+      tModel.setPgDefaults();
+      tModel.populate(makeRows(collection), { 0: 'sort' });
+      templateData.model = tModel;
 
       this.modalSvc.create({
         component: InfoModalComponent,
@@ -428,9 +426,6 @@ export class Homepage1Component implements OnInit {
         sku
       };
 
-      templateData.model = new S4STableModel();
-      S4STableModel.setPgDefaults(templateData.model);
-
       const resp = await this.invDistService.getShipNodesForSupplier(supplier.supplier_id).toPromise();
 
       const shipNodes = getArray(resp);
@@ -465,10 +460,11 @@ export class Homepage1Component implements OnInit {
         });
       });
 
-
-      templateData.model.header = makeHeaders();
-      S4STableModel.populate(templateData.model, makeRows(locData), {});
-      templateData.onSelectPage = (e) => { S4STableModel.selectPage(e, templateData.model); };
+      const tModel = new S4STableModel();
+      tModel.header = makeHeaders();
+      tModel.setPgDefaults();
+      tModel.populate(makeRows(locData));
+      templateData.model = tModel;
 
       this.modalSvc.create({
         component: InfoModalComponent,

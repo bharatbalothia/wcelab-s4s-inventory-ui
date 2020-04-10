@@ -25,8 +25,8 @@
       [skeleton]="!isScreenInitialized || model.isLoading"
       [hasSearch]=false
       [size]="'sm'"
-      (selectPage)="onSelectPage($event)"
-      (sort)="onSort($event)"
+      (selectPage)="model.onSelectPage($event)"
+      (sort)="model.onSort($event)"
       [showSelectionColumn]="false">
         <tbody>
           <tr>
@@ -104,8 +104,8 @@
           [class.no-data]="data.model.totalDataLength===0"
           [model]="data.model"
           [size]="'sm'"
-          (selectPage)="data.onSelectPage($event)"
-          (sort)="data.onSort($event)"
+          (selectPage)="data.model.onSelectPage($event)"
+          (sort)="data.model.onSort($event)"
           [showSelectionColumn]="false">
             <tbody>
               <tr>
@@ -171,7 +171,7 @@
           [class.no-data]="data.model.totalDataLength===0"
           [model]="data.model"
           [size]="'sm'"
-          (selectPage)="data.onSelectPage($event)"
+          (selectPage)="data.model.onSelectPage($event)"
           [showSelectionColumn]="false">
             <tbody>
               <tr>
