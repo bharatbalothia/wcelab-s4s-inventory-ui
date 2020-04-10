@@ -27,6 +27,10 @@
       "LABEL_sku": "Model no",
       "LABEL_skuQuantity": "SKU available quantity",
       "LABEL_noContact": "Point of contact not provided",
-      "LABEL_noPhone":"Phone number not provided"
+      "LABEL_noPhone": "Phone number not provided",
+      "LABEL_prodClass": "Product class",
+      "LABEL_all": "All",
+      "LABEL_new": "New",
+      "LABEL_open": "Open"
     }
 }
