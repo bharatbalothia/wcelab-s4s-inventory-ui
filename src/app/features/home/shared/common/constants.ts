@@ -9,6 +9,6 @@ export class Constants {
   public static readonly PC_MAP = {
     NONE: '',
     NEW: 'NEW',
-    OPEN: 'USED'
+    USED: 'USED'
   };
 }
