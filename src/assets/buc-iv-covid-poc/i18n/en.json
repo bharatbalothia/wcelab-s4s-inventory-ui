@@ -29,8 +29,8 @@
       "LABEL_noContact": "Point of contact not provided",
       "LABEL_noPhone": "Phone number not provided",
       "LABEL_prodClass": "Product class",
-      "LABEL_all": "All",
+      "LABEL_none": "None",
       "LABEL_new": "New",
-      "LABEL_open": "Open"
+      "LABEL_used": "Used"
     }
 }
