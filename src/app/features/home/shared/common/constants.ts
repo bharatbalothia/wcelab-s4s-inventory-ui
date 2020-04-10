@@ -3,12 +3,12 @@ export class Constants {
   public static readonly POST = 'post';
   public static readonly PUT = 'put';
 
-  public static readonly PC_ALL = 'ALL';
+  public static readonly PC_NONE = 'NONE';
   public static readonly PC_NEW = 'NEW';
-  public static readonly PC_OPEN = 'OPEN';
+  public static readonly PC_USED = 'USED';
   public static readonly PC_MAP = {
-    ALL: '',
+    NONE: '',
     NEW: 'NEW',
-    OPEN: 'OPEN'
+    OPEN: 'USED'
   };
 }
