@@ -34,9 +34,9 @@ export class Homepage1Component implements OnInit {
     'common.LABEL_ok': '',
     'common.LABEL_noContact': '',
     'common.LABEL_noPhone': '',
-    'common.LABEL_all': '',
+    'common.LABEL_none': '',
     'common.LABEL_new': '',
-    'common.LABEL_open': ''
+    'common.LABEL_used': ''
   };
 
   private supplierMap: { [ key: string ]: Supplier } = {};
@@ -46,7 +46,7 @@ export class Homepage1Component implements OnInit {
 
   private selectedCat: string;
   private selectedProd: Product = { item_id: undefined, description: undefined };
-  private selectedPc: string = '';
+  private selectedPc: string = 'NEW';
   private supplierSingleton: number = 0;
   private supplierSkuSingleton: number = 0;
 
@@ -90,9 +90,9 @@ export class Homepage1Component implements OnInit {
 
   private _initPcTypes() {
     const list = [
-      { value: Constants.PC_ALL, content: this.nlsMap['common.LABEL_all'], checked: true },
-      { value: Constants.PC_NEW, content: this.nlsMap['common.LABEL_new']},
-      { value: Constants.PC_OPEN, content: this.nlsMap['common.LABEL_open']}
+      { value: Constants.PC_NEW, content: this.nlsMap['common.LABEL_new'], checked: true},
+      { value: Constants.PC_USED, content: this.nlsMap['common.LABEL_used']},
+      { value: Constants.PC_NONE, content: this.nlsMap['common.LABEL_none']},
     ];
     this.pcRadios = list;
   }
