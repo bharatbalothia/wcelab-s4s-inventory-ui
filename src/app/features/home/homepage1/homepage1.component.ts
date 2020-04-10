@@ -14,6 +14,7 @@ import { SupplierLocation } from '../shared/common/supplierLocation';
 import { Product } from '../shared/common/product';
 import { SKU } from '../shared/common/sku';
 import { S4STableModel } from '../shared/common/table-model';
+import { Constants } from '../shared/common/constants';
 
 // PENDING - 1 - Need additonal logic to see the logged in users timezone
 @Component({
@@ -32,7 +33,10 @@ export class Homepage1Component implements OnInit {
     'common.LABEL_supplierLocation': '',
     'common.LABEL_ok': '',
     'common.LABEL_noContact': '',
-    'common.LABEL_noPhone': ''
+    'common.LABEL_noPhone': '',
+    'common.LABEL_all': '',
+    'common.LABEL_new': '',
+    'common.LABEL_open': ''
   };
 
   private supplierMap: { [ key: string ]: Supplier } = {};
@@ -41,7 +45,8 @@ export class Homepage1Component implements OnInit {
   private cat2ProdMap: { [ key: string ]: any } = {};
 
   private selectedCat: string;
-  private selectedProd: string;
+  private selectedProd: Product = { item_id: undefined, description: undefined };
+  private selectedPc: string = '';
   private supplierSingleton: number = 0;
   private supplierSkuSingleton: number = 0;
 
@@ -50,6 +55,7 @@ export class Homepage1Component implements OnInit {
   model = new S4STableModel();
   categoryListValues = [];
   productListValues = [];
+  pcRadios = [];
 
   constructor(
     private translateService: TranslateService,
@@ -76,9 +82,19 @@ export class Homepage1Component implements OnInit {
 
   private _initializePage() {
     this.model.setPgDefaults();
+    this._initPcTypes();
     this._initCategories();
     this._fetchAllSuppliers();
     this._refreshSupplierTableHeader();
+  }
+
+  private _initPcTypes() {
+    const list = [
+      { value: Constants.PC_ALL, content: this.nlsMap['common.LABEL_all'], checked: true },
+      { value: Constants.PC_NEW, content: this.nlsMap['common.LABEL_new']},
+      { value: Constants.PC_OPEN, content: this.nlsMap['common.LABEL_open']}
+    ];
+    this.pcRadios = list;
   }
 
   private async _fetchAllSuppliers() {
@@ -112,7 +128,7 @@ export class Homepage1Component implements OnInit {
     console.log('Model - S4S allSuppliers List ' , this.supplierMap);
   }
 
-  private async _fetchProductLists(childItems: string[]) {
+  private async _fetchProductsById(childItems: string[]) {
     const responses4s = await this.invDistService.fetchProductList( childItems ).toPromise();
     console.log('S4S response -  fetchAllProducts',  responses4s);
     const products = getArray(responses4s);
@@ -130,8 +146,6 @@ export class Homepage1Component implements OnInit {
     console.log('Model - S4S allProducts List ', this.skuMap);
   }
 
-
-
   private async _initCategories() {
     const responses4s = await this.invDistService.getAllCategories().toPromise();
     console.log('S4S response - getAllCategories '  , responses4s);
@@ -145,16 +159,28 @@ export class Homepage1Component implements OnInit {
   }
 
   /**
+   * called when product-class radio clicked
+   * @param event event that was checked
+   */
+  async onPC(event: { value: string }) {
+    const pc = Constants.PC_MAP[event.value];
+    if (pc !== undefined && pc !== this.selectedPc) {
+      this.selectedPc = pc;
+      this._fetchSuppliersForProductAndClass();
+    }
+  }
+
+  /**
    * Called when category selected from category dropdown
    * Padman: Fetch All Products By Category
    * @param event category-id container
    */
   public async onCategory(event) {
-    const cat = event.item.id;
+    const cat = event.item ? event.item.id : undefined;
     console.log('User selected Category ', cat);
     if (cat && cat !== this.selectedCat) {
       this.selectedCat = cat;
-      this.selectedProd = '';
+      this.selectedProd.item_id = undefined;
       this.productListValues = [];
 
       try {
@@ -191,51 +217,65 @@ export class Homepage1Component implements OnInit {
    * @param event product-id container
    */
   public async onProduct(event) {
-    const id = event.item.id;
-    const product: Product = { item_id: id, description: event.item.content };
+    const id = event.item ? event.item.id : undefined;
     console.log('User selected Product ', id);
-    if (id && id !== this.selectedProd) {
-      this.selectedProd = id;
-      try {
-        this.model.isLoading = true;
+    if (id && id !== this.selectedProd.item_id) {
+      this.selectedProd.item_id = id;
+      this.selectedProd.description = event.item.content ;
+      this._fetchSuppliersForProductAndClass();
+    }
+  }
 
-        const allSuppliersHavingSelectedProduct = [];
-        const suppliers = Object.keys(this.supplierMap);
+  /**
+   * fetch suppliers for selected product and product-class
+   */
+  private async _fetchSuppliersForProductAndClass() {
+    if (!this.selectedProd.item_id) {
+      return;
+    }
 
-        const resp = await this.invAvailService.getConslidatedInventoryForDG( [ id ], suppliers, ['UNIT'], [ 'GOOD' ]).toPromise();
-        console.log('IV response ',  resp);
+    try {
+      this.model.isLoading = true;
 
-        const lines = getArray(resp.lines)
-        .filter(l => l.networkAvailabilities.length > 0 && l.networkAvailabilities[0].totalAvailableQuantity > 0);
+      const allSuppliersHavingSelectedProduct = [];
+      const suppliers = Object.keys(this.supplierMap);
 
-        for (const line of lines) {
-          console.log('line', line, line.networkAvailabilities[0].distributionGroupId );
-          const supplier = this.supplierMap[line.networkAvailabilities[0].distributionGroupId];
-          supplier.descAndNode = `${supplier.description} (${line.networkAvailabilities[0].distributionGroupId})`;
+      const resp = await this.invAvailService.getConsolidatedInventorySameUOMSamePC(
+        this.selectedProd.item_id, suppliers, 'UNIT', this.selectedPc
+      ).toPromise();
+      console.log('IV response ', resp);
 
-          let availableDate = 'Now';
-          if (line.networkAvailabilities[0].thresholdType === 'ONHAND') {
-            availableDate = 'Now';
-          } else {
-            availableDate = new DatePipe('en-US').transform(line.networkAvailabilities[0].earliestShipTs, 'MM/dd/yyyy');
-          }
+      const lines = getArray(resp.lines)
+      .filter(l => l.networkAvailabilities.length > 0 && l.networkAvailabilities[0].totalAvailableQuantity > 0);
 
-          allSuppliersHavingSelectedProduct.push({
-            supplier,
-            product,
-            Availability: line.networkAvailabilities[0].totalAvailableQuantity,
-            Date: availableDate
-            // TODO PENDING - 1
-          });
+      for (const line of lines) {
+        console.log('line', line, line.networkAvailabilities[0].distributionGroupId );
+        const supplier = this.supplierMap[line.networkAvailabilities[0].distributionGroupId];
+        supplier.descAndNode = `${supplier.description} (${line.networkAvailabilities[0].distributionGroupId})`;
+
+        let availableDate = 'Now';
+        if (line.networkAvailabilities[0].thresholdType === 'ONHAND') {
+          availableDate = 'Now';
+        } else {
+          availableDate = new DatePipe('en-US').transform(line.networkAvailabilities[0].earliestShipTs, 'MM/dd/yyyy');
         }
 
-        this.model.isLoading = false;
-
-        console.log('Model - allSuppliersHavingSelectedProduct' , allSuppliersHavingSelectedProduct);
-        this._refreshSupplierTable(allSuppliersHavingSelectedProduct);
-      } catch (err) {
-        console.log('Error fetching availability: ', err);
+        allSuppliersHavingSelectedProduct.push({
+          supplier,
+          product: this.selectedProd,
+          productClass: this.selectedPc,
+          Availability: line.networkAvailabilities[0].totalAvailableQuantity,
+          Date: availableDate
+          // TODO PENDING - 1
+        });
       }
+
+      this.model.isLoading = false;
+
+      console.log('Model - allSuppliersHavingSelectedProduct' , allSuppliersHavingSelectedProduct);
+      this._refreshSupplierTable(allSuppliersHavingSelectedProduct);
+    } catch (err) {
+      console.log('Error fetching availability: ', err);
     }
   }
 
@@ -322,11 +362,8 @@ export class Homepage1Component implements OnInit {
       };
 
 
-      const resp = await this.invAvailService.getInventoryForNetwork(
-        [data.product.item_id],
-        [data.supplier.supplier_id],
-        ['UNIT'],
-        []
+      const resp = await this.invAvailService.getInventoryForItemBySupplier(
+        data.product.item_id, data.supplier.supplier_id, 'UNIT', data.productClass
       ).toPromise();
 
       const collection = [];
@@ -339,7 +376,7 @@ export class Homepage1Component implements OnInit {
 
       const children = lines.filter(line => !this.skuMap[line.itemId]).map(line => line.itemId);
       if (children.length > 0) {
-        await this._fetchProductLists(children);
+        await this._fetchProductsById(children);
       }
 
       lines.forEach(line => {
@@ -354,6 +391,7 @@ export class Homepage1Component implements OnInit {
               parentData: { product: data.product, quantity: data.Availability, date: data.Date },
               itemDescription: sku.description,
               unitOfMeasure: sku.unit_of_measure,
+              productClass: data.productClass,
               shipNodes: line.networkAvailabilities[0].distributionGroupId,
               availableQuantity: line.networkAvailabilities[0].totalAvailableQuantity,
               itemAvailableDate: line
@@ -398,7 +436,7 @@ export class Homepage1Component implements OnInit {
   }
 
   /**
-   * Called when SKU clicked supplier modal table
+   * Called when SKU clicked in supplier modal table
    * @param sku SKU whose location to fetch
    * @param supplier Supplier to fetch location for
    */
@@ -444,8 +482,8 @@ export class Homepage1Component implements OnInit {
 
       // 2. Call IV 'Get Network Availability Product Breakup' for network (supplier) - returns list of all child items
       console.log('Get IV Network Availability at ship node level For selected Child Item', sku.itemId);
-      const ivResponse = await this.invAvailService.getInventoryForNodes(
-        [sku.itemId], shipNodes.map(n => n.shipnode_id), ['UNIT'], []
+      const ivResponse = await this.invAvailService.getInventoryForSkuAtNodes(
+        sku.itemId, shipNodes.map(n => n.shipnode_id), 'UNIT', sku.productClass
       ).toPromise();
       console.log('IV response', ivResponse);
 
