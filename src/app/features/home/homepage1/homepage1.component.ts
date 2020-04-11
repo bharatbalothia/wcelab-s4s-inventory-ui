@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, TemplateRef, HostBinding, ElementRef  } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef, HostBinding, ElementRef, AfterViewInit   } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { DatePipe } from '@angular/common';
 
@@ -24,7 +24,7 @@ import { Constants } from '../shared/common/constants';
   templateUrl: './homepage1.component.html',
   styleUrls: ['./homepage1.component.scss'],
 })
-export class Homepage1Component implements OnInit {
+export class Homepage1Component implements OnInit, AfterViewInit  {
   @ViewChild('supplierLink', { static: true }) private supplierLink: TemplateRef<any>;
   @ViewChild('supplierTpl', { static: true }) private supplierTpl: TemplateRef<any>;
   @ViewChild('supplierLocationLink', { static: true }) private supplierLocationLink: TemplateRef<any>;
@@ -75,11 +75,16 @@ export class Homepage1Component implements OnInit {
   ngOnInit() {
     this._init();
   }
+  ngAfterViewInit() {
+    this._ngAfterViewInit()
+  }
+  private async _ngAfterViewInit() {
+    await this.mapInitializer();
+  }
 
   private async _init() {
     await this._initTranslations();
     this._initializePage();
-    this.mapInitializer();
   }
 
   private async _initTranslations() {
@@ -576,8 +581,8 @@ export class Homepage1Component implements OnInit {
     const customMapOptions = { center: coordinates, zoom: 8 };
     this.map = new google.maps.Map(this.gmap.nativeElement, customMapOptions);
     const markers = [
-      { position: new google.maps.LatLng(41.73061, -72.035242), map: this.map, title: "Marker 3" },
-      { position: new google.maps.LatLng(42.73061, -71.935242), map: this.map, title: "Marker 2" }
+      { position: new google.maps.LatLng(41.73061, -72.035242), map: this.map, title: "3m: location 1 (300)" },
+      { position: new google.maps.LatLng(42.73061, -71.935242), map: this.map, title: "3m: location 2 (200)" }
     ];
     this.loadAllMarkers(markers);
   }
