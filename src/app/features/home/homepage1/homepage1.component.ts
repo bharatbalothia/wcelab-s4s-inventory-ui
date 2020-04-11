@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, TemplateRef, HostBinding } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef, HostBinding, ElementRef  } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { DatePipe } from '@angular/common';
 
@@ -16,8 +16,10 @@ import { SKU } from '../shared/common/sku';
 import { S4STableModel } from '../shared/common/table-model';
 import { Constants } from '../shared/common/constants';
 
+
+
 // PENDING - 1 - Need additonal logic to see the logged in users timezone
-@Component({
+@Component({ 
   selector: 'app-homepage1',
   templateUrl: './homepage1.component.html',
   styleUrls: ['./homepage1.component.scss'],
@@ -27,6 +29,11 @@ export class Homepage1Component implements OnInit {
   @ViewChild('supplierTpl', { static: true }) private supplierTpl: TemplateRef<any>;
   @ViewChild('supplierLocationLink', { static: true }) private supplierLocationLink: TemplateRef<any>;
   @ViewChild('locationTpl', { static: true }) private locationTpl: TemplateRef<any>;
+  
+  //google map
+  @ViewChild('mapContainer', {static: false}) gmap: ElementRef;
+  map: google.maps.Map;
+
 
   private nlsMap: any = {
     'common.LABEL_supplierDetails': '',
@@ -72,6 +79,7 @@ export class Homepage1Component implements OnInit {
   private async _init() {
     await this._initTranslations();
     this._initializePage();
+    this.mapInitializer();
   }
 
   private async _initTranslations() {
@@ -270,6 +278,17 @@ export class Homepage1Component implements OnInit {
         });
       }
 
+      if(true){
+        allSuppliersHavingSelectedProduct.push({
+          supplier: {supplier_id:'3M', description:'3MC desc' , contactPerson: 'Padman', phone_number : '9090'},
+          product: this.selectedProd,
+          productClass: this.selectedPc,
+          Availability: '300',
+          Date: 'Now'
+          // TODO PENDING - 1
+        });
+      }
+
       this.model.isLoading = false;
 
       console.log('Model - allSuppliersHavingSelectedProduct' , allSuppliersHavingSelectedProduct);
@@ -400,6 +419,21 @@ export class Homepage1Component implements OnInit {
         }
       });
 
+      collection.push(
+        {
+          itemId: '1234',
+          itemIdDisplay: '12345-disp',
+          imgUrl: '',
+          parentData: { product: data.product, quantity: data.Availability, date: data.Date },
+          itemDescription: 'itemDesc',
+          unitOfMeasure: 'UNIT',
+          productClass: 'ProductClass',
+          shipNodes: '3mc::location1',
+          availableQuantity: 300,
+          itemAvailableDate: 'Now'
+        } 
+      );    
+
       const tModel = new S4STableModel();
       tModel.header = makeHeaders();
       tModel.setPgDefaults();
@@ -498,12 +532,14 @@ export class Homepage1Component implements OnInit {
         });
       });
 
+      locData.push({ shipNodeLocation: 'name' || 'shipnode', sku: 'itemId', availableQuantity: '300' });
+
       const tModel = new S4STableModel();
       tModel.header = makeHeaders();
       tModel.setPgDefaults();
       tModel.populate(makeRows(locData));
       templateData.model = tModel;
-
+      
       this.modalSvc.create({
         component: InfoModalComponent,
         inputs: {
@@ -531,5 +567,40 @@ export class Homepage1Component implements OnInit {
       this.supplierSkuSingleton = 0;
       console.log('Reset supplierSkuSingleton on Error', this.supplierSkuSingleton);
     }
+  }
+
+  mapInitializer(): void {
+    const lat = 45.73061;
+    const lng = -73.935242;
+    const coordinates = new google.maps.LatLng(41.73061, -72.035242);
+    const customMapOptions = { center: coordinates, zoom: 8 };
+    this.map = new google.maps.Map(this.gmap.nativeElement, customMapOptions);
+    const markers = [
+      { position: new google.maps.LatLng(41.73061, -72.035242), map: this.map, title: "Marker 3" },
+      { position: new google.maps.LatLng(42.73061, -71.935242), map: this.map, title: "Marker 2" }
+    ];
+    this.loadAllMarkers(markers);
+  }
+
+  loadAllMarkers(markers : any): void {
+    markers.forEach(markerInfo => {
+      //Creating a new marker object
+      const marker = new google.maps.Marker({
+        ...markerInfo
+      });
+
+      //creating a new info window with markers info
+      const infoWindow = new google.maps.InfoWindow({
+        content: marker.getTitle()
+      });
+
+      //Add click event to open info window on marker
+      marker.addListener("click", () => {
+        infoWindow.open(marker.getMap(), marker);
+      });
+
+      //Adding marker to google map
+      marker.setMap(this.map);
+    });
   }
 }
