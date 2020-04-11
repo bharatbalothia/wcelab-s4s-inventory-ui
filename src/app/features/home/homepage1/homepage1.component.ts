@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, TemplateRef, HostBinding, ElementRef, AfterViewInit   } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef, HostBinding, ElementRef  } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { DatePipe } from '@angular/common';
 
@@ -19,21 +19,16 @@ import { Constants } from '../shared/common/constants';
 
 
 // PENDING - 1 - Need additonal logic to see the logged in users timezone
-@Component({ 
+@Component({
   selector: 'app-homepage1',
   templateUrl: './homepage1.component.html',
   styleUrls: ['./homepage1.component.scss'],
 })
-export class Homepage1Component implements OnInit, AfterViewInit  {
+export class Homepage1Component implements OnInit {
   @ViewChild('supplierLink', { static: true }) private supplierLink: TemplateRef<any>;
   @ViewChild('supplierTpl', { static: true }) private supplierTpl: TemplateRef<any>;
   @ViewChild('supplierLocationLink', { static: true }) private supplierLocationLink: TemplateRef<any>;
   @ViewChild('locationTpl', { static: true }) private locationTpl: TemplateRef<any>;
-  
-  //google map
-  @ViewChild('mapContainer', {static: false}) gmap: ElementRef;
-  map: google.maps.Map;
-
 
   private nlsMap: any = {
     'common.LABEL_supplierDetails': '',
@@ -43,7 +38,9 @@ export class Homepage1Component implements OnInit, AfterViewInit  {
     'common.LABEL_noPhone': '',
     'common.LABEL_none': '',
     'common.LABEL_new': '',
-    'common.LABEL_used': ''
+    'common.LABEL_used': '',
+    'common.LABEL_showMap': '',
+    'common.LABEL_showTable': ''
   };
 
   private supplierMap: { [ key: string ]: Supplier } = {};
@@ -74,12 +71,6 @@ export class Homepage1Component implements OnInit, AfterViewInit  {
 
   ngOnInit() {
     this._init();
-  }
-  ngAfterViewInit() {
-    this._ngAfterViewInit()
-  }
-  private async _ngAfterViewInit() {
-    await this.mapInitializer();
   }
 
   private async _init() {
@@ -283,9 +274,9 @@ export class Homepage1Component implements OnInit, AfterViewInit  {
         });
       }
 
-      if(true){
+      if (true) {
         allSuppliersHavingSelectedProduct.push({
-          supplier: {supplier_id:'3M', description:'3MC desc' , contactPerson: 'Padman', phone_number : '9090'},
+          supplier: {supplier_id: '3M', description: '3MC desc', contactPerson: 'Padman', phone_number: '9090'},
           product: this.selectedProd,
           productClass: this.selectedPc,
           Availability: '300',
@@ -436,8 +427,8 @@ export class Homepage1Component implements OnInit, AfterViewInit  {
           shipNodes: '3mc::location1',
           availableQuantity: 300,
           itemAvailableDate: 'Now'
-        } 
-      );    
+        }
+      );
 
       const tModel = new S4STableModel();
       tModel.header = makeHeaders();
@@ -500,7 +491,20 @@ export class Homepage1Component implements OnInit, AfterViewInit  {
 
       const templateData: any = {
         supplier,
-        sku
+        sku,
+        hideMap: true,
+        googleMap: undefined,
+        buttonCaption: this.nlsMap['common.LABEL_showMap'],
+        mapInitializer: this._mapInitializer.bind(this),
+        switch: (self, mapRef) => {
+          self.hideMap = !self.hideMap;
+          if (!self.hideMap) {
+            self.mapInitializer(mapRef, self);
+            self.buttonCaption = this.nlsMap['common.LABEL_showTable'];
+          } else {
+            self.buttonCaption = this.nlsMap['common.LABEL_showMap'];
+          }
+        },
       };
 
       const resp = await this.invDistService.getShipNodesForSupplier(supplier.supplier_id).toPromise();
@@ -544,7 +548,7 @@ export class Homepage1Component implements OnInit, AfterViewInit  {
       tModel.setPgDefaults();
       tModel.populate(makeRows(locData));
       templateData.model = tModel;
-      
+
       this.modalSvc.create({
         component: InfoModalComponent,
         inputs: {
@@ -574,38 +578,38 @@ export class Homepage1Component implements OnInit, AfterViewInit  {
     }
   }
 
-  mapInitializer(): void {
-    const lat = 45.73061;
-    const lng = -73.935242;
+  private _mapInitializer(ref, caller) {
     const coordinates = new google.maps.LatLng(41.73061, -72.035242);
     const customMapOptions = { center: coordinates, zoom: 8 };
-    this.map = new google.maps.Map(this.gmap.nativeElement, customMapOptions);
+    if (!caller.googleMap) {
+      caller.googleMap = new google.maps.Map(ref, customMapOptions);
+    }
     const markers = [
-      { position: new google.maps.LatLng(41.73061, -72.035242), map: this.map, title: "3m: location 1 (300)" },
-      { position: new google.maps.LatLng(42.73061, -71.935242), map: this.map, title: "3m: location 2 (200)" }
+      { position: new google.maps.LatLng(41.73061, -72.035242), map: caller.googleMap, title: '3m: location 1 (300)' },
+      { position: new google.maps.LatLng(42.73061, -71.935242), map: caller.googleMap, title: '3m: location 2 (200)' }
     ];
-    this.loadAllMarkers(markers);
+    this._loadAllMarkers(caller.googleMap, markers);
   }
 
-  loadAllMarkers(markers : any): void {
+  private _loadAllMarkers(mapObj: google.maps.Map, markers: any): void {
     markers.forEach(markerInfo => {
-      //Creating a new marker object
+      // Creating a new marker object
       const marker = new google.maps.Marker({
         ...markerInfo
       });
 
-      //creating a new info window with markers info
+      // creating a new info window with markers info
       const infoWindow = new google.maps.InfoWindow({
         content: marker.getTitle()
       });
 
-      //Add click event to open info window on marker
-      marker.addListener("click", () => {
+      // Add click event to open info window on marker
+      marker.addListener('click', () => {
         infoWindow.open(marker.getMap(), marker);
       });
 
-      //Adding marker to google map
-      marker.setMap(this.map);
+      // Adding marker to google map
+      marker.setMap(mapObj);
     });
   }
 }

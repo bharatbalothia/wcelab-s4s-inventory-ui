@@ -187,6 +187,9 @@ ul.bx--list-box__menu.bx--multi-select {
   }
 }
 
+
+// arbitrarily named classes
+
 .modal-header-class {
   font-size: 1.5rem;
   font-weight: 600;
@@ -208,6 +211,16 @@ ul.bx--list-box__menu.bx--multi-select {
   font-size: 2rem;
   font-weight: 600;
 }
+
+.google-map {
+  height: 500px;
+  width: 100%;
+}
+
+.hide-div {
+  display: none;
+}
+
 
 // descriptive classes
 
@@ -321,7 +334,3 @@ img.object-fit--contain {
 .border-bottom--1px-solid-ui01 {
   border-bottom: 1px solid $ui-01;
 }
-.google-map {
-  height: 500px;
-  width: 100%;
- }
