@@ -274,17 +274,6 @@ export class Homepage1Component implements OnInit {
         });
       }
 
-      if (true) {
-        allSuppliersHavingSelectedProduct.push({
-          supplier: {supplier_id: '3M', description: '3MC desc', contactPerson: 'Padman', phone_number: '9090'},
-          product: this.selectedProd,
-          productClass: this.selectedPc,
-          Availability: '300',
-          Date: 'Now'
-          // TODO PENDING - 1
-        });
-      }
-
       this.model.isLoading = false;
 
       console.log('Model - allSuppliersHavingSelectedProduct' , allSuppliersHavingSelectedProduct);
@@ -415,21 +404,6 @@ export class Homepage1Component implements OnInit {
         }
       });
 
-      collection.push(
-        {
-          itemId: '1234',
-          itemIdDisplay: '12345-disp',
-          imgUrl: '',
-          parentData: { product: data.product, quantity: data.Availability, date: data.Date },
-          itemDescription: 'itemDesc',
-          unitOfMeasure: 'UNIT',
-          productClass: 'ProductClass',
-          shipNodes: '3mc::location1',
-          availableQuantity: 300,
-          itemAvailableDate: 'Now'
-        }
-      );
-
       const tModel = new S4STableModel();
       tModel.header = makeHeaders();
       tModel.setPgDefaults();
@@ -472,6 +446,7 @@ export class Homepage1Component implements OnInit {
    */
   public async onLocation(sku: any, supplier: Supplier) {
     try {
+      const locData = [];
       this.supplierSkuSingleton++;
       console.log('supplierSkuSingleton value on click for SKU ', this.supplierSkuSingleton);
       if (this.supplierSkuSingleton >= 2) {
@@ -492,11 +467,13 @@ export class Homepage1Component implements OnInit {
       const templateData: any = {
         supplier,
         sku,
+        locData,
         hideMap: true,
         googleMap: undefined,
         buttonCaption: this.nlsMap['common.LABEL_showMap'],
         mapInitializer: this._mapInitializer.bind(this),
         switch: (self, mapRef) => {
+          console.log('google map in switch self mapRef', self, mapRef);
           self.hideMap = !self.hideMap;
           if (!self.hideMap) {
             self.mapInitializer(mapRef, self);
@@ -530,18 +507,18 @@ export class Homepage1Component implements OnInit {
       ).toPromise();
       console.log('IV response', ivResponse);
 
-      const locData = [];
+     
       const lines = getArray(ivResponse.lines);
       lines.filter(l => l.itemId === sku.itemId).forEach(line => {
         const iv = getArray(line.shipNodeAvailability).filter(l => l.totalAvailableQuantity > 0);
         iv.forEach(nodeIv => {
           const name = this.supplierLocationMap[nodeIv.shipNode] ? this.supplierLocationMap[nodeIv.shipNode].shipnode_name : undefined;
           const shipNodeLocation = name || nodeIv.shipNode;
-          locData.push({ shipNodeLocation, sku: line.itemId, availableQuantity: nodeIv.totalAvailableQuantity });
+          locData.push({ shipNodeLocation, sku: line.itemId, availableQuantity: nodeIv.totalAvailableQuantity, 
+            latitude: this.supplierLocationMap[nodeIv.shipNode].latitude, longitude: this.supplierLocationMap[nodeIv.shipNode].longitude });
         });
       });
 
-      locData.push({ shipNodeLocation: 'name' || 'shipnode', sku: 'itemId', availableQuantity: '300' });
 
       const tModel = new S4STableModel();
       tModel.header = makeHeaders();
@@ -579,15 +556,32 @@ export class Homepage1Component implements OnInit {
   }
 
   private _mapInitializer(ref, caller) {
-    const coordinates = new google.maps.LatLng(41.73061, -72.035242);
-    const customMapOptions = { center: coordinates, zoom: 8 };
-    if (!caller.googleMap) {
-      caller.googleMap = new google.maps.Map(ref, customMapOptions);
+    const markers = [];
+    const datas = getArray(caller);
+    console.log('google map  _mapInitializer datas', datas);
+
+    let first = true;
+    datas.forEach(data => {
+      console.log('google map  data.locData', data.locData);
+      data.locData.map((location) => (
+        markers.push({
+          position: new google.maps.LatLng(location.latitude, location.longitude),
+          map: caller.googleMap, title: location.shipNodeLocation + '( ' + location.availableQuantity + ' )'
+        })
+      ));
+    });
+
+    //to point the map to a location and centralize
+    if (first && markers.length > 0) {
+      first = false;
+      const coordinates = markers[0].position;
+      const customMapOptions = { center: coordinates, zoom: 4 };
+      if (!caller.googleMap) {
+        caller.googleMap = new google.maps.Map(ref, customMapOptions);
+      }
     }
-    const markers = [
-      { position: new google.maps.LatLng(41.73061, -72.035242), map: caller.googleMap, title: '3m: location 1 (300)' },
-      { position: new google.maps.LatLng(42.73061, -71.935242), map: caller.googleMap, title: '3m: location 2 (200)' }
-    ];
+    console.log('final map data locMapData', markers)
+
     this._loadAllMarkers(caller.googleMap, markers);
   }
 
