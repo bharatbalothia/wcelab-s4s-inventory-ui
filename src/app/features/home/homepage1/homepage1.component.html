@@ -4,18 +4,25 @@
   <div class="bx--row">
     <!--<div class="bx--col-md-3 bx--col-sm-1">-->
     <div class="bx--col-md-4 bx--col-sm-6">
-      <buc-combobox  [attr.tid]="'Category-selection'"
-        placeholder="{{'HOMEPAGE1.LABEL_CATEGORY' | translate}}" [disabled]="categoryListValues.length === 0"
-        label="{{'HOMEPAGE1.LABEL_CATEGORY' | translate}}" [items]="categoryListValues"
+      <buc-combobox
+        placeholder="{{'HOMEPAGE1.LABEL_CATEGORY' | translate}}"
+        [attr.tid]="'Category-selection'"
+        [disabled]="categoryListValues.length === 0"
+        label="{{'HOMEPAGE1.LABEL_CATEGORY' | translate}}"
+        [items]="categoryListValues"
         (selectItemAction)="onCategory($event)">
       </buc-combobox>
     </div>
 
     <!--<div class="bx--col-md-3 bx--col-sm-1">-->
     <div class="bx--col-md-4 bx--col-sm-6">
-      <buc-combobox [attr.tid]="'Product-selection'"
-        placeholder="{{'HOMEPAGE1.LABEL_PRODUCT' | translate}}" [disabled]="productListValues.length === 0"
-        label="{{'HOMEPAGE1.LABEL_PRODUCT' | translate}}" [items]="productListValues"
+      <buc-combobox
+        #products
+        placeholder="{{'HOMEPAGE1.LABEL_PRODUCT' | translate}}"
+        [attr.tid]="'Product-selection'"
+        [disabled]="productListValues.length === 0"
+        label="{{'HOMEPAGE1.LABEL_PRODUCT' | translate}}"
+        [items]="productListValues"
         (selectItemAction)="onProduct($event)">
       </buc-combobox>
     </div>
