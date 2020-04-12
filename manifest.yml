@@ -1,0 +1,9 @@
+---
+# App Manifest
+applications:
+- name: buc-iv-covid-poc
+  buildpacks:
+    - staticfile_buildpack
+  path: ./dist/buc-iv-covid-poc
+  env:
+    env_type: production
