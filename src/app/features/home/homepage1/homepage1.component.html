@@ -1,3 +1,4 @@
+
 <div class="bx--grid bx--no-gutter">
 
   <div class="bx--row">
@@ -132,6 +133,7 @@
   </div>
 </ng-template>
 
+
 <!-- template for location-modal -->
 <ng-template #locationTpl let-data="data">
   <div class="bx--grid d--flex bx--no-gutter padding-top--1rem info-modal-grid min-height--30rem">
@@ -177,9 +179,20 @@
       </div>
     </div>
 
+    <div class="bx--row d--flex-jc-flex-end padding-top--1rem" [class.hide-div]="data.locData.length === 0">
+      <div class="bx--col padding-left-right--0 d--flex-jc-flex-end">
+        <buc-button class="padding-right--1rem" [type]="'primary'" (click)="data.switch(data, mapContainer)" [btnSize]="'sm'">
+          {{ data.buttonCaption }}
+        </buc-button>
+      </div>
+    </div>
+
     <div class="bx--row d--flex-1 d--flex-jc-space-evenly padding-top--1rem">
       <div class="bx--col padding-left-right--0">
+        <div #mapContainer class="google-map" [class.hide-div]="data.hideMap"></div>
+
         <buc-table
+          [class.hide-div]="!data.hideMap"
           [class.no-data]="data.model.totalDataLength===0"
           [model]="data.model"
           [size]="'sm'"
@@ -194,6 +207,7 @@
             </tbody>
         </buc-table>
       </div>
+
     </div>
   </div>
 </ng-template>

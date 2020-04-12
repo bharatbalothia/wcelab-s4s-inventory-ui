@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, TemplateRef, HostBinding } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef, HostBinding, ElementRef  } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { DatePipe } from '@angular/common';
 
@@ -15,6 +15,8 @@ import { Product } from '../shared/common/product';
 import { SKU } from '../shared/common/sku';
 import { S4STableModel } from '../shared/common/table-model';
 import { Constants } from '../shared/common/constants';
+
+
 
 // PENDING - 1 - Need additonal logic to see the logged in users timezone
 @Component({
@@ -36,7 +38,9 @@ export class Homepage1Component implements OnInit {
     'common.LABEL_noPhone': '',
     'common.LABEL_none': '',
     'common.LABEL_new': '',
-    'common.LABEL_used': ''
+    'common.LABEL_used': '',
+    'common.LABEL_showMap': '',
+    'common.LABEL_showTable': ''
   };
 
   private supplierMap: { [ key: string ]: Supplier } = {};
@@ -447,6 +451,8 @@ export class Homepage1Component implements OnInit {
       if (this.supplierSkuSingleton >= 2) {
         return;
       }
+
+      const locData = [];
       const makeHeaders = () => [
         [
           new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.LOCATION') }),
@@ -461,7 +467,22 @@ export class Homepage1Component implements OnInit {
 
       const templateData: any = {
         supplier,
-        sku
+        sku,
+        locData,
+        hideMap: true,
+        googleMap: undefined,
+        buttonCaption: this.nlsMap['common.LABEL_showMap'],
+        mapInitializer: this._mapInitializer.bind(this),
+        switch: (self, mapRef) => {
+          console.log('google map in switch self mapRef', self, mapRef);
+          self.hideMap = !self.hideMap;
+          if (!self.hideMap) {
+            self.mapInitializer(mapRef, self);
+            self.buttonCaption = this.nlsMap['common.LABEL_showTable'];
+          } else {
+            self.buttonCaption = this.nlsMap['common.LABEL_showMap'];
+          }
+        },
       };
 
       const resp = await this.invDistService.getShipNodesForSupplier(supplier.supplier_id).toPromise();
@@ -487,16 +508,18 @@ export class Homepage1Component implements OnInit {
       ).toPromise();
       console.log('IV response', ivResponse);
 
-      const locData = [];
+
       const lines = getArray(ivResponse.lines);
       lines.filter(l => l.itemId === sku.itemId).forEach(line => {
         const iv = getArray(line.shipNodeAvailability).filter(l => l.totalAvailableQuantity > 0);
         iv.forEach(nodeIv => {
           const name = this.supplierLocationMap[nodeIv.shipNode] ? this.supplierLocationMap[nodeIv.shipNode].shipnode_name : undefined;
           const shipNodeLocation = name || nodeIv.shipNode;
-          locData.push({ shipNodeLocation, sku: line.itemId, availableQuantity: nodeIv.totalAvailableQuantity });
+          locData.push({ shipNodeLocation, sku: line.itemId, availableQuantity: nodeIv.totalAvailableQuantity,
+            latitude: this.supplierLocationMap[nodeIv.shipNode].latitude, longitude: this.supplierLocationMap[nodeIv.shipNode].longitude });
         });
       });
+
 
       const tModel = new S4STableModel();
       tModel.header = makeHeaders();
@@ -531,5 +554,45 @@ export class Homepage1Component implements OnInit {
       this.supplierSkuSingleton = 0;
       console.log('Reset supplierSkuSingleton on Error', this.supplierSkuSingleton);
     }
+  }
+
+  private _mapInitializer(ref, caller) {
+    const markers = caller.locData.map(location => ({
+      position: new google.maps.LatLng(location.latitude, location.longitude),
+      title: location.shipNodeLocation + '( ' + location.availableQuantity + ' )'
+    }));
+    console.log('final map data locMapData', markers);
+
+    // to point the map to a location and centralize
+    if (markers.length > 0) {
+      const coordinates = markers[0].position;
+      const customMapOptions = { center: coordinates, zoom: 4 };
+      if (!caller.googleMap) {
+        caller.googleMap = new google.maps.Map(ref, customMapOptions);
+      }
+      this._loadAllMarkers(caller.googleMap, markers);
+    }
+  }
+
+  private _loadAllMarkers(mapObj: google.maps.Map, markers: any): void {
+    markers.forEach(markerInfo => {
+      // Creating a new marker object
+      const marker = new google.maps.Marker({
+        ...markerInfo
+      });
+
+      // creating a new info window with markers info
+      const infoWindow = new google.maps.InfoWindow({
+        content: marker.getTitle()
+      });
+
+      // Add click event to open info window on marker
+      marker.addListener('click', () => {
+        infoWindow.open(marker.getMap(), marker);
+      });
+
+      // Adding marker to google map
+      marker.setMap(mapObj);
+    });
   }
 }
