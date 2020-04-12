@@ -446,12 +446,13 @@ export class Homepage1Component implements OnInit {
    */
   public async onLocation(sku: any, supplier: Supplier) {
     try {
-      const locData = [];
       this.supplierSkuSingleton++;
       console.log('supplierSkuSingleton value on click for SKU ', this.supplierSkuSingleton);
       if (this.supplierSkuSingleton >= 2) {
         return;
       }
+
+      const locData = [];
       const makeHeaders = () => [
         [
           new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.LOCATION') }),
@@ -507,14 +508,14 @@ export class Homepage1Component implements OnInit {
       ).toPromise();
       console.log('IV response', ivResponse);
 
-     
+
       const lines = getArray(ivResponse.lines);
       lines.filter(l => l.itemId === sku.itemId).forEach(line => {
         const iv = getArray(line.shipNodeAvailability).filter(l => l.totalAvailableQuantity > 0);
         iv.forEach(nodeIv => {
           const name = this.supplierLocationMap[nodeIv.shipNode] ? this.supplierLocationMap[nodeIv.shipNode].shipnode_name : undefined;
           const shipNodeLocation = name || nodeIv.shipNode;
-          locData.push({ shipNodeLocation, sku: line.itemId, availableQuantity: nodeIv.totalAvailableQuantity, 
+          locData.push({ shipNodeLocation, sku: line.itemId, availableQuantity: nodeIv.totalAvailableQuantity,
             latitude: this.supplierLocationMap[nodeIv.shipNode].latitude, longitude: this.supplierLocationMap[nodeIv.shipNode].longitude });
         });
       });
@@ -556,33 +557,21 @@ export class Homepage1Component implements OnInit {
   }
 
   private _mapInitializer(ref, caller) {
-    const markers = [];
-    const datas = getArray(caller);
-    console.log('google map  _mapInitializer datas', datas);
+    const markers = caller.locData.map(location => ({
+      position: new google.maps.LatLng(location.latitude, location.longitude),
+      title: location.shipNodeLocation + '( ' + location.availableQuantity + ' )'
+    }));
+    console.log('final map data locMapData', markers);
 
-    let first = true;
-    datas.forEach(data => {
-      console.log('google map  data.locData', data.locData);
-      data.locData.map((location) => (
-        markers.push({
-          position: new google.maps.LatLng(location.latitude, location.longitude),
-          map: caller.googleMap, title: location.shipNodeLocation + '( ' + location.availableQuantity + ' )'
-        })
-      ));
-    });
-
-    //to point the map to a location and centralize
-    if (first && markers.length > 0) {
-      first = false;
+    // to point the map to a location and centralize
+    if (markers.length > 0) {
       const coordinates = markers[0].position;
       const customMapOptions = { center: coordinates, zoom: 4 };
       if (!caller.googleMap) {
         caller.googleMap = new google.maps.Map(ref, customMapOptions);
       }
+      this._loadAllMarkers(caller.googleMap, markers);
     }
-    console.log('final map data locMapData', markers)
-
-    this._loadAllMarkers(caller.googleMap, markers);
   }
 
   private _loadAllMarkers(mapObj: google.maps.Map, markers: any): void {
