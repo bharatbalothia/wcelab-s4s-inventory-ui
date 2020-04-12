@@ -1,13 +1,17 @@
+
 <div class="bx--grid bx--no-gutter">
+
   <div class="bx--row">
+    <!--<div class="bx--col-md-3 bx--col-sm-1">-->
     <div class="bx--col-md-4 bx--col-sm-6">
       <buc-combobox  [attr.tid]="'Category-selection'"
         placeholder="{{'HOMEPAGE1.LABEL_CATEGORY' | translate}}" [disabled]="categoryListValues.length === 0"
         label="{{'HOMEPAGE1.LABEL_CATEGORY' | translate}}" [items]="categoryListValues"
         (selectItemAction)="onCategory($event)">
       </buc-combobox>
-
     </div>
+
+    <!--<div class="bx--col-md-3 bx--col-sm-1">-->
     <div class="bx--col-md-4 bx--col-sm-6">
       <buc-combobox [attr.tid]="'Product-selection'"
         placeholder="{{'HOMEPAGE1.LABEL_PRODUCT' | translate}}" [disabled]="productListValues.length === 0"
@@ -15,6 +19,15 @@
         (selectItemAction)="onProduct($event)">
       </buc-combobox>
     </div>
+
+    <!--
+    <div class="bx--col-md-2 bx--col-sm-1 d--flex-fd-column">
+      <div class="bx--label">{{ 'common.LABEL_prodClass' | translate }}</div>
+      <div class="d--flex-1 d--flex-ai-center">
+        <buc-radio-group (bucRadioChange)="onPC($event)" [radioList]="pcRadios" orientation="horizontal"></buc-radio-group>
+      </div>
+    </div>
+    -->
   </div>
 
   <div class="bx--row d--flex-1 d--flex-fd-column">
@@ -25,8 +38,8 @@
       [skeleton]="!isScreenInitialized || model.isLoading"
       [hasSearch]=false
       [size]="'sm'"
-      (selectPage)="onSelectPage($event)"
-      (sort)="onSort($event)"
+      (selectPage)="model.onSelectPage($event)"
+      (sort)="model.onSort($event)"
       [showSelectionColumn]="false">
         <tbody>
           <tr>
@@ -104,8 +117,8 @@
           [class.no-data]="data.model.totalDataLength===0"
           [model]="data.model"
           [size]="'sm'"
-          (selectPage)="data.onSelectPage($event)"
-          (sort)="data.onSort($event)"
+          (selectPage)="data.model.onSelectPage($event)"
+          (sort)="data.model.onSort($event)"
           [showSelectionColumn]="false">
             <tbody>
               <tr>
@@ -119,6 +132,7 @@
     </div>
   </div>
 </ng-template>
+
 
 <!-- template for location-modal -->
 <ng-template #locationTpl let-data="data">
@@ -165,13 +179,24 @@
       </div>
     </div>
 
+    <div class="bx--row d--flex-jc-flex-end padding-top--1rem" [class.hide-div]="data.locData.length === 0">
+      <div class="bx--col padding-left-right--0 d--flex-jc-flex-end">
+        <buc-button class="padding-right--1rem" [type]="'primary'" (click)="data.switch(data, mapContainer)" [btnSize]="'sm'">
+          {{ data.buttonCaption }}
+        </buc-button>
+      </div>
+    </div>
+
     <div class="bx--row d--flex-1 d--flex-jc-space-evenly padding-top--1rem">
       <div class="bx--col padding-left-right--0">
+        <div #mapContainer class="google-map" [class.hide-div]="data.hideMap"></div>
+
         <buc-table
+          [class.hide-div]="!data.hideMap"
           [class.no-data]="data.model.totalDataLength===0"
           [model]="data.model"
           [size]="'sm'"
-          (selectPage)="data.onSelectPage($event)"
+          (selectPage)="data.model.onSelectPage($event)"
           [showSelectionColumn]="false">
             <tbody>
               <tr>
@@ -182,6 +207,7 @@
             </tbody>
         </buc-table>
       </div>
+
     </div>
   </div>
 </ng-template>

@@ -12,14 +12,14 @@ export class S4STableModel extends BucTableModel {
    * @param records data to specify/paginate/set
    * @param sortMap custom sorting map
    */
-  public static populate(model: S4STableModel, records: any[], sortMap: { [ key: number ]: string }) {
-    model.allRecords = records;
-    model.sortMap = sortMap;
-    model.calcPgLen = model.pageLength;
-    model.pages = COMMON.calcPagination(records, model.pageLength);
+  public populate(records: any[], sortMap: { [ key: number ]: string } = {}) {
+    this.allRecords = records;
+    this.sortMap = sortMap;
+    this.calcPgLen = this.pageLength;
+    this.pages = COMMON.calcPagination(records, this.pageLength);
 
-    model.data = model.pages[0];
-    model.totalDataLength = records.length;
+    this.data = this.pages[0];
+    this.totalDataLength = records.length;
   }
 
   /**
@@ -28,18 +28,18 @@ export class S4STableModel extends BucTableModel {
    * @param pg page number to navigate to (page numbers are ordinal, i.e., 1-based)
    * @param model model to refresh data on
    */
-  public static selectPage(pg, model: S4STableModel) {
-    model.isLoading = true;
+  public onSelectPage(pg) {
+    this.isLoading = true;
 
-    if (model.pageLength !== model.calcPgLen) {
-      model.pages = COMMON.calcPagination(model.allRecords, model.pageLength);
+    if (this.pageLength !== this.calcPgLen) {
+      this.pages = COMMON.calcPagination(this.allRecords, this.pageLength);
     }
 
-    model.calcPgLen = model.pageLength;
-    model.currentPage = pg;
-    model.data = model.pages[pg - 1];
+    this.calcPgLen = this.pageLength;
+    this.currentPage = pg;
+    this.data = this.pages[pg - 1];
 
-    model.isLoading = false;
+    this.isLoading = false;
   }
 
   /**
@@ -47,20 +47,20 @@ export class S4STableModel extends BucTableModel {
    * @param idx column index (0-based)
    * @param model model on which column's records reside
    */
-  public static sortColumn(idx, model: S4STableModel) {
-    const customSort = model.sortMap;
+  public onSort(idx) {
+    const customSort = this.sortMap;
     if (customSort && customSort[idx]) {
       const field = customSort[idx];
-      const s = model.getHeader(idx).ascending ? 1 : -1;
-      model.data.sort((l, r) => s * l[idx].data[field].localeCompare(r[idx].data[field]));
+      const s = this.getHeader(idx).ascending ? 1 : -1;
+      this.data.sort((l, r) => s * l[idx].data[field].localeCompare(r[idx].data[field]));
     }
   }
 
   /**
    * @param model model to set page defaults on
    */
-  public static setPgDefaults(model: S4STableModel) {
-    model.pageLength = BucTableModel.DEFAULT_PAGE_LEN;
-    model.currentPage = 1;
+  public setPgDefaults() {
+    this.pageLength = BucTableModel.DEFAULT_PAGE_LEN;
+    this.currentPage = 1;
   }
 }

@@ -176,8 +176,9 @@ export class UploadPageComponent implements OnInit {
     });
 
     try {
-      await this.suppSvc.postByTenantIdV1Supplies(params).toPromise();
-      this._showSuccess('', this.nlsMap['UPLOAD.LABEL_uploadSuccessful']);
+      // await this.suppSvc.postByTenantIdV1Supplies(params).toPromise();
+     await this.suppSvc.putByTenantIdV1Supplies(params).toPromise();
+    this._showSuccess('', this.nlsMap['UPLOAD.LABEL_uploadSuccessful']);
       this._loadTable(records);
       this.onSelectPage(1);
     } catch (r) {

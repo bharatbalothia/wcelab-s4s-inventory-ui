@@ -47,6 +47,9 @@ export class InventoryAvailabilityService {
         });
     }
 
+    /**
+     * @see getConsolidatedInventorySameUOMSamePC
+     */
     public getConslidatedInventoryForDG(
       items: string[],
       dgIds: string[],
@@ -76,23 +79,9 @@ export class InventoryAvailabilityService {
       .pipe(catchError((err) => observableOf([])));
     }
 
-
-
-
-    private _buildGetNetworkAvailabilityRequestLine(method, dgId, itemId, uom, productClass) {
-        const line: GetNetworkAvailabilityRequestLine = {
-            deliveryMethod: method,
-            distributionGroupId: dgId,
-            itemId,
-            lineId: itemId,
-            // itemId,
-            // lineId: productClass ? `${itemId}_${method}_${uom}_${productClass}` : `${itemId}_${method}_${uom}`,
-            // productClass,
-            unitOfMeasure: uom
-        };
-        return line;
-    }
-
+    /**
+     * @see getInventoryForSkuAtNodes
+     */
     public getInventoryForNodes(
       items: string[],
       nodes: string[],
@@ -117,6 +106,9 @@ export class InventoryAvailabilityService {
         });
     }
 
+    /**
+     * @see getInventoryForItemBySupplier
+     */
     public getInventoryForNetwork(
       items: string[],
       nodes: string[],
@@ -168,4 +160,87 @@ export class InventoryAvailabilityService {
           });
     }
 
+
+    /**
+     * fetches inventory for item at various suppliers by given UOM and PC
+     * @param item item-id
+     * @param suppliers array of supplier-ids
+     * @param unitOfMeasure unit-of-measure
+     * @param productClass product-class
+     */
+    public getConsolidatedInventorySameUOMSamePC(
+      item: string,
+      suppliers: string[],
+      unitOfMeasure: string,
+      productClass: string
+    ) {
+      const lines = suppliers.map((supplier, idx) => ({
+        deliveryMethod: 'SHP',
+        distributionGroupId: supplier,
+        itemId: item,
+        lineId: idx,
+        unitOfMeasure,
+        productClass
+      }));
+
+      return this.availabilitySvc.postByTenantIdV1AvailabilityNetwork({
+        $queryParameters: {},
+        tenantId: BucSvcAngularStaticAppInfoFacadeUtil.getInventoryTenantId(),
+        body: { lines }
+      })
+      .pipe(catchError((err) => observableOf([])));
+    }
+
+    /**
+     * fetches inventory for item (its SKUs) at given supplier by given UOM and PC
+     * @param productId item-id
+     * @param supplierId supplier-id
+     * @param unitOfMeasure unit-of-measure
+     * @param productClass product-class
+     */
+    public getInventoryForItemBySupplier(
+      productId: string,
+      supplierId: string,
+      unitOfMeasure: string,
+      productClass: string
+    ) {
+      const deliveryMethod = 'SHP';
+      return this.availabilitySvc.postByTenantIdV1AvailabilityNetworkBySupplierAndProductId({
+          $queryParameters: {},
+          tenantId: BucSvcAngularStaticAppInfoFacadeUtil.getInventoryTenantId(),
+          body: { deliveryMethod, productClass, unitOfMeasure },
+          productId,
+          supplierId
+      });
+    }
+
+    /**
+     * fetches sku/item inventory at given physical nodes
+     * @param itemId item-id
+     * @param nodes nodes to fetch inventory for
+     * @param unitOfMeasure unit-of-measure
+     * @param productClass product-class
+     */
+    public getInventoryForSkuAtNodes(
+      itemId: string,
+      nodes: string[],
+      unitOfMeasure: string,
+      productClass: string
+    ) {
+      const reqPayload = {
+        deliveryMethod: 'SHP',
+        itemId,
+        unitOfMeasure,
+        productClass,
+        shipNodes: nodes
+      };
+
+      console.log('Request payload getInventoryForSkuAtNodes', reqPayload);
+      return this.availabilitySvc.postByTenantIdV1AvailabilityNode({
+        $queryParameters: {},
+        tenantId: BucSvcAngularStaticAppInfoFacadeUtil.getInventoryTenantId(),
+        body: reqPayload,
+        productId: itemId
+      });
+    }
 }
