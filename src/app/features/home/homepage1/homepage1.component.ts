@@ -2,8 +2,8 @@ import { Component, OnInit, ViewChild, TemplateRef, HostBinding, ElementRef  } f
 import { TranslateService } from '@ngx-translate/core';
 import { DatePipe } from '@angular/common';
 
-import { COMMON } from '@buc/common-components';
-import { TableHeaderItem, ModalService } from 'carbon-components-angular';
+import { COMMON, ComboboxComponent } from '@buc/common-components';
+import { TableHeaderItem, ModalService, ComboBox } from 'carbon-components-angular';
 import { InventoryAvailabilityService } from '../shared/services/inventory-availability.service';
 import { InventoryDistributionService } from '../shared/services/inventory-distribution.service';
 import { getArray } from '../shared/common/functions';
@@ -29,6 +29,7 @@ export class Homepage1Component implements OnInit {
   @ViewChild('supplierTpl', { static: true }) private supplierTpl: TemplateRef<any>;
   @ViewChild('supplierLocationLink', { static: true }) private supplierLocationLink: TemplateRef<any>;
   @ViewChild('locationTpl', { static: true }) private locationTpl: TemplateRef<any>;
+  @ViewChild('products', { static: true }) private products: ComboboxComponent;
 
   private nlsMap: any = {
     'common.LABEL_supplierDetails': '',
@@ -182,10 +183,12 @@ export class Homepage1Component implements OnInit {
   public async onCategory(event) {
     const cat = event.item ? event.item.id : undefined;
     console.log('User selected Category ', cat);
-    if (cat && cat !== this.selectedCat) {
+
+    if (cat === undefined || cat !== this.selectedCat) {
       this.selectedCat = cat;
       this.selectedProd.item_id = undefined;
       this.productListValues = [];
+      this._clearCarbonCombo(this.products.comboBox);
 
       try {
         this.model.isLoading = true;
@@ -193,21 +196,23 @@ export class Homepage1Component implements OnInit {
         // reset table
         this._refreshSupplierTable([]);
 
-        // try to use cache, otherwise fetch
-        let responses4s = this.cat2ProdMap[cat];
-        if (!responses4s) {
-          responses4s = await this.invDistService.getAllProductsByCategoryId(cat).toPromise();
-          this.cat2ProdMap[cat] = responses4s;
+        if (cat !== undefined) {
+          // try to use cache, otherwise fetch
+          let responses4s = this.cat2ProdMap[cat];
+          if (!responses4s) {
+            responses4s = await this.invDistService.getAllProductsByCategoryId(cat).toPromise();
+            this.cat2ProdMap[cat] = responses4s;
+          }
+
+          console.log('S4S response of all products with in selected category id ', cat, responses4s);
+          this.productListValues = getArray(responses4s).map((product) => ({
+            content: `${product.description} (${product.item_id})`,
+            id: product.item_id
+          }));
+          console.log('Model - Product List ' , this.productListValues);
         }
 
-        console.log('S4S response of all products with in selected category id ', cat, responses4s);
-        this.productListValues = getArray(responses4s).map((product) => ({
-          content: `${product.description} (${product.item_id})`,
-          id: product.item_id
-        }));
-
         this.model.isLoading = false;
-        console.log('Model - Product List ' , this.productListValues);
       } catch (err) {
         console.log('Error fetching availability: ', err);
       }
@@ -223,11 +228,21 @@ export class Homepage1Component implements OnInit {
   public async onProduct(event) {
     const id = event.item ? event.item.id : undefined;
     console.log('User selected Product ', id);
-    if (id && id !== this.selectedProd.item_id) {
+    if (id === undefined || id !== this.selectedProd.item_id) {
       this.selectedProd.item_id = id;
-      this.selectedProd.description = event.item.content ;
-      this._fetchSuppliersForProductAndClass();
+      this._refreshSupplierTable([]);
+      if (id === undefined) {
+        this._clearCarbonCombo(this.products.comboBox);
+      } else {
+        this.selectedProd.description = event.item.content ;
+        this._fetchSuppliersForProductAndClass();
+      }
     }
+  }
+
+  private _clearCarbonCombo(carbon: ComboBox) {
+    carbon.selectedValue = '';
+    carbon.showClearButton = false;
   }
 
   /**
