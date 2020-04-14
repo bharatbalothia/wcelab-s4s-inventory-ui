@@ -313,7 +313,7 @@ export class Homepage1Component implements OnInit {
   /**
    * fetch suppliers for selected product and product-class
    */
-  private async _fetchSuppliersForProductAndClass() {
+  private async _fetchSuppliersForProductAndClass() { 
     if (!this.selectedProd.item_id) {
       return;
     }
