@@ -30,6 +30,10 @@ export class Homepage1Component implements OnInit {
   @ViewChild('supplierLocationLink', { static: true }) private supplierLocationLink: TemplateRef<any>;
   @ViewChild('locationTpl', { static: true }) private locationTpl: TemplateRef<any>;
   @ViewChild('products', { static: true }) private products: ComboboxComponent;
+  @ViewChild('categories', { static: true }) private categories: ComboboxComponent;
+  @ViewChild('modelnumbers', { static: true }) private modelnumbers: ComboboxComponent;
+  
+  
 
   private nlsMap: any = {
     'common.LABEL_supplierDetails': '',
@@ -55,10 +59,16 @@ export class Homepage1Component implements OnInit {
   private supplierSingleton: number = 0;
   private supplierSkuSingleton: number = 0;
 
+  private isSearchByModelNo = false;
+  private selectedModelNumbers;
+  private lastSearchedModelNumbers;
+  
+
   @HostBinding('class') page = 'page-component';
   isScreenInitialized = false;
   model = new S4STableModel();
   categoryListValues = [];
+  modelNumberListValues = [];
   productListValues = [];
   pcRadios = [];
 
@@ -89,8 +99,12 @@ export class Homepage1Component implements OnInit {
     this.model.setPgDefaults();
     this._initPcTypes();
     this._initCategories();
+    this._initModelNumber();
     this._fetchAllSuppliers();
-    this._refreshSupplierTableHeader();
+    this._refreshSupplierTableHeader(false);
+    this.isSearchByModelNo = false;
+    this.selectedModelNumbers = [];
+    this.lastSearchedModelNumbers = [];
   }
 
   private _initPcTypes() {
@@ -163,6 +177,18 @@ export class Homepage1Component implements OnInit {
     this.isScreenInitialized = true;
   }
 
+  private async _initModelNumber() {
+    const responses4s = await this.invDistService.getProducts().toPromise();
+    console.log('S4S response - getAllModelNumber ', responses4s);
+    this.modelNumberListValues = getArray(responses4s).filter(p => p.category === '').map((p) => ({
+      content: p.item_id.replace(/^.+?::/, ''),
+      id: p.item_id,
+      selected: false
+    }));
+    console.log('Model - Model Number List ', this.modelNumberListValues);
+  }
+  
+
   /**
    * called when product-class radio clicked
    * @param event event that was checked
@@ -219,6 +245,44 @@ export class Homepage1Component implements OnInit {
     }
   }
 
+  
+  /**
+   * Called when user select options from 'model number' multi select combobox 
+   * @param event Model-Number-selection container
+   */
+  public async onModelNumber(event) {
+    this.selectedModelNumbers = event;
+    console.log('selectedModelNumbers -->', this.selectedModelNumbers);
+  }
+  /**
+    * Called when user click on the button 'search by model number'
+    * @param event Model-Number-selection container
+    */
+  searchSuppliersByModelNumber(event) {
+    if (this.lastSearchedModelNumbers.length === 0 || this.lastSearchedModelNumbers.length !== this.selectedModelNumbers.length) {
+      this.lastSearchedModelNumbers = this.selectedModelNumbers;
+    } else {
+      const previousModelIds = [];
+      const currentModelIds = [];
+      this.lastSearchedModelNumbers.forEach(previousModelNumber => {
+        previousModelIds.push(previousModelNumber.id)
+      });
+      this.selectedModelNumbers.forEach(selectedModelNumber => {
+        currentModelIds.push(selectedModelNumber.id);
+      });
+
+      var is_same = (previousModelIds.length == currentModelIds.length) && previousModelIds.every(function (element, index) {
+        return element === currentModelIds[index];
+      });
+      console.log('previousModelIds, currentModelIds, is_same ', previousModelIds, currentModelIds, is_same);
+      if (is_same)
+        return;
+    }
+
+    this._fetchSuppliersForMultipleProductAndClass();
+
+  }
+
   /**
    * Called when product selected from product dropdown
    * Fetch Supplier for searched product id starts
@@ -243,6 +307,9 @@ export class Homepage1Component implements OnInit {
   private _clearCarbonCombo(carbon: ComboBox) {
     carbon.selectedValue = '';
     carbon.showClearButton = false;
+    if(carbon.pills.length>0){
+      carbon.pills = [];
+    }
   }
 
   /**
@@ -298,47 +365,154 @@ export class Homepage1Component implements OnInit {
     }
   }
 
-  private _refreshSupplierTableHeader() {
-    this.model.header = [
-      [
-        new TableHeaderItem({
-          data: this.translateService.instant('LIST_TABLE.HEADER_SUPPLIER'),
-          sortable: true
-        }),
-        new TableHeaderItem({
-          data: this.translateService.instant('LIST_TABLE.HEADER_AVAILABILITY'),
-          sortable: true
-        }),
-        new TableHeaderItem({
-          data: this.translateService.instant('LIST_TABLE.HEADER_DATE'),
-          sortable: true
-        }),
-      ]
-    ];
+  
+  /**
+   * fetch suppliers for selected multiple products and product-class
+   */
+  private async _fetchSuppliersForMultipleProductAndClass() {
+    if (this.selectedModelNumbers.length === 0) {
+      return;
+    }
+    
+    const searchSkuIds = [];
+    this.selectedModelNumbers.forEach(modelNumber => {
+      searchSkuIds.push([modelNumber.id, modelNumber.content]); //{modelNumber.id, modelNumber.content}
+      
+    });
+    console.log('searchSkuIds',searchSkuIds);
+    try {
+      this.model.isLoading = true;
+
+      const allSuppliersHavingSelectedProduct = [];
+      const suppliers = Object.keys(this.supplierMap);
+
+      for (const sku of searchSkuIds) {
+        const resp = await this.invAvailService.getConsolidatedInventorySameUOMSamePC(
+          sku[0], suppliers, 'UNIT', this.selectedPc
+        ).toPromise();
+        console.log('IV response ', resp, sku);
+
+        const lines = getArray(resp.lines)
+          .filter(l => l.networkAvailabilities.length > 0 && l.networkAvailabilities[0].totalAvailableQuantity > 0);
+
+        for (const line of lines) {
+          console.log('line', line, line.networkAvailabilities[0].distributionGroupId);
+          const supplier = this.supplierMap[line.networkAvailabilities[0].distributionGroupId];
+          supplier.descAndNode = `${supplier.description} (${line.networkAvailabilities[0].distributionGroupId})`;
+
+          let availableDate = 'Now';
+          if (line.networkAvailabilities[0].thresholdType === 'ONHAND') {
+            availableDate = 'Now';
+          } else {
+            availableDate = new DatePipe('en-US').transform(line.networkAvailabilities[0].earliestShipTs, 'MM/dd/yyyy');
+          }
+           
+          allSuppliersHavingSelectedProduct.push({
+            supplier,
+            product: { item_id: sku[0], description: sku[1]},
+            productClass: this.selectedPc,
+            Availability: line.networkAvailabilities[0].totalAvailableQuantity,
+            Date: availableDate
+            // TODO PENDING - 1
+          });
+        }
+
+        this.model.isLoading = false;
+
+        console.log('Model - allSuppliersHavingSelectedProduct', allSuppliersHavingSelectedProduct);
+        this._refreshSupplierTable(allSuppliersHavingSelectedProduct, true);
+      };
+
+    } catch (err) {
+      console.log('Error fetching availability: ', err);
+    }
   }
 
-  private _refreshSupplierTable(data) {
-    this.model.isLoading = true;
+  private _refreshSupplierTableHeader(includeSkuColumn?) {
+    if (includeSkuColumn !== undefined && includeSkuColumn) {
+      this.model.header = [
+        [
+          new TableHeaderItem({
+            data: this.translateService.instant('LIST_TABLE.HEADER_SUPPLIER'),
+            sortable: true
+          }),
+          new TableHeaderItem({
+            data: this.translateService.instant('LIST_TABLE.HEADER_ITEMS'),
+            sortable: true
+          }),
+          new TableHeaderItem({
+            data: this.translateService.instant('LIST_TABLE.HEADER_AVAILABILITY'),
+            sortable: true
+          }),
+          new TableHeaderItem({
+            data: this.translateService.instant('LIST_TABLE.HEADER_DATE'),
+            sortable: true
+          }),
+        ]
+      ];
+    }else{
+      this.model.header = [
+        [
+          new TableHeaderItem({
+            data: this.translateService.instant('LIST_TABLE.HEADER_SUPPLIER'),
+            sortable: true
+          }),
+          new TableHeaderItem({
+            data: this.translateService.instant('LIST_TABLE.HEADER_AVAILABILITY'),
+            sortable: true
+          }),
+          new TableHeaderItem({
+            data: this.translateService.instant('LIST_TABLE.HEADER_DATE'),
+            sortable: true
+          }),
+        ]
+      ];
+    }
 
-    const records = data.map((record, i) => [
-      {
-        data: { name: record.supplier.description, descriptor: record },
-        template: this.supplierLink,
-        id: i
-      },
-      {
-        data: record.Availability,
-      },
-      {
-        data: record.Date
-      }
-    ]);
+  }
+
+  private _refreshSupplierTable(data, includeSkuColumn?) {
+    this.model.isLoading = true;
+    if (includeSkuColumn !== undefined && includeSkuColumn) {
+      const records = data.map((record, i) => [
+        {
+          data: { name: record.supplier.description, descriptor: record },
+          template: this.supplierLink,
+          id: i
+        },
+        {
+          data: record.product.item_id.replace(/^.+?::/, ''),
+        },
+        {
+          data: record.Availability,
+        },
+        {
+          data: record.Date
+        }
+      ]);
+      this.model.populate(records, { 0: 'name' });
+    } else {
+      const records = data.map((record, i) => [
+        {
+          data: { name: record.supplier.description, descriptor: record },
+          template: this.supplierLink,
+          id: i
+        },
+        {
+          data: record.Availability,
+        },
+        {
+          data: record.Date
+        }
+      ]);
+      this.model.populate(records, { 0: 'name' });
+    }
 
     this.model.setPgDefaults();
-    this.model.populate(records, { 0: 'name' });
-
     this.model.isLoading = false;
   }
+
+
 
   /**
    * Called when supplier clicked in supplier-table from main page
@@ -609,5 +783,20 @@ export class Homepage1Component implements OnInit {
       // Adding marker to google map
       marker.setMap(mapObj);
     });
+  }
+
+  
+  onChangeSearchByModelNo(event) {
+    this.isSearchByModelNo = !this.isSearchByModelNo;
+    console.log('isSearchByModelNo -->' , this.isSearchByModelNo);
+
+    this._refreshSupplierTableHeader(this.isSearchByModelNo);
+    this._refreshSupplierTable([],this.isSearchByModelNo);
+    this.selectedModelNumbers = [];
+    this.lastSearchedModelNumbers = [];
+    this._clearCarbonCombo(this.products.comboBox);
+    this._clearCarbonCombo(this.categories.comboBox);
+    this._clearCarbonCombo(this.modelnumbers.comboBox);
+    this.selectedProd.item_id = undefined;
   }
 }
