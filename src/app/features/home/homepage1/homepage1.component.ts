@@ -60,7 +60,7 @@ export class Homepage1Component implements OnInit {
   private supplierSkuSingleton: number = 0;
 
   private isSearchByModelNo = false;
-  private selectedModelNumbers;
+  
   private lastSearchedModelNumbers;
   
 
@@ -69,6 +69,7 @@ export class Homepage1Component implements OnInit {
   model = new S4STableModel();
   categoryListValues = [];
   modelNumberListValues = [];
+  selectedModelNumbers = [];
   productListValues = [];
   pcRadios = [];
 
@@ -307,15 +308,12 @@ export class Homepage1Component implements OnInit {
   private _clearCarbonCombo(carbon: ComboBox) {
     carbon.selectedValue = '';
     carbon.showClearButton = false;
-    if(carbon.pills.length>0){
-      carbon.pills = [];
-    }
   }
 
   /**
    * fetch suppliers for selected product and product-class
    */
-  private async _fetchSuppliersForProductAndClass() {
+  private async _fetchSuppliersForProductAndClass() { 
     if (!this.selectedProd.item_id) {
       return;
     }
@@ -788,15 +786,22 @@ export class Homepage1Component implements OnInit {
   
   onChangeSearchByModelNo(event) {
     this.isSearchByModelNo = !this.isSearchByModelNo;
-    console.log('isSearchByModelNo -->' , this.isSearchByModelNo);
+    console.log('isSearchByModelNo -->', this.isSearchByModelNo);
 
     this._refreshSupplierTableHeader(this.isSearchByModelNo);
-    this._refreshSupplierTable([],this.isSearchByModelNo);
-    this.selectedModelNumbers = [];
-    this.lastSearchedModelNumbers = [];
+    this._refreshSupplierTable([], this.isSearchByModelNo);
+
     this._clearCarbonCombo(this.products.comboBox);
     this._clearCarbonCombo(this.categories.comboBox);
-    this._clearCarbonCombo(this.modelnumbers.comboBox);
+    
     this.selectedProd.item_id = undefined;
+
+    
+    this.selectedModelNumbers = [];
+    this.lastSearchedModelNumbers = [];
+    this._clearCarbonCombo(this.modelnumbers.comboBox);
+    //clear multi select
+    this.modelNumberListValues.forEach(i => i.selected = false);
+    this.modelNumberListValues = this.modelNumberListValues.map(i => i);
   }
 }
