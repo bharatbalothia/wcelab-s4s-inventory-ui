@@ -18,6 +18,7 @@ import { UploadPageComponent } from './upload/upload-page.component';
 import { FindInventoryComponent } from './find-inventory/find-inventory.component';
 import { ItemSummaryComponent } from './find-inventory/item-summary/item-summary.component';
 import { ItemDGAvailabilityComponent } from './find-inventory/item-dg-availability/item-dg-availability.component';
+import { SupplierUploadPageComponent } from './supplierupload/supplier-upload-page.component';
 
 import { BUCInvAvailabilityService } from './shared/rest-services/inventory-buc/Availability.service';
 import { AvailabilityService } from './shared/rest-services/Availability.service';
@@ -54,6 +55,10 @@ export class BucIVCovidPOCHomeModuleBundles {
     {
       prefix: './assets/buc-iv-covid-poc/i18n/home/findinventory/',
       suffix: '.json'
+    },
+    {
+      prefix: './assets/buc-iv-covid-poc/i18n/home/supplierupload/',
+      suffix: '.json'
     }
   ];
 }
@@ -68,7 +73,8 @@ export function bucIVCovidPOCHomeModuleHttpLoaderFactory(http: HttpClient) {
     UploadPageComponent,
     FindInventoryComponent,
     ItemSummaryComponent,
-    ItemDGAvailabilityComponent
+    ItemDGAvailabilityComponent,
+    SupplierUploadPageComponent
   ],
   imports: [
     CommonModule,
