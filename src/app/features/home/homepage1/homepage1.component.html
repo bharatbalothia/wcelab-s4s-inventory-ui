@@ -1,18 +1,18 @@
 
 <div class="bx--grid bx--no-gutter">
   <div class="bx--row">
-    <div class="bx--col-md-4 bx--col-sm-6">
-        <buc-checkbox [checked]="isSearchByModelNo" [attr.tid]="componentId + '-search-by-model-no'"
-            (change)="onChangeSearchByModelNo($event)">
-            {{'HOMEPAGE1.LABEL_SEARCH_BY_MODEL_NO' | translate}}
+    <div class="bx--col">
+        <buc-checkbox [checked]="isSearchByModelNo" [attr.tid]="'search-by-model-no'" (change)="onChangeSearchByModelNo($event)">
+          {{ 'HOMEPAGE1.LABEL_SEARCH_BY_MODEL_NO' | translate }}
         </buc-checkbox>
     </div>
   </div>
-  
+
+  <!-- model number search -->
   <div class="bx--row" [class.hide-div]="!isSearchByModelNo">
-    <div class="bx--col-md-4 bx--col-sm-6">
+    <div class="bx--col-md-5 bx--col-sm-2">
       <buc-combobox
-        #modelnumbers 
+        #modelnumbers
         placeholder="{{'HOMEPAGE1.LABEL_MODEL_NO' | translate}}"
         [attr.tid]="'Model-Number-selection'"
         [disabled]="modelNumberListValues.length === 0"
@@ -22,16 +22,18 @@
         (selectItemAction)="onModelNumber($event)">
       </buc-combobox>
     </div>
-    <div class="bx--col-md-4 bx--col-sm-6">
-      <buc-button 
-      [type]="'primary'" 
-      (click)="searchSuppliersByModelNumber($event)" 
-      [btnSize]="'sm'">
+    <div class="bx--col-md-3 bx--col-sm-2 d--flex-jc-flex-end d--flex-ai-flex-end">
+      <buc-button
+        [attr.tid]="'model-search-button'"
+        [type]="'primary'"
+        (click)="searchSuppliersByModelNumber($event)"
+        [btnSize]="'sm'">
         {{'HOMEPAGE1.LABEL_SEARCH_BY_MODEL_NO' | translate}}
       </buc-button>
     </div>
   </div>
 
+  <!-- cat + prod search-->
   <div class="bx--row" [class.hide-div]="isSearchByModelNo">
     <!--<div class="bx--col-md-3 bx--col-sm-1">-->
     <div class="bx--col-md-4 bx--col-sm-6">
@@ -82,7 +84,7 @@
       [showSelectionColumn]="false">
         <tbody>
           <tr>
-            <td class="no-data" colspan="3">
+            <td class="no-data" [attr.colspan]="model.header[0].length">
               <div>
                 <buc-empty-state stateMessage="{{ 'common.LABEL_noData' | translate }}"></buc-empty-state>
               </div>

@@ -331,6 +331,11 @@ img.object-fit--contain {
   align-items: center;
 }
 
+.d--flex-ai-flex-end {
+  display: flex;
+  align-items: flex-end;
+}
+
 .border-bottom--1px-solid-ui01 {
   border-bottom: 1px solid $ui-01;
 }
