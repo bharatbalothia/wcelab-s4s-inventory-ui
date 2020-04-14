@@ -27,6 +27,7 @@
         [attr.tid]="'model-search-button'"
         [type]="'primary'"
         (click)="searchSuppliersByModelNumber($event)"
+        [isDisabled]="selectedModelNumbers.length === 0"
         [btnSize]="'sm'">
         {{'HOMEPAGE1.LABEL_SEARCH_BY_MODEL_NO' | translate}}
       </buc-button>
