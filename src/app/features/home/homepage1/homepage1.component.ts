@@ -32,8 +32,8 @@ export class Homepage1Component implements OnInit {
   @ViewChild('products', { static: true }) private products: ComboboxComponent;
   @ViewChild('categories', { static: true }) private categories: ComboboxComponent;
   @ViewChild('modelnumbers', { static: true }) private modelnumbers: ComboboxComponent;
-  
-  
+
+
 
   private nlsMap: any = {
     'common.LABEL_supplierDetails': '',
@@ -60,9 +60,9 @@ export class Homepage1Component implements OnInit {
   private supplierSkuSingleton: number = 0;
 
   private isSearchByModelNo = false;
-  
+
   private lastSearchedModelNumbers;
-  
+
 
   @HostBinding('class') page = 'page-component';
   isScreenInitialized = false;
@@ -188,7 +188,7 @@ export class Homepage1Component implements OnInit {
     }));
     console.log('Model - Model Number List ', this.modelNumberListValues);
   }
-  
+
 
   /**
    * called when product-class radio clicked
@@ -246,19 +246,20 @@ export class Homepage1Component implements OnInit {
     }
   }
 
-  
+
   /**
-   * Called when user select options from 'model number' multi select combobox 
+   * Called when user select options from 'model number' multi select combobox
    * @param event Model-Number-selection container
    */
   public async onModelNumber(event) {
     this.selectedModelNumbers = event;
     console.log('selectedModelNumbers -->', this.selectedModelNumbers);
   }
+
   /**
-    * Called when user click on the button 'search by model number'
-    * @param event Model-Number-selection container
-    */
+   * Called when user click on the button 'search by model number'
+   * @param event Model-Number-selection container
+   */
   searchSuppliersByModelNumber(event) {
     if (this.lastSearchedModelNumbers.length === 0 || this.lastSearchedModelNumbers.length !== this.selectedModelNumbers.length) {
       this.lastSearchedModelNumbers = this.selectedModelNumbers;
@@ -266,18 +267,19 @@ export class Homepage1Component implements OnInit {
       const previousModelIds = [];
       const currentModelIds = [];
       this.lastSearchedModelNumbers.forEach(previousModelNumber => {
-        previousModelIds.push(previousModelNumber.id)
+        previousModelIds.push(previousModelNumber.id);
       });
       this.selectedModelNumbers.forEach(selectedModelNumber => {
         currentModelIds.push(selectedModelNumber.id);
       });
 
-      var is_same = (previousModelIds.length == currentModelIds.length) && previousModelIds.every(function (element, index) {
+      const isSame = (previousModelIds.length === currentModelIds.length) && previousModelIds.every((element, index) => {
         return element === currentModelIds[index];
       });
-      console.log('previousModelIds, currentModelIds, is_same ', previousModelIds, currentModelIds, is_same);
-      if (is_same)
+      console.log('previousModelIds, currentModelIds, is_same ', previousModelIds, currentModelIds, isSame);
+      if (isSame) {
         return;
+      }
     }
 
     this._fetchSuppliersForMultipleProductAndClass();
@@ -313,7 +315,7 @@ export class Homepage1Component implements OnInit {
   /**
    * fetch suppliers for selected product and product-class
    */
-  private async _fetchSuppliersForProductAndClass() { 
+  private async _fetchSuppliersForProductAndClass() {
     if (!this.selectedProd.item_id) {
       return;
     }
@@ -363,7 +365,7 @@ export class Homepage1Component implements OnInit {
     }
   }
 
-  
+
   /**
    * fetch suppliers for selected multiple products and product-class
    */
@@ -371,13 +373,13 @@ export class Homepage1Component implements OnInit {
     if (this.selectedModelNumbers.length === 0) {
       return;
     }
-    
+
     const searchSkuIds = [];
     this.selectedModelNumbers.forEach(modelNumber => {
-      searchSkuIds.push([modelNumber.id, modelNumber.content]); //{modelNumber.id, modelNumber.content}
-      
+      searchSkuIds.push([modelNumber.id, modelNumber.content]); // {modelNumber.id, modelNumber.content}
     });
-    console.log('searchSkuIds',searchSkuIds);
+
+    console.log('searchSkuIds', searchSkuIds);
     try {
       this.model.isLoading = true;
 
@@ -404,7 +406,7 @@ export class Homepage1Component implements OnInit {
           } else {
             availableDate = new DatePipe('en-US').transform(line.networkAvailabilities[0].earliestShipTs, 'MM/dd/yyyy');
           }
-           
+
           allSuppliersHavingSelectedProduct.push({
             supplier,
             product: { item_id: sku[0], description: sku[1]},
@@ -419,7 +421,7 @@ export class Homepage1Component implements OnInit {
 
         console.log('Model - allSuppliersHavingSelectedProduct', allSuppliersHavingSelectedProduct);
         this._refreshSupplierTable(allSuppliersHavingSelectedProduct, true);
-      };
+      }
 
     } catch (err) {
       console.log('Error fetching availability: ', err);
@@ -448,7 +450,7 @@ export class Homepage1Component implements OnInit {
           }),
         ]
       ];
-    }else{
+    } else {
       this.model.header = [
         [
           new TableHeaderItem({
@@ -783,7 +785,7 @@ export class Homepage1Component implements OnInit {
     });
   }
 
-  
+
   onChangeSearchByModelNo(event) {
     this.isSearchByModelNo = !this.isSearchByModelNo;
     console.log('isSearchByModelNo -->', this.isSearchByModelNo);
@@ -793,14 +795,14 @@ export class Homepage1Component implements OnInit {
 
     this._clearCarbonCombo(this.products.comboBox);
     this._clearCarbonCombo(this.categories.comboBox);
-    
+
     this.selectedProd.item_id = undefined;
 
-    
+
     this.selectedModelNumbers = [];
     this.lastSearchedModelNumbers = [];
     this._clearCarbonCombo(this.modelnumbers.comboBox);
-    //clear multi select
+    // clear multi select
     this.modelNumberListValues.forEach(i => i.selected = false);
     this.modelNumberListValues = this.modelNumberListValues.map(i => i);
   }
