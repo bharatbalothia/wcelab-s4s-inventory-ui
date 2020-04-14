@@ -1,10 +1,42 @@
 
 <div class="bx--grid bx--no-gutter">
-
   <div class="bx--row">
+    <div class="bx--col-md-4 bx--col-sm-6">
+        <buc-checkbox [checked]="isSearchByModelNo" [attr.tid]="componentId + '-search-by-model-no'"
+            (change)="onChangeSearchByModelNo($event)">
+            {{'HOMEPAGE1.LABEL_SEARCH_BY_MODEL_NO' | translate}}
+        </buc-checkbox>
+    </div>
+  </div>
+  
+  <div class="bx--row" [class.hide-div]="!isSearchByModelNo">
+    <div class="bx--col-md-4 bx--col-sm-6">
+      <buc-combobox
+        #modelnumbers 
+        placeholder="{{'HOMEPAGE1.LABEL_MODEL_NO' | translate}}"
+        [attr.tid]="'Model-Number-selection'"
+        [disabled]="modelNumberListValues.length === 0"
+        label="{{'HOMEPAGE1.LABEL_MODEL_NO' | translate}}"
+        [items]="modelNumberListValues"
+        type="multi"
+        (selectItemAction)="onModelNumber($event)">
+      </buc-combobox>
+    </div>
+    <div class="bx--col-md-4 bx--col-sm-6">
+      <buc-button 
+      [type]="'primary'" 
+      (click)="searchSuppliersByModelNumber($event)" 
+      [btnSize]="'sm'">
+        {{'HOMEPAGE1.LABEL_SEARCH_BY_MODEL_NO' | translate}}
+      </buc-button>
+    </div>
+  </div>
+
+  <div class="bx--row" [class.hide-div]="isSearchByModelNo">
     <!--<div class="bx--col-md-3 bx--col-sm-1">-->
     <div class="bx--col-md-4 bx--col-sm-6">
       <buc-combobox
+        #categories
         placeholder="{{'HOMEPAGE1.LABEL_CATEGORY' | translate}}"
         [attr.tid]="'Category-selection'"
         [disabled]="categoryListValues.length === 0"
