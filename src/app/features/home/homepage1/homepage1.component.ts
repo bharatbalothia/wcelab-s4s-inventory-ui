@@ -601,13 +601,9 @@ export class Homepage1Component implements OnInit {
           );
         }
       });
-
-      console.log('product AvailableQuantity from Supplier screen to display in SKU detail header section', data.Availability);
-      if(productAvailableQuantity>0){
-        data.Availability = productAvailableQuantity;
-        templateData.quantity= productAvailableQuantity;
-        console.log('product AvailableQuantity after sum up all SKU quantity', data.Availability,templateData.quantity);
-      }
+      //product AvailableQuantity after sum up all SKU's quantity
+      data.Availability = productAvailableQuantity;
+      templateData.quantity= productAvailableQuantity;
 
       const tModel = new S4STableModel();
       tModel.header = makeHeaders();
@@ -727,12 +723,10 @@ export class Homepage1Component implements OnInit {
         });
       });
       
-      console.log('product AvailableQuantity from SKU detail screen to display in Location header section', sku.availableQuantity);
-      if(productAvailableQuantity>0){
-        sku.availableQuantity = productAvailableQuantity;
-        console.log('product AvailableQuantity after sum up all SKU per location quantity', sku.availableQuantity);
-      }
+      //product AvailableQuantity after sum up all SKU per location quantity
+      sku.availableQuantity = productAvailableQuantity;
       
+    
 
       const tModel = new S4STableModel();
       tModel.header = makeHeaders();
