@@ -182,7 +182,7 @@ export class Homepage1Component implements OnInit {
     const responses4s = await this.invDistService.getProducts().toPromise();
     console.log('S4S response - getAllModelNumber ', responses4s);
     this.modelNumberListValues = getArray(responses4s).filter(p => p.category === '').map((p) => ({
-      content: p.item_id.replace(/^.+?::/, ''),
+      content: `${p.description} (${p.item_id.replace(/^.+?::/, '')})`,
       id: p.item_id,
       selected: false
     }));
@@ -253,6 +253,13 @@ export class Homepage1Component implements OnInit {
    */
   public async onModelNumber(event) {
     this.selectedModelNumbers = event;
+    const currentModelIds = [];
+    this.selectedModelNumbers.forEach(selectedModelNumber => {
+      currentModelIds.push(selectedModelNumber.id.replace(/^.+?::/, ''));
+    });
+    if(currentModelIds.length>0){
+      this.modelnumbers.comboBox.selectedValue = currentModelIds.join(', '); 
+    }
     console.log('selectedModelNumbers -->', this.selectedModelNumbers);
   }
 
@@ -481,7 +488,7 @@ export class Homepage1Component implements OnInit {
           id: i
         },
         {
-          data: record.product.item_id.replace(/^.+?::/, ''),
+          data: record.product.description,
         },
         {
           data: record.Availability,
