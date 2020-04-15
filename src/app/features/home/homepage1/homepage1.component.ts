@@ -444,7 +444,7 @@ export class Homepage1Component implements OnInit {
             sortable: true
           }),
           new TableHeaderItem({
-            data: this.translateService.instant('LIST_TABLE.HEADER_ITEMS'),
+            data: this.translateService.instant('LIST_TABLE.PRODUCT_MODEL_NUMBER'),
             sortable: true
           }),
           new TableHeaderItem({
