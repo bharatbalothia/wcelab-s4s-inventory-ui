@@ -579,10 +579,12 @@ export class Homepage1Component implements OnInit {
         await this._fetchProductsById(children);
       }
 
+      let productAvailableQuantity = 0;
       lines.forEach(line => {
         const sku = this.skuMap[line.itemId];
         console.log('S4S response Child Item ', sku);
         if (sku && sku.unit_of_measure !== undefined) {
+          productAvailableQuantity +=  line.networkAvailabilities[0].totalAvailableQuantity ; 
           collection.push(
             {
               itemId: sku.item_id,
@@ -599,6 +601,9 @@ export class Homepage1Component implements OnInit {
           );
         }
       });
+      //product AvailableQuantity after sum up all SKU's quantity
+      data.Availability = productAvailableQuantity;
+      templateData.quantity= productAvailableQuantity;
 
       const tModel = new S4STableModel();
       tModel.header = makeHeaders();
@@ -704,18 +709,24 @@ export class Homepage1Component implements OnInit {
       ).toPromise();
       console.log('IV response', ivResponse);
 
-
+      
+      let productAvailableQuantity = 0;
       const lines = getArray(ivResponse.lines);
       lines.filter(l => l.itemId === sku.itemId).forEach(line => {
         const iv = getArray(line.shipNodeAvailability).filter(l => l.totalAvailableQuantity > 0);
         iv.forEach(nodeIv => {
           const name = this.supplierLocationMap[nodeIv.shipNode] ? this.supplierLocationMap[nodeIv.shipNode].shipnode_name : undefined;
           const shipNodeLocation = name || nodeIv.shipNode;
+          productAvailableQuantity +=  nodeIv.totalAvailableQuantity ; 
           locData.push({ shipNodeLocation, sku: line.itemId, availableQuantity: nodeIv.totalAvailableQuantity,
             latitude: this.supplierLocationMap[nodeIv.shipNode].latitude, longitude: this.supplierLocationMap[nodeIv.shipNode].longitude });
         });
       });
-
+      
+      //product AvailableQuantity after sum up all SKU per location quantity
+      sku.availableQuantity = productAvailableQuantity;
+      
+    
 
       const tModel = new S4STableModel();
       tModel.header = makeHeaders();
