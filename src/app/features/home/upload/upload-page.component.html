@@ -9,11 +9,23 @@
       <p class="bx--data-table-header__description">{{ 'UPLOAD.LABEL_instructions' | translate }}</p>
       <buc-tooltip [placement]="'bottom'" [tooltipMsg]="'UPLOAD.LABEL_tooltip' | translate" [showCloseButton]="false"></buc-tooltip>
     </div>
-    <div class="bx--col d--jc--flex-end">
+  
+    <div class="bx--col d--jc--flex-end" [class.hide-div]="supplierList.length <=  1">
+      <buc-combobox
+        #supplierCombo
+        [label]="'ss.LABEL_supplier' | translate"
+        [attr.tid]="'supplier'"
+        [disabled]="supplierList.length === 0"
+        [placeholder]="'ss.LABEL_selectSupplier' | translate"
+        [items]="supplierList"
+        (selectItemAction)="onSupplier($event)">
+      </buc-combobox>
+    </div> 
+    <div class="bx--col d--jc--flex-end" > 
       <label [attr.tid]="'sku-upload'">
-        <input type="file" class="input--file" id="csvUpload" (change)="onUpload($event)" (click)="u.value=null" accept=".csv" #u>
-        <span class="bx--btn bx--btn--primary bx--btn--sm">
-          {{ 'UPLOAD.LABEL_upload' | translate }}
+        <input [disabled]="((supplierList.length === 0) || !supplier)" type="file" class="input--file" id="csvUpload" (change)="onUpload($event)" (click)="u.value=null" accept=".csv" #u>
+        <span class="bx--btn bx--btn--primary bx--btn--sm" [class.bx--btn--disabled]="((supplierList.length === 0) || !supplier)" >
+          {{ 'UPLOAD.LABEL_upload' | translate }} 
           <ibm-icon-upload16 class="bx--btn__icon"></ibm-icon-upload16>
         </span>
       </label>
