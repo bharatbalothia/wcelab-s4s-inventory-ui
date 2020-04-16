@@ -1,0 +1,16 @@
+{
+  "ss": {
+    "LABEL_supplier": "Supplier:",
+    "LABEL_searchBy": "Search by:",
+    "LABEL_location": "Location",
+    "LABEL_model": "Model no.",
+    "LABEL_search": "Search",
+    "LABEL_sku": "SKU",
+    "LABEL_supply": "Supply",
+    "LABEL_date": "Date",
+    "LABEL_selectSupplier": "Select a supplier",
+    "LABEL_selectLocation": "Select a location",
+    "LABEL_selectSKU": "Select a SKU"
+
+  }
+}

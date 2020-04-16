@@ -1,0 +1,82 @@
+<div class="screen-loading" [class.hide-div]="initialized">
+  <buc-loading [isActive]="!initialized"></buc-loading>
+</div>
+
+<div class="bx--grid bx--no-gutter" [class.hide-div]="!initialized">
+  <div class="bx--row padding-bottom--1rem" [class.hide-div]="user?.sellers?.length === 1">
+    <div class="bx--col">
+      <buc-combobox
+        #supplierCombo
+        [label]="'ss.LABEL_supplier' | translate"
+        [attr.tid]="'supplier'"
+        [disabled]="supplierList.length === 0"
+        [placeholder]="'ss.LABEL_selectSupplier' | translate"
+        [items]="supplierList"
+        (selectItemAction)="onSupplier($event)">
+      </buc-combobox>
+    </div>
+  </div>
+
+  <div class="bx--row padding-bottom--1rem">
+    <div class="bx--col">
+      <div class="bx--label">{{ 'ss.LABEL_searchBy' | translate }}</div>
+      <div class="d--flex-1 d--flex-ai-center">
+        <buc-radio-group
+          (bucRadioChange)="onSearchType($event)"
+          [radioList]="typeRadios"
+          orientation="horizontal">
+        </buc-radio-group>
+      </div>
+    </div>
+  </div>
+
+  <div class="bx--row padding-bottom--1rem">
+    <div class="bx--col">
+      <buc-combobox
+        #listCombo
+        [placeholder]="listDisplay.ph"
+        [attr.tid]="'selection'"
+        [disabled]="ddList.length === 0"
+        [label]="listDisplay.label"
+        [items]="ddList"
+        (selectItemAction)="onList($event)">
+      </buc-combobox>
+    </div>
+    <!--
+    <div class="bx--col d--flex-0 min-width--8rem d--flex-jc-flex-end d--flex-ai-flex-end">
+      <buc-button
+        type="primary"
+        btnSize="sm"
+        [attr.tid]="'search-button'"
+        (click)="onSearch($event)"
+        [isDisabled]="ddList.length === 0">
+        {{ 'ss.LABEL_search' | translate }}
+      </buc-button>
+    </div>
+    -->
+  </div>
+
+  <div class="bx--row d--flex-1 d--flex-fd-column">
+    <div class="bx--col">
+      <buc-table
+      size="sm"
+      [class.no-data]="model.totalDataLength===0"
+      [model]="model"
+      [skeleton]="model.isLoading"
+      [hasSearch]=false
+      (selectPage)="model.onSelectPage($event)"
+      (sort)="model.onSort($event)"
+      [showSelectionColumn]="false">
+        <tbody>
+          <tr>
+            <td class="no-data" [attr.colspan]="model.header[0].length">
+              <div>
+                <buc-empty-state stateMessage="{{ 'common.LABEL_noData' | translate }}"></buc-empty-state>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </buc-table>
+    </div>
+  </div>
+</div>
