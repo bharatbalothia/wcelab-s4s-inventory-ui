@@ -11,6 +11,9 @@
     "NODEID": "Node ID",
     "QUANTITY": "Quantity",
     "PRODUCTCLASS": "Product class",
-    "UOM": "Unit of measure"
+    "UOM": "Unit of measure",
+    "MODEL_NUMBER":"Model#",
+    "SHIP_BY_DATE":"Ship by date",
+    "SHIP_NODE" : "Location"
   }
 }

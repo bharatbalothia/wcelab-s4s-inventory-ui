@@ -5,6 +5,9 @@ import { COMMON, BucTableModel, BucTableHeaderModel, BucNotificationModel, BucNo
 import { TableHeaderItem } from 'carbon-components-angular';
 import { TranslateService } from '@ngx-translate/core';
 
+import { S4SSearchService } from '../shared/rest-services/S4SSearch.service';
+import { forkJoin } from 'rxjs';
+
 @Component({
   selector: 'app-upload-page',
   templateUrl: './upload-page.component.html',
@@ -18,9 +21,12 @@ export class UploadPageComponent implements OnInit {
     'UPLOAD.QUANTITY': '',
     'UPLOAD.UOM': '',
     'UPLOAD.NODEID': '',
-    'UPLOAD.PRODUCTCLASS': ''
+    'UPLOAD.PRODUCTCLASS': '',
+    'UPLOAD.MODEL_NUMBER': '',
+    'UPLOAD.SHIP_BY_DATE': '',
+    'UPLOAD.SHIP_NODE': ''
   };
-  private readonly reqCols = ['sku', 'nodeid', 'quantity'];
+  private readonly reqCols = ['modelnumber','quantity','shipbydate','shipnode']; 
   private readonly columnNames: string[] = [];
   private pages = [];
   private pgLen = BucTableModel.DEFAULT_PAGE_LEN;
@@ -29,9 +35,14 @@ export class UploadPageComponent implements OnInit {
   model: BucTableModel = new BucTableModel();
   headerModel: BucTableHeaderModel;
 
+  user: { buyers: string[], sellers: string[] };
+  supplierList: any[] = [];
+  private supplier: string;
+
   constructor(
     private translateSvc: TranslateService,
-    private suppSvc: SupplyService
+    private suppSvc: SupplyService,
+    private s4sSvc: S4SSearchService
   ) {
   }
 
@@ -41,6 +52,10 @@ export class UploadPageComponent implements OnInit {
 
   onUpload(e) {
     this._clearTable();
+    
+    if (this.supplierList.length == 1) {
+      this.onSupplier({ item: this.supplierList[0] });
+    }
     const f = e.target.files[0];
     const r = new FileReader();
     r.onload = () => this._parseFile(r);
@@ -63,6 +78,7 @@ export class UploadPageComponent implements OnInit {
   private async _init() {
     await this._initTranslations();
     this._initTable();
+    this._initUserDataAndFetchAllSuppliers();
   }
 
   private async _initTranslations() {
@@ -75,11 +91,11 @@ export class UploadPageComponent implements OnInit {
     // note these headers are literals, hence not translatable
     this.model.header = [
       [
-        new TableHeaderItem({ data: this.nlsMap['UPLOAD.SKUID'] }),
-        new TableHeaderItem({ data: this.nlsMap['UPLOAD.NODEID'] }),
+        new TableHeaderItem({ data: this.nlsMap['UPLOAD.MODEL_NUMBER'] }),
         new TableHeaderItem({ data: this.nlsMap['UPLOAD.QUANTITY'] }),
-        new TableHeaderItem({ data: this.nlsMap['UPLOAD.UOM'] }),
-        new TableHeaderItem({ data: this.nlsMap['UPLOAD.PRODUCTCLASS'] })
+        new TableHeaderItem({ data: this.nlsMap['UPLOAD.SHIP_BY_DATE'] }),
+        new TableHeaderItem({ data: this.nlsMap['UPLOAD.SHIP_NODE'] }),
+        new TableHeaderItem({ data: this.nlsMap['UPLOAD.UOM'] })
       ]
     ];
     this.model.data = [];
@@ -140,11 +156,11 @@ export class UploadPageComponent implements OnInit {
   private _loadTable(records) {
     const data = records.map(v => {
       return [
-        { data: v.sku },
-        { data: v.nodeid },
+        { data: v.modelnumber },
         { data: v.quantity },
-        { data: v.unitofmeasure || 'EACH' },
-        { data: v.productclass || '' }
+        { data: v.shipbydate || '' },
+        { data: v.shipnode },
+        { data: v.unitofmeasure || 'UNIT' }
       ];
     });
     this.model.totalDataLength = records.length;
@@ -161,21 +177,22 @@ export class UploadPageComponent implements OnInit {
     };
     let adj: AdjustSupply;
 
+    //prefix supplier id:: to itemId & shipNode
     records.forEach(v => {
       adj = {
-        itemId: v.sku,
-        shipNode: v.nodeid,
+        itemId: `${this.supplier}::${v.modelnumber}`,
+        shipNode:`${this.supplier}::${v.shipnode}`,
         changedQuantity: v.quantity,
         type: 'ONHAND',
-        productClass: v.productclass || '',
-        unitOfMeasure: v.unitofmeasure || 'EACH',
-        eta: '',
-        shipByDate: '',
+        unitOfMeasure: v.unitofmeasure || 'UNIT',
+        eta: v.shipbydate || '',
+        shipByDate: v.shipbydate || '',
       };
       supplies.push(adj);
     });
 
     try {
+      console.log('_adjustSupply call to putByTenantIdV1Supplies : params', params)
       // await this.suppSvc.postByTenantIdV1Supplies(params).toPromise();
       await this.suppSvc.putByTenantIdV1Supplies(params).toPromise();
       this._showSuccess('', this.nlsMap['UPLOAD.LABEL_uploadSuccessful']);
@@ -202,6 +219,28 @@ export class UploadPageComponent implements OnInit {
       }
     );
     this.bucNS.send([notification]);
+  }
+
+  private async _initUserDataAndFetchAllSuppliers() {
+    const getValue = (attr, def = '-') => {
+      return attr ? attr.value : def;
+    };
+
+    this.user = await this.s4sSvc.getUserInfo().toPromise();
+    console.log('S4S response - _initUserDataAndFetchAllSuppliers - getUserInfo',  this.user);
+    const obs = this.user.sellers.map(supplierId => this.s4sSvc.getContactDetailsOfSelectedSupplier({ supplierId }));
+    const suppliers = await forkJoin(obs).toPromise();
+    console.log('S4S response - _initUserDataAndFetchAllSuppliers - getContactDetailsOfSelectedSupplier combined',  suppliers);
+    this.supplierList = suppliers.map(s => ({ content: `${s.description} (${s.supplier_id})`, id: s.supplier_id }));
+    console.log('Model - _initUserDataAndFetchAllSuppliers S4S supplierList ', this.supplierList );
+    
+  }
+
+  onSupplier(e) {
+    const s = e.item ? e.item.id : undefined;
+    if (s && s !== this.supplier) {
+      this.supplier = s;
+    }  
   }
 
 }
