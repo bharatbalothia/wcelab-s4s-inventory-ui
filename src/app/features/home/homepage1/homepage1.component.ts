@@ -6,6 +6,8 @@ import { COMMON, ComboboxComponent } from '@buc/common-components';
 import { TableHeaderItem, ModalService, ComboBox } from 'carbon-components-angular';
 import { InventoryAvailabilityService } from '../shared/services/inventory-availability.service';
 import { InventoryDistributionService } from '../shared/services/inventory-distribution.service';
+import { S4SSearchService } from '../shared/rest-services/S4SSearch.service';
+import { forkJoin } from 'rxjs';
 import { getArray } from '../shared/common/functions';
 
 import { InfoModalComponent } from '../shared/components/info-modal/info-modal.component';
@@ -49,6 +51,7 @@ export class Homepage1Component implements OnInit {
   };
 
   private supplierMap: { [ key: string ]: Supplier } = {};
+  supplierList: any[] = [];
   private skuMap: { [ key: string ]: SKU } = {};
   private supplierLocationMap: { [ key: string ]: SupplierLocation } = {};
   private cat2ProdMap: { [ key: string ]: any } = {};
@@ -63,6 +66,7 @@ export class Homepage1Component implements OnInit {
 
   private lastSearchedModelNumbers;
 
+  user: { buyers: string[], sellers: string[] };
 
   @HostBinding('class') page = 'page-component';
   isScreenInitialized = false;
@@ -78,7 +82,8 @@ export class Homepage1Component implements OnInit {
     private invAvailService: InventoryAvailabilityService,
     private invDistService: InventoryDistributionService,
     private modalSvc: ModalService,
-    private translateSvc: TranslateService
+    private translateSvc: TranslateService,
+    private s4sSvc: S4SSearchService,
   ) { }
 
   ngOnInit() {
@@ -101,11 +106,49 @@ export class Homepage1Component implements OnInit {
     this._initPcTypes();
     this._initCategories();
     this._initModelNumber();
-    this._fetchAllSuppliers();
+    
+    //this._fetchAllSuppliers();
+    this._initUserDataAndFetchAllSuppliers();
     this._refreshSupplierTableHeader(false);
     this.isSearchByModelNo = false;
     this.selectedModelNumbers = [];
     this.lastSearchedModelNumbers = [];
+  }
+
+  private async _initUserDataAndFetchAllSuppliers() {
+    const getValue = (attr, def = '-') => {
+      return attr ? attr.value : def;
+    };
+
+    this.user = await this.s4sSvc.getUserInfo().toPromise();
+    console.log('S4S response - _initUserDataAndFetchAllSuppliers - getUserInfo',  this.user);
+    const obs = this.user.sellers.map(supplierId => this.s4sSvc.getContactDetailsOfSelectedSupplier({ supplierId }));
+    const suppliers = await forkJoin(obs).toPromise();
+    console.log('S4S response - _initUserDataAndFetchAllSuppliers - getContactDetailsOfSelectedSupplier combined',  suppliers);
+
+    this.supplierList = suppliers.map(s => ({ content: `${s.description} (${s.supplier_id})`, id: s.supplier_id }));
+
+    getArray(suppliers).forEach((supplier) => {
+      const attrMap: { [ key: string ]: { value: string } } = COMMON.toMap(supplier.address_attributes, 'name');
+      const s: Supplier = {
+        _id: supplier._id,
+        supplier_id: supplier.supplier_id,
+        description: supplier.description,
+        descAndNode: '',
+        supplier_type: supplier.supplier_type,
+        url: supplier.supplier_url || '',
+        contactPerson: supplier.contact_person || this.nlsMap['common.LABEL_noContact'],
+        address_line_1: getValue(attrMap.address_line_1),
+        city: getValue(attrMap.city),
+        state: getValue(attrMap.state),
+        zipcode: getValue(attrMap.zipcode),
+        country: getValue(attrMap.country),
+        phoneNumber: getValue(attrMap.phone_number, this.nlsMap['common.LABEL_noPhone'])
+      };
+      this.supplierMap[s.supplier_id] = s;
+    });
+    console.log('Model - _initUserDataAndFetchAllSuppliers S4S supplierList ', this.supplierList );
+    console.log('Model - _initUserDataAndFetchAllSuppliers S4S supplierMap ', this.supplierMap);
   }
 
   private _initPcTypes() {
