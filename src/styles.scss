@@ -239,6 +239,10 @@ ul.bx--list-box__menu.bx--multi-select {
 }
 
 
+.min-width--8rem {
+  min-width: 8rem;
+}
+
 .max-width--8rem {
   max-width: 8rem;
 }
@@ -294,6 +298,11 @@ img.object-fit--contain {
 
 .d--flex {
   display: flex;
+}
+
+.d--flex-0 {
+  display: flex;
+  flex: 0;
 }
 
 .d--flex-1 {

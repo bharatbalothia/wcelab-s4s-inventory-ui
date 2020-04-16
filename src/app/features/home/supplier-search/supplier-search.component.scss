@@ -1,0 +1,13 @@
+.bx--grid {
+  margin-left: 0;
+  margin-right: 0;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  buc-button[tid="search-button"] {
+    ::ng-deep button.bx--btn--sm {
+      min-height: 2.55rem;
+    }
+  }
+}

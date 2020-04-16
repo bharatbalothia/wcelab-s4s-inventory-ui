@@ -11,4 +11,9 @@ export class Constants {
     NEW: 'NEW',
     USED: 'USED'
   };
+
+  public static readonly SS_LOCATION = 1;
+  public static readonly SS_MODEL = 2;
+
+  public static readonly NOW = 'Now';
 }

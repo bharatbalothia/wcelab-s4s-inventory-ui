@@ -17,7 +17,6 @@ import {
     Injectable
 } from '@angular/core';
 import {
-    of as observableOf,
     throwError,
     Observable
 } from 'rxjs';
@@ -26,52 +25,32 @@ import { BucCommBEHttpWrapperService, BucSvcAngularStaticAppInfoFacadeUtil } fro
 import { Constants } from '../common/constants';
 
 type PostSupplierInputList = {
-    'supplier' ? : Array < PostSupplierInput >
-        | PostSupplierInput
-
+    'supplier' ? : Array < PostSupplierInput > | PostSupplierInput
 };
-    
+
 type PostSupplierInput = {
     'supplier_id': string
-
     'description' ? : string
-
     'supplier_type' ? : string
-
     'supplier_mailslot_id' ? : string
-
     'tenant_id': string
-
     'supplier_url' ? : string
-
     'contact_email' ? : string
-
     'contact_person': string
-
     'supplier_twitter': string
-
-    'address_attributes' ? : Array < AddressAttrInput >
-        | AddressAttrInput
-
-
+    'address_attributes' ? : Array < AddressAttrInput > | AddressAttrInput
 };
 type AddressAttrInput = {
     'name' ? : string
-
     'value' ? : string
-
 };
 type AuthenticationError = {
     'error' ? : string
-
     'error_description' ? : string
-
 };
 type AccessForbiddenError = {
     'error' ? : string
-
     'error_description' ? : string
-
 };
 
 
@@ -238,6 +217,11 @@ class S4SSearchService {
       return this.post(`suppliers`, body, parameters);
     }
 
+    public getUserInfo(): Observable<any> {
+      const userId = BucSvcAngularStaticAppInfoFacadeUtil.getCurrentUser().userName;
+      return this.invoke(`users/${userId}`, {});
+    }
+
     private invoke(api: string, parameters: SvcParameters, type: string = Constants.GET): Observable<any> {
       const headers = {
         Authorization: 'Basic N21jNGZyN2tqdzh6cnE3a2loYmZpYTV5cThkOHJxNjU6dDg5czk1amJqbm1lZmQyZHhzNDN1bmwxcjJwNnp1ZjA=',
@@ -285,5 +269,5 @@ export {
   AddressAttrInput,
   AuthenticationError,
   AccessForbiddenError
-  
+
 }

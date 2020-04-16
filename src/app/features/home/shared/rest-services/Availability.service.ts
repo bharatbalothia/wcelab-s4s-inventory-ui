@@ -656,7 +656,7 @@ class AvailabilityService {
         useMocks ? : boolean,
         productId ? : string,
         supplierId ? : string ,
-        itemId ?: string, 
+        itemId ?: string,
         dgId ?: string
     }){
 
@@ -670,7 +670,7 @@ class AvailabilityService {
         }else{
             path = '/{tenantId}/v1/availability/'+parameters['itemId'] +'/network/'+parameters['dgId'] ;
         }
-        
+
         const headers = parameters.$headers || {}
         headers['Accept'] = 'application/json';
         headers['Content-Type'] = 'application/json';
@@ -739,7 +739,8 @@ class AvailabilityService {
             useMocks = true
         }
 
-        let path = '/{tenantId}/v1/availability/'+parameters['productId']+'/node'
+        const suffix = parameters.productId ? `${parameters.productId}/node` : 'node';
+        let path = `/{tenantId}/v1/availability/${suffix}`
 
         const headers = parameters.$headers || {}
         headers['Accept'] = 'application/json';
