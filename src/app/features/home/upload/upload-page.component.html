@@ -23,8 +23,8 @@
     </div> 
     <div class="bx--col d--jc--flex-end" > 
       <label [attr.tid]="'sku-upload'">
-        <input [disabled]="supplierList.length === 0" type="file" class="input--file" id="csvUpload" (change)="onUpload($event)" (click)="u.value=null" accept=".csv" #u>
-        <span class="bx--btn bx--btn--primary bx--btn--sm" [class.bx--btn--disabled]="supplierList.length === 0" >
+        <input [disabled]="((supplierList.length === 0) || !supplier)" type="file" class="input--file" id="csvUpload" (change)="onUpload($event)" (click)="u.value=null" accept=".csv" #u>
+        <span class="bx--btn bx--btn--primary bx--btn--sm" [class.bx--btn--disabled]="((supplierList.length === 0) || !supplier)" >
           {{ 'UPLOAD.LABEL_upload' | translate }} 
           <ibm-icon-upload16 class="bx--btn__icon"></ibm-icon-upload16>
         </span>
