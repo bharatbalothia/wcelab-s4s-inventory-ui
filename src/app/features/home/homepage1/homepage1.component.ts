@@ -10,6 +10,7 @@ import { S4SSearchService } from '../shared/rest-services/S4SSearch.service';
 import { forkJoin } from 'rxjs';
 import { getArray } from '../shared/common/functions';
 
+
 import { InfoModalComponent } from '../shared/components/info-modal/info-modal.component';
 import { Supplier } from '../shared/common/supplier';
 import { SupplierLocation } from '../shared/common/supplierLocation';
@@ -34,11 +35,8 @@ export class Homepage1Component implements OnInit {
   @ViewChild('products', { static: true }) private products: ComboboxComponent;
   @ViewChild('categories', { static: true }) private categories: ComboboxComponent;
   @ViewChild('modelnumbers', { static: true }) private modelnumbers: ComboboxComponent;
-<<<<<<< HEAD
   @ViewChild('suppliers', { static: true }) private suppliers: ComboboxComponent;
-
-=======
->>>>>>> parent of de577ed... Merge pull request #76 from wcelab/#63
+  
 
 
 
@@ -67,10 +65,10 @@ export class Homepage1Component implements OnInit {
   private supplierSingleton: number = 0;
   private supplierSkuSingleton: number = 0;
 
-  private isSearchByModelNo = false;
-
+  isSearchByModelNo = false;
   private lastSearchedModelNumbers;
-
+  private lastSelectedSuppliers ;
+  
 
   user: { buyers: string[], sellers: string[] };
 
@@ -80,15 +78,11 @@ export class Homepage1Component implements OnInit {
   categoryListValues = [];
   modelNumberListValues = [];
   selectedModelNumbers = [];
-<<<<<<< HEAD
-
   selectedSuppliers = [];
 
-=======
->>>>>>> parent of de577ed... Merge pull request #76 from wcelab/#63
   productListValues = [];
   pcRadios = [];
-
+  initialized: boolean = false;
   constructor(
     private translateService: TranslateService,
     private invAvailService: InventoryAvailabilityService,
@@ -117,24 +111,23 @@ export class Homepage1Component implements OnInit {
     this.model.setPgDefaults();
     this._initPcTypes();
     this._initCategories();
-<<<<<<< HEAD
-
    
-=======
-    this._initModelNumber();
->>>>>>> parent of de577ed... Merge pull request #76 from wcelab/#63
     
     //this._fetchAllSuppliers();
-    this._initUserDataAndFetchAllSuppliers();
+    forkJoin(    
+    this._initUserDataAndFetchAllSuppliers()
+    ).subscribe(() => {
+      this._initModelNumber();
+      this.initialized = true;
+    })
+   
+
     this._refreshSupplierTableHeader(false);
     this.isSearchByModelNo = false;
     this.selectedModelNumbers = [];
+    this.selectedSuppliers = [];
     this.lastSearchedModelNumbers = [];
-<<<<<<< HEAD
     this.lastSelectedSuppliers = [];
-
-=======
->>>>>>> parent of de577ed... Merge pull request #76 from wcelab/#63
   }
 
   private async _initUserDataAndFetchAllSuppliers() {
@@ -243,8 +236,6 @@ export class Homepage1Component implements OnInit {
     this.isScreenInitialized = true;
   }
 
-<<<<<<< HEAD
-
   private async _initModelNumber() { 
 //    const responses4s = await this.invDistService.getProducts().toPromise();
     const supplierIds = Object.keys(this.supplierMap);
@@ -256,17 +247,6 @@ export class Homepage1Component implements OnInit {
         id: p.item_id,
         selected: false
       }));
-
-=======
-  private async _initModelNumber() {
-    const responses4s = await this.invDistService.getProducts().toPromise();
-    console.log('S4S response - getAllModelNumber ', responses4s);
-    this.modelNumberListValues = getArray(responses4s).filter(p => p.category === '').map((p) => ({
-      content: `${p.description} (${p.item_id.replace(/^.+?::/, '')})`,
-      id: p.item_id,
-      selected: false
-    }));
->>>>>>> parent of de577ed... Merge pull request #76 from wcelab/#63
     console.log('Model - Model Number List ', this.modelNumberListValues);
   }
 
@@ -338,21 +318,12 @@ export class Homepage1Component implements OnInit {
     this.selectedModelNumbers.forEach(selectedModelNumber => {
       currentModelIds.push(selectedModelNumber.id.replace(/^.+?::/, ''));
     });
-<<<<<<< HEAD
     this.modelnumbers.comboBox.selectedValue = currentModelIds.join(', ');
 
-
-=======
-    if(currentModelIds.length>0){
-      this.modelnumbers.comboBox.selectedValue = currentModelIds.join(', '); 
-    }
->>>>>>> parent of de577ed... Merge pull request #76 from wcelab/#63
     console.log('selectedModelNumbers -->', this.selectedModelNumbers);
   }
 
   /**
-<<<<<<< HEAD
-
    * Called when user change supplier dropdown (Search by Model# view). 
    * Selected Supplier ids will be used as a filter while making network availability IV call
    * @param event supplier-id-selection container
@@ -371,37 +342,32 @@ export class Homepage1Component implements OnInit {
   
   
   /**
-
-=======
->>>>>>> parent of de577ed... Merge pull request #76 from wcelab/#63
    * Called when user click on the button 'search by model number'
    * @param event Model-Number-selection container
    */
   searchSuppliersByModelNumber(event) {
+    let isModelSelectionSame = false;
+    let isSupplierSelectionSame = false;
+
     if (this.lastSearchedModelNumbers.length === 0 || this.lastSearchedModelNumbers.length !== this.selectedModelNumbers.length) {
       this.lastSearchedModelNumbers = this.selectedModelNumbers;
     } else {
-      const previousModelIds = [];
-      const currentModelIds = [];
-      this.lastSearchedModelNumbers.forEach(previousModelNumber => {
-        previousModelIds.push(previousModelNumber.id);
-      });
-      this.selectedModelNumbers.forEach(selectedModelNumber => {
-        currentModelIds.push(selectedModelNumber.id);
-      });
+      isModelSelectionSame = this.isSelectionUnchanged(this.lastSearchedModelNumbers, this.selectedModelNumbers);
+    }
 
-      const isSame = (previousModelIds.length === currentModelIds.length) && previousModelIds.every((element, index) => {
-        return element === currentModelIds[index];
-      });
-      console.log('previousModelIds, currentModelIds, is_same ', previousModelIds, currentModelIds, isSame);
-      if (isSame) {
-        return;
-      }
+    if (this.lastSelectedSuppliers.length === 0 || this.lastSelectedSuppliers.length !== this.selectedSuppliers.length) {
+      this.lastSelectedSuppliers = this.selectedSuppliers;
+    } else {
+      isSupplierSelectionSame = this.isSelectionUnchanged(this.lastSelectedSuppliers, this.selectedSuppliers);
+    }
+
+    if (isModelSelectionSame && isSupplierSelectionSame) {
+      return;
     }
 
     this._fetchSuppliersForMultipleProductAndClass();
+  }
 
-<<<<<<< HEAD
   private isSelectionUnchanged(previousSelections, currentSelections): boolean {
     const previousIds = [];
     const currentIds = [];
@@ -418,9 +384,6 @@ export class Homepage1Component implements OnInit {
     console.log('previousIds, currentIds, isSame ', previousIds, currentIds, isSame);
 
     return isSame;
-
-=======
->>>>>>> parent of de577ed... Merge pull request #76 from wcelab/#63
   }
 
   /**
@@ -512,20 +475,31 @@ export class Homepage1Component implements OnInit {
     }
 
     const searchSkuIds = [];
+    const selectedSupplierIds = [];
     this.selectedModelNumbers.forEach(modelNumber => {
-      searchSkuIds.push([modelNumber.id, modelNumber.content]); // {modelNumber.id, modelNumber.content}
+      searchSkuIds.push([modelNumber.id, modelNumber.content]);  
     });
 
-    console.log('searchSkuIds', searchSkuIds);
-    try {
+    
+    this.selectedSuppliers.forEach(supplier => {
+      selectedSupplierIds.push(supplier.id); 
+    });
+
+     try {
       this.model.isLoading = true;
 
       const allSuppliersHavingSelectedProduct = [];
-      const suppliers = Object.keys(this.supplierMap);
+      let supplierIds = Object.keys(this.supplierMap)
 
+       //filter suppliers based on selection from supplier dropdown. 
+       // In case if entitled to one supplier, then it is available in supplierIds
+      if(selectedSupplierIds.length>0){
+        supplierIds = selectedSupplierIds.slice();
+      }
+      console.log('searchSkuIds , supplierIds, selectedSupplierIds', searchSkuIds, supplierIds, selectedSupplierIds);
       for (const sku of searchSkuIds) {
         const resp = await this.invAvailService.getConsolidatedInventorySameUOMSamePC(
-          sku[0], suppliers, 'UNIT', this.selectedPc
+          sku[0], supplierIds, 'UNIT', this.selectedPc
         ).toPromise();
         console.log('IV response ', resp, sku);
 
@@ -559,7 +533,6 @@ export class Homepage1Component implements OnInit {
         console.log('Model - allSuppliersHavingSelectedProduct', allSuppliersHavingSelectedProduct);
         this._refreshSupplierTable(allSuppliersHavingSelectedProduct, true);
       }
-
 
     } catch (err) {
       console.log('Error fetching availability: ', err);
@@ -954,5 +927,12 @@ export class Homepage1Component implements OnInit {
     // clear multi select
     this.modelNumberListValues.forEach(i => i.selected = false);
     this.modelNumberListValues = this.modelNumberListValues.map(i => i);
+    this.selectedSuppliers = [];
+    this.lastSelectedSuppliers = [];
+    this._clearCarbonCombo(this.suppliers.comboBox);
+    // clear multi select
+    this.supplierList.forEach(i => i.selected = false);
+    this.supplierList = this.supplierList.map(i => i);
+    
   }
 }
