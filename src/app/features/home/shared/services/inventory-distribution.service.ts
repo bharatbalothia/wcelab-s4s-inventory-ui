@@ -39,29 +39,25 @@ export class InventoryDistributionService {
   }
 
   public getProducts(): Observable<any> {
-    return this.s4sSvc.getProducts(  {} )
-    .pipe( map(r => r) );
+    return this.s4sSvc.getProducts(  {} );
   }
 
   public getEntitledProductsBySupplierIds(supplierIds: string[]): Observable<any> {
     const reqPayLoad = { supplier_ids: supplierIds };
-    return this.s4sSvc.getEntitledProductsBySupplierIds(  { body: reqPayLoad} )
-    .pipe( map(r => r) );
+    return this.s4sSvc.getEntitledProductsBySupplierIds(  { body: reqPayLoad} ) ;
   }
 
   public getAllCategories(): Observable<any> {
-    return this.s4sSvc.getAllCategories({})
-    .pipe( map(r => r) );
+    return this.s4sSvc.getAllCategories({});
   }
+  
 
   public getAllProductsByCategoryId(selectedCategoryId : string): Observable<any> {
-    return this.s4sSvc.getAllProductsByCategoryId({categoryId : selectedCategoryId})
-    .pipe( map(r => r) );
+    return this.s4sSvc.getAllProductsByCategoryId({categoryId : selectedCategoryId});
   }
 
   public fetchAllSuppliers(): Observable<any> {
-    return this.s4sSvc.fetchAllSuppliers({} )
-    .pipe( map(r => r) );
+    return this.s4sSvc.fetchAllSuppliers({} );
   }
 
   public fetchProductList(productIds: string[]): Observable<any> {
@@ -71,20 +67,17 @@ export class InventoryDistributionService {
   }
 
   public getContactDetailsOfSelectedSupplier(supplierId : string): Observable<any> {
-    return this.s4sSvc.getContactDetailsOfSelectedSupplier({supplierId} )
-    .pipe( map(r => r) );
+    return this.s4sSvc.getContactDetailsOfSelectedSupplier({supplierId} );
   }
 
   public getChildItemDetails(childItemId : string): Observable<any> {
     return this.s4sSvc.getItemDetails({childItemId} )
-    .pipe( map(r => r) )
     .pipe(catchError((err) => observableOf([])));
   }
 
   public getByTenantIdV1ConfigurationShipNodes(): Observable<any> {
     const tenantId = BucSvcAngularStaticAppInfoFacadeUtil.getInventoryTenantId();
-    return this.shipNodeSvc.getByTenantIdV1ConfigurationShipNodes({ tenantId } )
-    .pipe( map(r => r) );
+    return this.shipNodeSvc.getByTenantIdV1ConfigurationShipNodes({ tenantId } );
   }
 
   public getShipNodesForSupplier(supplierId: string): Observable<any> {

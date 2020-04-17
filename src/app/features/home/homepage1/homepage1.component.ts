@@ -107,20 +107,14 @@ export class Homepage1Component implements OnInit {
     keys.forEach(k => this.nlsMap[k] = json[k]);
   }
 
-  private _initializePage() {
+  private async _initializePage() {
     this.model.setPgDefaults();
     this._initPcTypes();
     this._initCategories();
-   
-    
-    //this._fetchAllSuppliers();
-    forkJoin(    
-    this._initUserDataAndFetchAllSuppliers()
-    ).subscribe(() => {
-      this._initModelNumber();
-      this.initialized = true;
-    })
-   
+
+    await this._initUserDataAndFetchAllSuppliers();
+    await this._initModelNumber();
+    this.initialized = true;
 
     this._refreshSupplierTableHeader(false);
     this.isSearchByModelNo = false;
@@ -313,14 +307,10 @@ export class Homepage1Component implements OnInit {
    * @param event Model-Number-selection container
    */
   public async onModelNumber(event) {
-    this.selectedModelNumbers = event;
-    const currentModelIds = [];
-    this.selectedModelNumbers.forEach(selectedModelNumber => {
-      currentModelIds.push(selectedModelNumber.id.replace(/^.+?::/, ''));
-    });
+    this.selectedModelNumbers = event; 
+    const currentModelIds = this.selectedModelNumbers.map(selectedModelNumber => selectedModelNumber.id.replace(/^.+?::/, ''));
     this.modelnumbers.comboBox.selectedValue = currentModelIds.join(', ');
-
-    console.log('selectedModelNumbers -->', this.selectedModelNumbers);
+    console.log('selectedModelNumbers --->', this.selectedModelNumbers);
   }
 
   /**
@@ -330,16 +320,10 @@ export class Homepage1Component implements OnInit {
    */
   public async onSupplierDropdownChange(event) {
     this.selectedSuppliers = event;
-    const supplierNames = [];
-    this.selectedSuppliers.forEach(supplierId => {
-      //supplierIds.push(supplierId.id.replace(/^.+?::/, ''));
-      supplierNames.push(supplierId.content.replace(/^.+?::/, ''));
-    });
+    const supplierNames = this.selectedSuppliers.map(s => s.content);
     this.suppliers.comboBox.selectedValue = supplierNames.join(', ');
-
     console.log('applied filter on supplier  -->', this.selectedSuppliers);
   }
-  
   
   /**
    * Called when user click on the button 'search by model number'
@@ -369,16 +353,14 @@ export class Homepage1Component implements OnInit {
   }
 
   private isSelectionUnchanged(previousSelections, currentSelections): boolean {
-    const previousIds = [];
-    const currentIds = [];
-    previousSelections.forEach(previousSelection => {
-      previousIds.push(previousSelection.id);
-    });
-    currentSelections.forEach(currentSelection => {
-      currentIds.push(currentSelection.id);
-    });
 
-    const isSame = (previousIds.length === currentIds.length) && previousIds.every((element, index) => {
+    const previousIds = previousSelections.map(previousSelection => previousSelection.id);
+    const currentIds = currentSelections.map(currentSelection => currentSelection.id);
+
+    if (previousIds.length !== currentIds.length) {
+      return false;
+    }
+    const isSame = previousIds.every((element, index) => {
       return element === currentIds[index];
     });
     console.log('previousIds, currentIds, isSame ', previousIds, currentIds, isSame);
@@ -477,23 +459,23 @@ export class Homepage1Component implements OnInit {
     const searchSkuIds = [];
     const selectedSupplierIds = [];
     this.selectedModelNumbers.forEach(modelNumber => {
-      searchSkuIds.push([modelNumber.id, modelNumber.content]);  
+      searchSkuIds.push([modelNumber.id, modelNumber.content]);
     });
 
-    
+
     this.selectedSuppliers.forEach(supplier => {
-      selectedSupplierIds.push(supplier.id); 
+      selectedSupplierIds.push(supplier.id);
     });
 
-     try {
+    try {
       this.model.isLoading = true;
 
       const allSuppliersHavingSelectedProduct = [];
-      let supplierIds = Object.keys(this.supplierMap)
+      let supplierIds = Object.keys(this.supplierMap);
 
-       //filter suppliers based on selection from supplier dropdown. 
-       // In case if entitled to one supplier, then it is available in supplierIds
-      if(selectedSupplierIds.length>0){
+      // filter suppliers based on selection from supplier dropdown. 
+      // In case if entitled to one supplier, then it is available in supplierIds
+      if (selectedSupplierIds.length > 0) {
         supplierIds = selectedSupplierIds.slice();
       }
       console.log('searchSkuIds , supplierIds, selectedSupplierIds', searchSkuIds, supplierIds, selectedSupplierIds);
@@ -520,7 +502,7 @@ export class Homepage1Component implements OnInit {
 
           allSuppliersHavingSelectedProduct.push({
             supplier,
-            product: { item_id: sku[0], description: sku[1]},
+            product: { item_id: sku[0], description: sku[1] },
             productClass: this.selectedPc,
             Availability: line.networkAvailabilities[0].totalAvailableQuantity,
             Date: availableDate
@@ -705,7 +687,7 @@ export class Homepage1Component implements OnInit {
           );
         }
       });
-      //product AvailableQuantity after sum up all SKU's quantity
+      // product AvailableQuantity after sum up all SKU's quantity
       data.Availability = productAvailableQuantity;
       templateData.quantity= productAvailableQuantity;
 
@@ -827,7 +809,7 @@ export class Homepage1Component implements OnInit {
         });
       });
       
-      //product AvailableQuantity after sum up all SKU per location quantity
+      // product AvailableQuantity after sum up all SKU per location quantity
       sku.availableQuantity = productAvailableQuantity;
       
     
