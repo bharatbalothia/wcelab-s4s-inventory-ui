@@ -36,7 +36,7 @@ export class Homepage1Component implements OnInit {
   @ViewChild('categories', { static: true }) private categories: ComboboxComponent;
   @ViewChild('modelnumbers', { static: true }) private modelnumbers: ComboboxComponent;
   @ViewChild('suppliers', { static: true }) private suppliers: ComboboxComponent;
-  
+
 
 
 
@@ -68,7 +68,7 @@ export class Homepage1Component implements OnInit {
   isSearchByModelNo = false;
   private lastSearchedModelNumbers;
   private lastSelectedSuppliers ;
-  
+
 
   user: { buyers: string[], sellers: string[] };
 
@@ -230,7 +230,7 @@ export class Homepage1Component implements OnInit {
     this.isScreenInitialized = true;
   }
 
-  private async _initModelNumber() { 
+  private async _initModelNumber() {
 //    const responses4s = await this.invDistService.getProducts().toPromise();
     const supplierIds = Object.keys(this.supplierMap);
     const responses4s = await this.invDistService.getEntitledProductsBySupplierIds(supplierIds).toPromise();
@@ -307,14 +307,14 @@ export class Homepage1Component implements OnInit {
    * @param event Model-Number-selection container
    */
   public async onModelNumber(event) {
-    this.selectedModelNumbers = event; 
+    this.selectedModelNumbers = event;
     const currentModelIds = this.selectedModelNumbers.map(selectedModelNumber => selectedModelNumber.id.replace(/^.+?::/, ''));
     this.modelnumbers.comboBox.selectedValue = currentModelIds.join(', ');
     console.log('selectedModelNumbers --->', this.selectedModelNumbers);
   }
 
   /**
-   * Called when user change supplier dropdown (Search by Model# view). 
+   * Called when user change supplier dropdown (Search by Model# view).
    * Selected Supplier ids will be used as a filter while making network availability IV call
    * @param event supplier-id-selection container
    */
@@ -324,7 +324,7 @@ export class Homepage1Component implements OnInit {
     this.suppliers.comboBox.selectedValue = supplierNames.join(', ');
     console.log('applied filter on supplier  -->', this.selectedSuppliers);
   }
-  
+
   /**
    * Called when user click on the button 'search by model number'
    * @param event Model-Number-selection container
@@ -473,7 +473,7 @@ export class Homepage1Component implements OnInit {
       const allSuppliersHavingSelectedProduct = [];
       let supplierIds = Object.keys(this.supplierMap);
 
-      // filter suppliers based on selection from supplier dropdown. 
+      // filter suppliers based on selection from supplier dropdown.
       // In case if entitled to one supplier, then it is available in supplierIds
       if (selectedSupplierIds.length > 0) {
         supplierIds = selectedSupplierIds.slice();
@@ -670,7 +670,7 @@ export class Homepage1Component implements OnInit {
         const sku = this.skuMap[line.itemId];
         console.log('S4S response Child Item ', sku);
         if (sku && sku.unit_of_measure !== undefined) {
-          productAvailableQuantity +=  line.networkAvailabilities[0].totalAvailableQuantity ; 
+          productAvailableQuantity +=  line.networkAvailabilities[0].totalAvailableQuantity ;
           collection.push(
             {
               itemId: sku.item_id,
@@ -689,7 +689,7 @@ export class Homepage1Component implements OnInit {
       });
       // product AvailableQuantity after sum up all SKU's quantity
       data.Availability = productAvailableQuantity;
-      templateData.quantity= productAvailableQuantity;
+      templateData.quantity = productAvailableQuantity;
 
       const tModel = new S4STableModel();
       tModel.header = makeHeaders();
@@ -795,7 +795,7 @@ export class Homepage1Component implements OnInit {
       ).toPromise();
       console.log('IV response', ivResponse);
 
-      
+
       let productAvailableQuantity = 0;
       const lines = getArray(ivResponse.lines);
       lines.filter(l => l.itemId === sku.itemId).forEach(line => {
@@ -803,16 +803,16 @@ export class Homepage1Component implements OnInit {
         iv.forEach(nodeIv => {
           const name = this.supplierLocationMap[nodeIv.shipNode] ? this.supplierLocationMap[nodeIv.shipNode].shipnode_name : undefined;
           const shipNodeLocation = name || nodeIv.shipNode;
-          productAvailableQuantity +=  nodeIv.totalAvailableQuantity ; 
+          productAvailableQuantity +=  nodeIv.totalAvailableQuantity ;
           locData.push({ shipNodeLocation, sku: line.itemId, availableQuantity: nodeIv.totalAvailableQuantity,
             latitude: this.supplierLocationMap[nodeIv.shipNode].latitude, longitude: this.supplierLocationMap[nodeIv.shipNode].longitude });
         });
       });
-      
+
       // product AvailableQuantity after sum up all SKU per location quantity
       sku.availableQuantity = productAvailableQuantity;
-      
-    
+
+
 
       const tModel = new S4STableModel();
       tModel.header = makeHeaders();
@@ -915,6 +915,6 @@ export class Homepage1Component implements OnInit {
     // clear multi select
     this.supplierList.forEach(i => i.selected = false);
     this.supplierList = this.supplierList.map(i => i);
-    
+
   }
 }

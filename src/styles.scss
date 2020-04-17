@@ -296,6 +296,11 @@ img.object-fit--contain {
   margin-bottom: 0;
 }
 
+.margin-right--1rem {
+  margin-right: 1rem;
+}
+
+
 .d--flex {
   display: flex;
 }
@@ -328,6 +333,11 @@ img.object-fit--contain {
 .d--flex-jc-space-evenly {
   display: flex;
   justify-content: space-evenly;
+}
+
+.d--flex-jc-stretch {
+  display: flex;
+  justify-content: stretch;
 }
 
 .d--flex-jc-flex-end {
