@@ -13,31 +13,35 @@
 
   <!-- model number search -->
   <div class="bx--row" [class.hide-div]="!isSearchByModelNo">
-    <div class="bx--col-md-5 bx--col-sm-2" [class.hide-div]="supplierList.length <=  1"> 
-      <buc-combobox
-        #suppliers
-        placeholder="{{'HOMEPAGE1.LABEL_SUPPLIER' | translate}}"
-        [attr.tid]="'supplier-id-selection'"
-        [disabled]="supplierList.length === 0"
-        label="{{'HOMEPAGE1.LABEL_SUPPLIER' | translate}}"
-        [items]="supplierList"
-        type="multi"
-        (selectItemAction)="onSupplierDropdownChange($event)">
-      </buc-combobox>
-    </div>      
-    <div class="bx--col-md-5 bx--col-sm-2">
-      <buc-combobox
-        #modelnumbers
-        placeholder="{{'HOMEPAGE1.LABEL_MODEL_NO' | translate}}"
-        [attr.tid]="'Model-Number-selection'"
-        [disabled]="modelNumberListValues.length === 0"
-        label="{{'HOMEPAGE1.LABEL_MODEL_NO' | translate}}"
-        [items]="modelNumberListValues"
-        type="multi"
-        (selectItemAction)="onModelNumber($event)">
-      </buc-combobox>
-    </div>
-    <div class="bx--col-md-3 bx--col-sm-2 d--flex-jc-flex-end d--flex-ai-flex-end">
+    
+    <div class="bx--col-md-6 bx--col-sm-1 d--flex-jc-space-evenly"> 
+      <div class="bx--col-md-3 bx--col-sm-1" [class.hide-div]="supplierList.length <=  1"> 
+        <buc-combobox
+          #suppliers
+          placeholder="{{'HOMEPAGE1.LABEL_SUPPLIER' | translate}}"
+          [attr.tid]="'supplier-id-selection'"
+          [disabled]="supplierList.length === 0"
+          label="{{'HOMEPAGE1.LABEL_SUPPLIER' | translate}}"
+          [items]="supplierList"
+          type="multi"
+          (selectItemAction)="onSupplierDropdownChange($event)">
+        </buc-combobox>
+      </div>      
+      <div class="bx--col-md-3 bx--col-sm-1">
+        <buc-combobox
+          #modelnumbers
+          placeholder="{{'HOMEPAGE1.LABEL_MODEL_NO' | translate}}"
+          [attr.tid]="'Model-Number-selection'"
+          [disabled]="modelNumberListValues.length === 0"
+          label="{{'HOMEPAGE1.LABEL_MODEL_NO' | translate}}"
+          [items]="modelNumberListValues"
+          type="multi"
+          (selectItemAction)="onModelNumber($event)">
+        </buc-combobox>
+      </div>
+    </div> 
+     
+    <div class="bx--col-md-2 bx--col-sm-1 d--flex-jc-flex-end d--flex-ai-flex-end">
       <buc-button
         [attr.tid]="'model-search-button'"
         [type]="'primary'"
