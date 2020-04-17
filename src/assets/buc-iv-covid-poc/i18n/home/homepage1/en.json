@@ -9,9 +9,7 @@
         "LABEL_FETCH_SUPPLIER_DETAILS" : "Supplier Record",
         "LABEL_FETCH_SUPPLIER_LOCATION_DETAILS" : "Suppler Location",
         "LABEL_SEARCH_BY_MODEL_NO": "Search by Model#",
-        "LABEL_MODEL_NO" : "Model#",
-        "LABEL_SUPPLIER" : "Supplier:"
-
+        "LABEL_MODEL_NO" : "Model#"
     },
     "LIST_TABLE": {
         "HEADER_ITEMS": "SKU ID",

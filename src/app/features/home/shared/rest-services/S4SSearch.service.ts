@@ -89,35 +89,6 @@ class S4SSearchService {
       return this.invoke(`products`, parameters);
     }
 
-  public getEntitledProductsBySupplierIds(parameters: {
-    'tenantId'?: string,
-    'distributionGroupId'?: string,
-    'transactionId'?: string,
-    $queryParameters?: any,
-    $headers?: any,
-    $cache?: any,
-    $refresh?: any,
-    useMocks?: boolean,
-    'body': any,
-  }): Observable<any> {
-    
-
-    let body = {};
-    // allow use of param with or without underscore
-    parameters['body'] = parameters['body'] || parameters['body'];
-
-    if (parameters['body'] !== undefined) {
-      body = parameters['body'];
-    }
-
-    if (parameters['body'] === undefined) {
-      return throwError(new Error('Missing required  parameter: body'));
-    }
-    return this.post(`suppliers/products`, body, parameters);
-    console.log('product')
-  }
-
-    
     /**
     * Retrieves all categories present in S4S
     * @method

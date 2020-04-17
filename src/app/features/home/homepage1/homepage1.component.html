@@ -1,8 +1,5 @@
-<div class="screen-loading" [class.hide-div]="initialized">
-  <buc-loading [isActive]="!initialized"></buc-loading>
-</div>
 
-<div class="bx--grid bx--no-gutter" [class.hide-div]="!initialized"> 
+<div class="bx--grid bx--no-gutter">
   <div class="bx--row">
     <div class="bx--col">
         <buc-checkbox [checked]="isSearchByModelNo" [attr.tid]="'search-by-model-no'" (change)="onChangeSearchByModelNo($event)">
@@ -13,6 +10,7 @@
 
   <!-- model number search -->
   <div class="bx--row" [class.hide-div]="!isSearchByModelNo">
+<<<<<<< HEAD
     <div class="bx--col-md-5 bx--col-sm-2" [class.hide-div]="supplierList.length <=  1"> 
       <buc-combobox
         #suppliers
@@ -25,6 +23,20 @@
         (selectItemAction)="onSupplierDropdownChange($event)">
       </buc-combobox>
     </div>      
+=======
+    <div class="bx--col-md-5 bx--col-sm-2">
+      <buc-combobox
+        #modelnumbers
+        placeholder="{{'HOMEPAGE1.LABEL_MODEL_NO' | translate}}"
+        [attr.tid]="'Model-Number-selection'"
+        [disabled]="modelNumberListValues.length === 0"
+        label="{{'HOMEPAGE1.LABEL_MODEL_NO' | translate}}"
+        [items]="modelNumberListValues"
+        type="multi"
+        (selectItemAction)="onModelNumber($event)">
+      </buc-combobox>
+    </div>
+>>>>>>> parent of de577ed... Merge pull request #76 from wcelab/#63
     <div class="bx--col-md-3 bx--col-sm-2 d--flex-jc-flex-end d--flex-ai-flex-end">
       <buc-button
         [attr.tid]="'model-search-button'"

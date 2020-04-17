@@ -37,7 +37,7 @@ export class UploadPageComponent implements OnInit {
 
   user: { buyers: string[], sellers: string[] };
   supplierList: any[] = [];
-  supplier: string;
+  private supplier: string;
 
 
   constructor(
