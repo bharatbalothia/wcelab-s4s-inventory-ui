@@ -1,0 +1,50 @@
+:host {
+  input[type="file"].input--file {
+    display: none;
+  }
+
+  .bx--grid.bx--no-gutter {
+    margin-left: unset;
+    margin-right: unset;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    .d--jc--flex-start {
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    .d--jc--flex-end {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .d--jc--space-between {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .d--ai--center {
+      display: flex;
+      align-items: center;
+    }
+
+    .padding--top-down-1rem {
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+    }
+
+    .d--flex-1 {
+      display: flex;
+      flex: 1;
+    }
+
+    .no-data {
+      ::ng-deep table {
+        height: 100%;
+      }
+    }
+  }
+
+}

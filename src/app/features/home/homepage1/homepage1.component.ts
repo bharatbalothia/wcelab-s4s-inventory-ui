@@ -2,10 +2,12 @@ import { Component, OnInit, ViewChild, TemplateRef, HostBinding, ElementRef  } f
 import { TranslateService } from '@ngx-translate/core';
 import { DatePipe } from '@angular/common';
 
-import { COMMON } from '@buc/common-components';
-import { TableHeaderItem, ModalService } from 'carbon-components-angular';
+import { COMMON, ComboboxComponent } from '@buc/common-components';
+import { TableHeaderItem, ModalService, ComboBox } from 'carbon-components-angular';
 import { InventoryAvailabilityService } from '../shared/services/inventory-availability.service';
 import { InventoryDistributionService } from '../shared/services/inventory-distribution.service';
+import { S4SSearchService } from '../shared/rest-services/S4SSearch.service';
+import { forkJoin } from 'rxjs';
 import { getArray } from '../shared/common/functions';
 
 import { InfoModalComponent } from '../shared/components/info-modal/info-modal.component';
@@ -29,6 +31,11 @@ export class Homepage1Component implements OnInit {
   @ViewChild('supplierTpl', { static: true }) private supplierTpl: TemplateRef<any>;
   @ViewChild('supplierLocationLink', { static: true }) private supplierLocationLink: TemplateRef<any>;
   @ViewChild('locationTpl', { static: true }) private locationTpl: TemplateRef<any>;
+  @ViewChild('products', { static: true }) private products: ComboboxComponent;
+  @ViewChild('categories', { static: true }) private categories: ComboboxComponent;
+  @ViewChild('modelnumbers', { static: true }) private modelnumbers: ComboboxComponent;
+
+
 
   private nlsMap: any = {
     'common.LABEL_supplierDetails': '',
@@ -44,6 +51,7 @@ export class Homepage1Component implements OnInit {
   };
 
   private supplierMap: { [ key: string ]: Supplier } = {};
+  supplierList: any[] = [];
   private skuMap: { [ key: string ]: SKU } = {};
   private supplierLocationMap: { [ key: string ]: SupplierLocation } = {};
   private cat2ProdMap: { [ key: string ]: any } = {};
@@ -54,10 +62,18 @@ export class Homepage1Component implements OnInit {
   private supplierSingleton: number = 0;
   private supplierSkuSingleton: number = 0;
 
+  private isSearchByModelNo = false;
+
+  private lastSearchedModelNumbers;
+
+  user: { buyers: string[], sellers: string[] };
+
   @HostBinding('class') page = 'page-component';
   isScreenInitialized = false;
   model = new S4STableModel();
   categoryListValues = [];
+  modelNumberListValues = [];
+  selectedModelNumbers = [];
   productListValues = [];
   pcRadios = [];
 
@@ -66,7 +82,8 @@ export class Homepage1Component implements OnInit {
     private invAvailService: InventoryAvailabilityService,
     private invDistService: InventoryDistributionService,
     private modalSvc: ModalService,
-    private translateSvc: TranslateService
+    private translateSvc: TranslateService,
+    private s4sSvc: S4SSearchService,
   ) { }
 
   ngOnInit() {
@@ -88,8 +105,50 @@ export class Homepage1Component implements OnInit {
     this.model.setPgDefaults();
     this._initPcTypes();
     this._initCategories();
-    this._fetchAllSuppliers();
-    this._refreshSupplierTableHeader();
+    this._initModelNumber();
+    
+    //this._fetchAllSuppliers();
+    this._initUserDataAndFetchAllSuppliers();
+    this._refreshSupplierTableHeader(false);
+    this.isSearchByModelNo = false;
+    this.selectedModelNumbers = [];
+    this.lastSearchedModelNumbers = [];
+  }
+
+  private async _initUserDataAndFetchAllSuppliers() {
+    const getValue = (attr, def = '-') => {
+      return attr ? attr.value : def;
+    };
+
+    this.user = await this.s4sSvc.getUserInfo().toPromise();
+    console.log('S4S response - _initUserDataAndFetchAllSuppliers - getUserInfo',  this.user);
+    const obs = this.user.sellers.map(supplierId => this.s4sSvc.getContactDetailsOfSelectedSupplier({ supplierId }));
+    const suppliers = await forkJoin(obs).toPromise();
+    console.log('S4S response - _initUserDataAndFetchAllSuppliers - getContactDetailsOfSelectedSupplier combined',  suppliers);
+
+    this.supplierList = suppliers.map(s => ({ content: `${s.description} (${s.supplier_id})`, id: s.supplier_id }));
+
+    getArray(suppliers).forEach((supplier) => {
+      const attrMap: { [ key: string ]: { value: string } } = COMMON.toMap(supplier.address_attributes, 'name');
+      const s: Supplier = {
+        _id: supplier._id,
+        supplier_id: supplier.supplier_id,
+        description: supplier.description,
+        descAndNode: '',
+        supplier_type: supplier.supplier_type,
+        url: supplier.supplier_url || '',
+        contactPerson: supplier.contact_person || this.nlsMap['common.LABEL_noContact'],
+        address_line_1: getValue(attrMap.address_line_1),
+        city: getValue(attrMap.city),
+        state: getValue(attrMap.state),
+        zipcode: getValue(attrMap.zipcode),
+        country: getValue(attrMap.country),
+        phoneNumber: getValue(attrMap.phone_number, this.nlsMap['common.LABEL_noPhone'])
+      };
+      this.supplierMap[s.supplier_id] = s;
+    });
+    console.log('Model - _initUserDataAndFetchAllSuppliers S4S supplierList ', this.supplierList );
+    console.log('Model - _initUserDataAndFetchAllSuppliers S4S supplierMap ', this.supplierMap);
   }
 
   private _initPcTypes() {
@@ -162,6 +221,18 @@ export class Homepage1Component implements OnInit {
     this.isScreenInitialized = true;
   }
 
+  private async _initModelNumber() {
+    const responses4s = await this.invDistService.getProducts().toPromise();
+    console.log('S4S response - getAllModelNumber ', responses4s);
+    this.modelNumberListValues = getArray(responses4s).filter(p => p.category === '').map((p) => ({
+      content: `${p.description} (${p.item_id.replace(/^.+?::/, '')})`,
+      id: p.item_id,
+      selected: false
+    }));
+    console.log('Model - Model Number List ', this.modelNumberListValues);
+  }
+
+
   /**
    * called when product-class radio clicked
    * @param event event that was checked
@@ -182,10 +253,12 @@ export class Homepage1Component implements OnInit {
   public async onCategory(event) {
     const cat = event.item ? event.item.id : undefined;
     console.log('User selected Category ', cat);
-    if (cat && cat !== this.selectedCat) {
+
+    if (cat === undefined || cat !== this.selectedCat) {
       this.selectedCat = cat;
       this.selectedProd.item_id = undefined;
       this.productListValues = [];
+      this._clearCarbonCombo(this.products.comboBox);
 
       try {
         this.model.isLoading = true;
@@ -193,25 +266,74 @@ export class Homepage1Component implements OnInit {
         // reset table
         this._refreshSupplierTable([]);
 
-        // try to use cache, otherwise fetch
-        let responses4s = this.cat2ProdMap[cat];
-        if (!responses4s) {
-          responses4s = await this.invDistService.getAllProductsByCategoryId(cat).toPromise();
-          this.cat2ProdMap[cat] = responses4s;
+        if (cat !== undefined) {
+          // try to use cache, otherwise fetch
+          let responses4s = this.cat2ProdMap[cat];
+          if (!responses4s) {
+            responses4s = await this.invDistService.getAllProductsByCategoryId(cat).toPromise();
+            this.cat2ProdMap[cat] = responses4s;
+          }
+
+          console.log('S4S response of all products with in selected category id ', cat, responses4s);
+          this.productListValues = getArray(responses4s).map((product) => ({
+            content: `${product.description} (${product.item_id})`,
+            id: product.item_id
+          }));
+          console.log('Model - Product List ' , this.productListValues);
         }
 
-        console.log('S4S response of all products with in selected category id ', cat, responses4s);
-        this.productListValues = getArray(responses4s).map((product) => ({
-          content: `${product.description} (${product.item_id})`,
-          id: product.item_id
-        }));
-
         this.model.isLoading = false;
-        console.log('Model - Product List ' , this.productListValues);
       } catch (err) {
         console.log('Error fetching availability: ', err);
       }
     }
+  }
+
+
+  /**
+   * Called when user select options from 'model number' multi select combobox
+   * @param event Model-Number-selection container
+   */
+  public async onModelNumber(event) {
+    this.selectedModelNumbers = event;
+    const currentModelIds = [];
+    this.selectedModelNumbers.forEach(selectedModelNumber => {
+      currentModelIds.push(selectedModelNumber.id.replace(/^.+?::/, ''));
+    });
+    if(currentModelIds.length>0){
+      this.modelnumbers.comboBox.selectedValue = currentModelIds.join(', '); 
+    }
+    console.log('selectedModelNumbers -->', this.selectedModelNumbers);
+  }
+
+  /**
+   * Called when user click on the button 'search by model number'
+   * @param event Model-Number-selection container
+   */
+  searchSuppliersByModelNumber(event) {
+    if (this.lastSearchedModelNumbers.length === 0 || this.lastSearchedModelNumbers.length !== this.selectedModelNumbers.length) {
+      this.lastSearchedModelNumbers = this.selectedModelNumbers;
+    } else {
+      const previousModelIds = [];
+      const currentModelIds = [];
+      this.lastSearchedModelNumbers.forEach(previousModelNumber => {
+        previousModelIds.push(previousModelNumber.id);
+      });
+      this.selectedModelNumbers.forEach(selectedModelNumber => {
+        currentModelIds.push(selectedModelNumber.id);
+      });
+
+      const isSame = (previousModelIds.length === currentModelIds.length) && previousModelIds.every((element, index) => {
+        return element === currentModelIds[index];
+      });
+      console.log('previousModelIds, currentModelIds, is_same ', previousModelIds, currentModelIds, isSame);
+      if (isSame) {
+        return;
+      }
+    }
+
+    this._fetchSuppliersForMultipleProductAndClass();
+
   }
 
   /**
@@ -223,11 +345,21 @@ export class Homepage1Component implements OnInit {
   public async onProduct(event) {
     const id = event.item ? event.item.id : undefined;
     console.log('User selected Product ', id);
-    if (id && id !== this.selectedProd.item_id) {
+    if (id === undefined || id !== this.selectedProd.item_id) {
       this.selectedProd.item_id = id;
-      this.selectedProd.description = event.item.content ;
-      this._fetchSuppliersForProductAndClass();
+      this._refreshSupplierTable([]);
+      if (id === undefined) {
+        this._clearCarbonCombo(this.products.comboBox);
+      } else {
+        this.selectedProd.description = event.item.content ;
+        this._fetchSuppliersForProductAndClass();
+      }
     }
+  }
+
+  private _clearCarbonCombo(carbon: ComboBox) {
+    carbon.selectedValue = '';
+    carbon.showClearButton = false;
   }
 
   /**
@@ -283,47 +415,154 @@ export class Homepage1Component implements OnInit {
     }
   }
 
-  private _refreshSupplierTableHeader() {
-    this.model.header = [
-      [
-        new TableHeaderItem({
-          data: this.translateService.instant('LIST_TABLE.HEADER_SUPPLIER'),
-          sortable: true
-        }),
-        new TableHeaderItem({
-          data: this.translateService.instant('LIST_TABLE.HEADER_AVAILABILITY'),
-          sortable: true
-        }),
-        new TableHeaderItem({
-          data: this.translateService.instant('LIST_TABLE.HEADER_DATE'),
-          sortable: true
-        }),
-      ]
-    ];
+
+  /**
+   * fetch suppliers for selected multiple products and product-class
+   */
+  private async _fetchSuppliersForMultipleProductAndClass() {
+    if (this.selectedModelNumbers.length === 0) {
+      return;
+    }
+
+    const searchSkuIds = [];
+    this.selectedModelNumbers.forEach(modelNumber => {
+      searchSkuIds.push([modelNumber.id, modelNumber.content]); // {modelNumber.id, modelNumber.content}
+    });
+
+    console.log('searchSkuIds', searchSkuIds);
+    try {
+      this.model.isLoading = true;
+
+      const allSuppliersHavingSelectedProduct = [];
+      const suppliers = Object.keys(this.supplierMap);
+
+      for (const sku of searchSkuIds) {
+        const resp = await this.invAvailService.getConsolidatedInventorySameUOMSamePC(
+          sku[0], suppliers, 'UNIT', this.selectedPc
+        ).toPromise();
+        console.log('IV response ', resp, sku);
+
+        const lines = getArray(resp.lines)
+          .filter(l => l.networkAvailabilities.length > 0 && l.networkAvailabilities[0].totalAvailableQuantity > 0);
+
+        for (const line of lines) {
+          console.log('line', line, line.networkAvailabilities[0].distributionGroupId);
+          const supplier = this.supplierMap[line.networkAvailabilities[0].distributionGroupId];
+          supplier.descAndNode = `${supplier.description} (${line.networkAvailabilities[0].distributionGroupId})`;
+
+          let availableDate = 'Now';
+          if (line.networkAvailabilities[0].thresholdType === 'ONHAND') {
+            availableDate = 'Now';
+          } else {
+            availableDate = new DatePipe('en-US').transform(line.networkAvailabilities[0].earliestShipTs, 'MM/dd/yyyy');
+          }
+
+          allSuppliersHavingSelectedProduct.push({
+            supplier,
+            product: { item_id: sku[0], description: sku[1]},
+            productClass: this.selectedPc,
+            Availability: line.networkAvailabilities[0].totalAvailableQuantity,
+            Date: availableDate
+            // TODO PENDING - 1
+          });
+        }
+
+        this.model.isLoading = false;
+
+        console.log('Model - allSuppliersHavingSelectedProduct', allSuppliersHavingSelectedProduct);
+        this._refreshSupplierTable(allSuppliersHavingSelectedProduct, true);
+      }
+
+    } catch (err) {
+      console.log('Error fetching availability: ', err);
+    }
   }
 
-  private _refreshSupplierTable(data) {
-    this.model.isLoading = true;
+  private _refreshSupplierTableHeader(includeSkuColumn?) {
+    if (includeSkuColumn !== undefined && includeSkuColumn) {
+      this.model.header = [
+        [
+          new TableHeaderItem({
+            data: this.translateService.instant('LIST_TABLE.HEADER_SUPPLIER'),
+            sortable: true
+          }),
+          new TableHeaderItem({
+            data: this.translateService.instant('LIST_TABLE.PRODUCT_MODEL_NUMBER'),
+            sortable: true
+          }),
+          new TableHeaderItem({
+            data: this.translateService.instant('LIST_TABLE.HEADER_AVAILABILITY'),
+            sortable: true
+          }),
+          new TableHeaderItem({
+            data: this.translateService.instant('LIST_TABLE.HEADER_DATE'),
+            sortable: true
+          }),
+        ]
+      ];
+    } else {
+      this.model.header = [
+        [
+          new TableHeaderItem({
+            data: this.translateService.instant('LIST_TABLE.HEADER_SUPPLIER'),
+            sortable: true
+          }),
+          new TableHeaderItem({
+            data: this.translateService.instant('LIST_TABLE.HEADER_AVAILABILITY'),
+            sortable: true
+          }),
+          new TableHeaderItem({
+            data: this.translateService.instant('LIST_TABLE.HEADER_DATE'),
+            sortable: true
+          }),
+        ]
+      ];
+    }
 
-    const records = data.map((record, i) => [
-      {
-        data: { name: record.supplier.description, descriptor: record },
-        template: this.supplierLink,
-        id: i
-      },
-      {
-        data: record.Availability,
-      },
-      {
-        data: record.Date
-      }
-    ]);
+  }
+
+  private _refreshSupplierTable(data, includeSkuColumn?) {
+    this.model.isLoading = true;
+    if (includeSkuColumn !== undefined && includeSkuColumn) {
+      const records = data.map((record, i) => [
+        {
+          data: { name: record.supplier.description, descriptor: record },
+          template: this.supplierLink,
+          id: i
+        },
+        {
+          data: record.product.description,
+        },
+        {
+          data: record.Availability,
+        },
+        {
+          data: record.Date
+        }
+      ]);
+      this.model.populate(records, { 0: 'name' });
+    } else {
+      const records = data.map((record, i) => [
+        {
+          data: { name: record.supplier.description, descriptor: record },
+          template: this.supplierLink,
+          id: i
+        },
+        {
+          data: record.Availability,
+        },
+        {
+          data: record.Date
+        }
+      ]);
+      this.model.populate(records, { 0: 'name' });
+    }
 
     this.model.setPgDefaults();
-    this.model.populate(records, { 0: 'name' });
-
     this.model.isLoading = false;
   }
+
+
 
   /**
    * Called when supplier clicked in supplier-table from main page
@@ -383,10 +622,12 @@ export class Homepage1Component implements OnInit {
         await this._fetchProductsById(children);
       }
 
+      let productAvailableQuantity = 0;
       lines.forEach(line => {
         const sku = this.skuMap[line.itemId];
         console.log('S4S response Child Item ', sku);
         if (sku && sku.unit_of_measure !== undefined) {
+          productAvailableQuantity +=  line.networkAvailabilities[0].totalAvailableQuantity ; 
           collection.push(
             {
               itemId: sku.item_id,
@@ -403,6 +644,9 @@ export class Homepage1Component implements OnInit {
           );
         }
       });
+      //product AvailableQuantity after sum up all SKU's quantity
+      data.Availability = productAvailableQuantity;
+      templateData.quantity= productAvailableQuantity;
 
       const tModel = new S4STableModel();
       tModel.header = makeHeaders();
@@ -508,18 +752,24 @@ export class Homepage1Component implements OnInit {
       ).toPromise();
       console.log('IV response', ivResponse);
 
-
+      
+      let productAvailableQuantity = 0;
       const lines = getArray(ivResponse.lines);
       lines.filter(l => l.itemId === sku.itemId).forEach(line => {
         const iv = getArray(line.shipNodeAvailability).filter(l => l.totalAvailableQuantity > 0);
         iv.forEach(nodeIv => {
           const name = this.supplierLocationMap[nodeIv.shipNode] ? this.supplierLocationMap[nodeIv.shipNode].shipnode_name : undefined;
           const shipNodeLocation = name || nodeIv.shipNode;
+          productAvailableQuantity +=  nodeIv.totalAvailableQuantity ; 
           locData.push({ shipNodeLocation, sku: line.itemId, availableQuantity: nodeIv.totalAvailableQuantity,
             latitude: this.supplierLocationMap[nodeIv.shipNode].latitude, longitude: this.supplierLocationMap[nodeIv.shipNode].longitude });
         });
       });
-
+      
+      //product AvailableQuantity after sum up all SKU per location quantity
+      sku.availableQuantity = productAvailableQuantity;
+      
+    
 
       const tModel = new S4STableModel();
       tModel.header = makeHeaders();
@@ -594,5 +844,27 @@ export class Homepage1Component implements OnInit {
       // Adding marker to google map
       marker.setMap(mapObj);
     });
+  }
+
+
+  onChangeSearchByModelNo(event) {
+    this.isSearchByModelNo = !this.isSearchByModelNo;
+    console.log('isSearchByModelNo -->', this.isSearchByModelNo);
+
+    this._refreshSupplierTableHeader(this.isSearchByModelNo);
+    this._refreshSupplierTable([], this.isSearchByModelNo);
+
+    this._clearCarbonCombo(this.products.comboBox);
+    this._clearCarbonCombo(this.categories.comboBox);
+
+    this.selectedProd.item_id = undefined;
+
+
+    this.selectedModelNumbers = [];
+    this.lastSearchedModelNumbers = [];
+    this._clearCarbonCombo(this.modelnumbers.comboBox);
+    // clear multi select
+    this.modelNumberListValues.forEach(i => i.selected = false);
+    this.modelNumberListValues = this.modelNumberListValues.map(i => i);
   }
 }

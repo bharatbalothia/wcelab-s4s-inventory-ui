@@ -18,6 +18,7 @@ import { UploadPageComponent } from './upload/upload-page.component';
 import { FindInventoryComponent } from './find-inventory/find-inventory.component';
 import { ItemSummaryComponent } from './find-inventory/item-summary/item-summary.component';
 import { ItemDGAvailabilityComponent } from './find-inventory/item-dg-availability/item-dg-availability.component';
+import { SupplierUploadPageComponent } from './supplierupload/supplier-upload-page.component';
 
 import { BUCInvAvailabilityService } from './shared/rest-services/inventory-buc/Availability.service';
 import { AvailabilityService } from './shared/rest-services/Availability.service';
@@ -32,35 +33,39 @@ import { DistributionGroupService } from './shared/rest-services/DistributionGro
 import { InventoryDistributionService } from './shared/services/inventory-distribution.service';
 import { InventoryAvailabilityService } from './shared/services/inventory-availability.service';
 import { InventoryDemandService } from './shared/services/inventory-demand.service';
+import { InventorySupplyService } from './shared/services/inventory-supply.service';
 
 import { S4SSearchService } from './shared/rest-services/S4SSearch.service';
 import { HomeSharedModule } from './shared/home-shared.module';
 import { Image32Module } from '@carbon/icons-angular/lib/image/32';
+import { SupplierSearchComponent } from './supplier-search/supplier-search.component';
 
-export class BucIVCovidPOCHomeModuleBundles {
-  static bundles: Array<any> = [
-    {
-      prefix: './assets/buc-iv-covid-poc/i18n/',
-      suffix: '.json'
-    },
-    {
-      prefix: './assets/buc-iv-covid-poc/i18n/home/homepage1/',
-      suffix: '.json'
-    },
-    {
-      prefix: './assets/buc-iv-covid-poc/i18n/home/upload/',
-      suffix: '.json'
-    },
-    {
-      prefix: './assets/buc-iv-covid-poc/i18n/home/findinventory/',
-      suffix: '.json'
-    }
-  ];
-}
-
-export function bucIVCovidPOCHomeModuleHttpLoaderFactory(http: HttpClient) {
-  return new BucMultiTranslateHttpLoader(http, BucIVCovidPOCHomeModuleBundles.bundles);
-}
+const bundles: Array<any> = [
+  {
+    prefix: './assets/buc-iv-covid-poc/i18n/',
+    suffix: '.json'
+  },
+  {
+    prefix: './assets/buc-iv-covid-poc/i18n/home/homepage1/',
+    suffix: '.json'
+  },
+  {
+    prefix: './assets/buc-iv-covid-poc/i18n/home/upload/',
+    suffix: '.json'
+  },
+  {
+    prefix: './assets/buc-iv-covid-poc/i18n/home/findinventory/',
+    suffix: '.json'
+  },
+  {
+    prefix: './assets/buc-iv-covid-poc/i18n/home/supplierupload/',
+    suffix: '.json'
+  },
+  {
+    prefix: './assets/buc-iv-covid-poc/i18n/home/supplier-search/',
+    suffix: '.json'
+  }
+];
 
 @NgModule({
   declarations: [
@@ -68,7 +73,9 @@ export function bucIVCovidPOCHomeModuleHttpLoaderFactory(http: HttpClient) {
     UploadPageComponent,
     FindInventoryComponent,
     ItemSummaryComponent,
-    ItemDGAvailabilityComponent
+    ItemDGAvailabilityComponent,
+    SupplierUploadPageComponent,
+    SupplierSearchComponent
   ],
   imports: [
     CommonModule,
@@ -77,7 +84,7 @@ export function bucIVCovidPOCHomeModuleHttpLoaderFactory(http: HttpClient) {
     TranslateModule.forChild({
       loader: {
         provide: TranslateLoader,
-        useFactory: bucIVCovidPOCHomeModuleHttpLoaderFactory,
+        useFactory: (h: HttpClient) => new BucMultiTranslateHttpLoader(h, bundles),
         deps: [HttpClient]
       },
       isolate: true
@@ -100,7 +107,9 @@ export function bucIVCovidPOCHomeModuleHttpLoaderFactory(http: HttpClient) {
     S4SSearchService,
     InventoryDistributionService,
     InventoryAvailabilityService,
-    InventoryDemandService],
+    InventoryDemandService,
+    InventorySupplyService
+  ],
 })
 export class HomeModule extends BucCommonClassesAllModuleClazz {
   constructor(translateService: TranslateService) {

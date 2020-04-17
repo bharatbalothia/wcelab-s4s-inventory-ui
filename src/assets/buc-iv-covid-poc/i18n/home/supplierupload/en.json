@@ -1,0 +1,20 @@
+{
+  "SUPPLIERUPLOAD": {
+    "TITLE_UPLOAD_INV": "Supplier Upload",
+    "PAGE_LOADED": "Upload page loaded.",
+    "LABEL_instructions": "Upload the list of Suppliers using a CSV file.",
+    "LABEL_tooltip": "Upload file must be of the following format:<br><br>supplier_id,supplier_mailslot_id,description,supplier_type,address_line_1,city,state,zipcode,country,contact_person,phone_number,contact_email,supplier_url,supplier_twitter",
+    "LABEL_upload": "Upload",
+    "LABEL_noData": "No data",
+    "LABEL_uploadSuccessful": "Upload was successful.",
+    "SKUID": "SKU ID",
+    "NODEID": "Node ID",
+    "QUANTITY": "Quantity",
+    "PRODUCTCLASS": "Product class",
+    "UOM": "Unit of measure"
+    ,"SUPPLIERID":"SupplierID"
+    ,"MAILSLOTID":"MailSlotID"
+    ,"DESCRIPTION":"Description"
+    ,"CITY":"City"
+  }
+}

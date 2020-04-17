@@ -218,7 +218,7 @@ ul.bx--list-box__menu.bx--multi-select {
 }
 
 .hide-div {
-  display: none;
+  display: none !important;
 }
 
 
@@ -238,6 +238,10 @@ ul.bx--list-box__menu.bx--multi-select {
   max-height: 10rem;
 }
 
+
+.min-width--8rem {
+  min-width: 8rem;
+}
 
 .max-width--8rem {
   max-width: 8rem;
@@ -296,6 +300,11 @@ img.object-fit--contain {
   display: flex;
 }
 
+.d--flex-0 {
+  display: flex;
+  flex: 0;
+}
+
 .d--flex-1 {
   display: flex;
   flex: 1;
@@ -329,6 +338,11 @@ img.object-fit--contain {
 .d--flex-ai-center {
   display: flex;
   align-items: center;
+}
+
+.d--flex-ai-flex-end {
+  display: flex;
+  align-items: flex-end;
 }
 
 .border-bottom--1px-solid-ui01 {

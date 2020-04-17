@@ -5,5 +5,17 @@
     display: flex;
     flex-direction: column;
     flex: 1;
+
+    buc-checkbox {
+      ::ng-deep label span {
+        margin-left: 0.5rem;
+      }
+    }
+
+    buc-button[tid="model-search-button"] {
+      ::ng-deep button.bx--btn--sm {
+        min-height: 2.55rem;
+      }
+    }
   }
 }

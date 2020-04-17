@@ -17,7 +17,6 @@ import {
     Injectable
 } from '@angular/core';
 import {
-    of as observableOf,
     throwError,
     Observable
 } from 'rxjs';
@@ -25,585 +24,35 @@ import {
 import { BucCommBEHttpWrapperService, BucSvcAngularStaticAppInfoFacadeUtil } from '@buc/svc-angular';
 import { Constants } from '../common/constants';
 
+type PostSupplierInputList = {
+    'supplier' ? : Array < PostSupplierInput > | PostSupplierInput
+};
+
+type PostSupplierInput = {
+    'supplier_id': string
+    'description' ? : string
+    'supplier_type' ? : string
+    'supplier_mailslot_id' ? : string
+    'tenant_id': string
+    'supplier_url' ? : string
+    'contact_email' ? : string
+    'contact_person': string
+    'supplier_twitter': string
+    'address_attributes' ? : Array < AddressAttrInput > | AddressAttrInput
+};
+type AddressAttrInput = {
+    'name' ? : string
+    'value' ? : string
+};
 type AuthenticationError = {
     'error' ? : string
-
     'error_description' ? : string
-
 };
 type AccessForbiddenError = {
     'error' ? : string
-
     'error_description' ? : string
-
 };
-type AdjustSupplyList = {
-    'supplies' ? : Array < AdjustSupply >
-        | AdjustSupply
 
-};
-type AdjustSupply = {
-    'itemId': string
-
-    'unitOfMeasure': string
-
-    'productClass': string
-
-    'tagNumber' ? : string
-
-    'shipNode': string
-
-    'type': string
-
-    'segmentType' ? : string
-
-    'segment' ? : string
-
-    'eta': string
-
-    'shipByDate': string
-
-    'referenceType' ? : string
-
-    'reference' ? : string
-
-    'lineReference' ? : string
-
-    'changedQuantity': number
-
-    'adjustmentReason' ? : string
-
-    'sourceTs' ? : string
-
-    'reservations' ? : Array < ReservationInput >
-        | ReservationInput
-
-};
-type AdjustDemandList = {
-    'demands' ? : Array < AdjustDemand >
-        | AdjustDemand
-
-};
-type AdjustDemand = {
-    'itemId': string
-
-    'unitOfMeasure': string
-
-    'productClass': string
-
-    'type': string
-
-    'shipNode' ? : string
-
-    'tagNumber' ? : string
-
-    'segment' ? : string
-
-    'segmentType' ? : string
-
-    'shipDate': string
-
-    'cancelDate': string
-
-    'referenceType' ? : string
-
-    'reference' ? : string
-
-    'minShipByDate' ? : string
-
-    'adjustmentReason' ? : string
-
-    'changedQuantity': number
-
-    'sourceTs' ? : string
-
-    'reservations' ? : Array < ReservationInput >
-        | ReservationInput
-
-};
-type SyncSupplyList = {
-    'supplies' ? : Array < SyncSupply >
-        | SyncSupply
-
-};
-type SyncSupply = {
-    'itemId': string
-
-    'unitOfMeasure': string
-
-    'productClass': string
-
-    'type': string
-
-    'shipNode': string
-
-    'tagNumber' ? : string
-
-    'segment' ? : string
-
-    'segmentType' ? : string
-
-    'eta': string
-
-    'shipByDate': string
-
-    'referenceType' ? : string
-
-    'reference' ? : string
-
-    'lineReference' ? : string
-
-    'quantity': number
-
-    'sourceTs' ? : string
-
-};
-type SupplyResponse = {
-    'itemId' ? : string
-
-    'unitOfMeasure' ? : string
-
-    'productClass' ? : string
-
-    'type' ? : string
-
-    'shipNode' ? : string
-
-    'tagNumber' ? : string
-
-    'segment' ? : string
-
-    'segmentType' ? : string
-
-    'eta' ? : string
-
-    'shipByDate' ? : string
-
-    'referenceType' ? : string
-
-    'reference' ? : string
-
-    'lineReference' ? : string
-
-    'quantity' ? : number
-
-};
-type SyncDemandList = {
-    'demands' ? : Array < SyncDemand >
-        | SyncDemand
-
-};
-type SyncDemand = {
-    'itemId': string
-
-    'unitOfMeasure': string
-
-    'productClass': string
-
-    'type': string
-
-    'shipNode' ? : string
-
-    'tagNumber' ? : string
-
-    'segment' ? : string
-
-    'segmentType' ? : string
-
-    'shipDate': string
-
-    'cancelDate': string
-
-    'referenceType' ? : string
-
-    'reference' ? : string
-
-    'minShipByDate' ? : string
-
-    'quantity': number
-
-    'sourceTs' ? : string
-
-};
-type DemandResponse = {
-    'itemId' ? : string
-
-    'unitOfMeasure' ? : string
-
-    'productClass' ? : string
-
-    'type' ? : string
-
-    'shipNode' ? : string
-
-    'tagNumber' ? : string
-
-    'segment' ? : string
-
-    'segmentType' ? : string
-
-    'shipDate' ? : string
-
-    'cancelDate' ? : string
-
-    'referenceType' ? : string
-
-    'reference' ? : string
-
-    'minShipByDate' ? : string
-
-    'quantity' ? : number
-
-};
-type ReservationInput = {
-    'id' ? : string
-
-    'reference' ? : string
-
-    'quantity' ? : number
-
-};
-type PostReservationRequest = {
-    'reference' ? : string
-
-    'timeToExpire' ? : number
-
-    'segment' ? : string
-
-    'segmentType' ? : string
-
-    'lines': Array < PostReservationRequestLine >
-        | PostReservationRequestLine
-
-};
-type PostReservationRequestLine = {
-    'lineId': string
-
-    'itemId': string
-
-    'unitOfMeasure': string
-
-    'productClass': string
-
-    'deliveryMethod': "SHP" | "PICK"
-
-    'shipNode' ? : string
-
-    'distributionGroup' ? : string
-
-    'quantity': number
-
-};
-type PostReservationResponse = {
-    'lines' ? : Array < PostReservationResponseLine >
-        | PostReservationResponseLine
-
-};
-type PostReservationResponseLine = {
-    'lineId': string
-
-    'reservationId' ? : string
-
-    'reservedQuantity': number
-
-};
-type GetReservationResponse = {
-    'id' ? : string
-
-    'reference' ? : string
-
-    'reservationTs' ? : string
-
-    'expirationTs' ? : string
-
-    'itemId' ? : string
-
-    'unitOfMeasure' ? : string
-
-    'deliveryMethod' ? : "SHP" | "PICK"
-
-    'productClass' ? : string
-
-    'segment' ? : string
-
-    'segmentType' ? : string
-
-    'reservedQuantity' ? : number
-
-};
-type PatchReservationRequest = {
-    'quantity' ? : number
-
-};
-type GetNetworkAvailabilityRequest = {
-    'distributionGroupId': string
-
-    'lines': Array < GetNetworkAvailabilityRequestLine >
-        | GetNetworkAvailabilityRequestLine
-
-    'segment' ? : string
-
-    'segmentType' ? : string
-
-};
-type GetNetworkAvailabilityRequestLine = {
-    'lineId': string
-
-    'itemId': string
-
-    'unitOfMeasure': string
-
-    'productClass': string
-
-    'deliveryMethod': "SHP" | "PICK"
-
-    'distributionGroupId' ? : string
-
-};
-type GetNetworkAvailabilityResponse = {
-    'lines' ? : Array < GetNetworkAvailabilityResponseLine >
-        | GetNetworkAvailabilityResponseLine
-
-};
-type GetNetworkAvailabilityResponseLine = {
-    'lineId' ? : string
-
-    'networkAvailabilities' ? : Array < GetNetworkAvailabilityResponseNetworkAvailabilities >
-        | GetNetworkAvailabilityResponseNetworkAvailabilities
-
-};
-type GetNetworkAvailabilityResponseNetworkAvailabilities = {
-    'earliestShipTs' ? : string
-
-    'totalAvailableQuantity' ? : number
-
-    'onhandAvailableQuantity' ? : number
-
-    'onhandEarliestShipTs' ? : string
-
-    'onhandLatestShipTs' ? : string
-
-    'futureAvailableQuantity' ? : number
-
-    'futureEarliestShipTs' ? : string
-
-    'futureLatestShipTs' ? : string
-
-    'distributionGroupId' ? : string
-
-    'alertLevel' ? : string
-
-    'alertQuantity' ? : number
-
-    'thresholdLevel' ? : 0 | 1 | 2 | 3
-
-    'thresholdType' ? : "ONHAND" | "FUTURE"
-
-    'thresholdQuantity' ? : number
-
-};
-type GetNodeAvailabilityRequest = {
-    'lines': Array < GetNodeAvailabilityRequestLine >
-        | GetNodeAvailabilityRequestLine
-
-    'segment' ? : string
-
-    'segmentType' ? : string
-
-};
-type GetNodeAvailabilityRequestLine = {
-    'lineId': string
-
-    'itemId': string
-
-    'unitOfMeasure': string
-
-    'productClass': string
-
-    'deliveryMethod': "SHP" | "PICK"
-
-    'shipNodes': Array < string >
-        | string
-
-};
-type GetNodeAvailabilityResponse = {
-    'lines' ? : Array < GetNodeAvailabilityResponseLine >
-        | GetNodeAvailabilityResponseLine
-
-};
-type GetNodeAvailabilityResponseLine = {
-    'lineId' ? : string
-
-    'shipNodeAvailability' ? : Array < GetNodeAvailabilityResponseShipNodeAvailability >
-        | GetNodeAvailabilityResponseShipNodeAvailability
-
-};
-type GetNodeAvailabilityResponseShipNodeAvailability = {
-    'earliestShipTs' ? : string
-
-    'latestShipTs' ? : string
-
-    'totalAvailableQuantity' ? : number
-
-    'shipNode' ? : string
-
-    'onhandAvailableQuantity' ? : number
-
-    'onhandEarliestShipTs' ? : string
-
-    'onhandLatestShipTs' ? : string
-
-    'futureAvailableQuantity' ? : number
-
-    'futureEarliestShipTs' ? : string
-
-    'futureLatestShipTs' ? : string
-
-    'thresholdLevel' ? : number
-
-    'thresholdType' ? : "ONHAND" | "FUTURE"
-
-};
-type DistributionGroupInList = {
-    'distributionGroupId' ? : string
-
-};
-type DGShipNode = {
-    'shipNode': string
-
-};
-type DistributionGroup = {
-    'shipNodes' ? : Array < DGShipNode >
-        | DGShipNode
-
-};
-type DistributionGroupForPut = {
-    'shipNodes' ? : Array < DGShipNode >
-        | DGShipNode
-
-    'syncDgAvailability' ? : string
-
-};
-type Threshold = {
-    'low': number
-
-    'medium': number
-
-    'high': number
-
-};
-type ItemConfiguration = {
-    'threshold' ? : {
-        'low' ? : number
-
-        'medium' ? : number
-
-        'high' ? : number
-
-    }
-
-};
-type ItemFulfillmentOptions = {
-    'shipNode' ? : string
-
-    'deliveryMethod' ? : "SHP" | "PICK"
-
-    'fulfillmentAllowed' ? : boolean
-
-};
-type FulfillmentOptions = {
-    'fulfillmentAllowed' ? : boolean
-
-};
-type ShipNode = {
-    'latitude' ? : number
-
-    'longitude' ? : number
-
-};
-type ShipNodeResponse = {
-    'shipNode' ? : string
-
-    'latitude' ? : number
-
-    'longitude' ? : number
-
-};
-type Settings = {
-    'reservations' ? : {
-        'defaultExpirationMinutes' ? : string
-
-    }
-
-};
-type SafetyStock = {
-    'unitOfMeasure': string
-
-    'productClass': string
-
-    'shipNode': string
-
-    'deliveryMethod': "SHP" | "PICK"
-
-    'safetyStockQuantity': number
-
-};
-type GetEventsResponse = Array < {
-        'eventId' ? : string
-
-    } >
-    | {
-        'eventId' ? : string
-
-    }
-
-;
-type CreatePublisherRequest = {
-    'type' ? : string
-
-    'ubxToken' ? : string
-
-    'url' ? : string
-
-};
-type PublisherResponse = {
-    'type': string
-
-    'ubxToken': string
-
-    'url': string
-
-    'publisherId' ? : string
-
-};
-type PublisherListResponse = Array < PublisherResponse >
-    | PublisherResponse
-
-;
-type SupplyTypeResponse = {
-    'type' ? : string
-
-    'derivedFromType' ? : string
-
-    'isOnhand' ? : boolean
-
-};
-type CreateSupplyType = {
-    'derivedFromType' ? : string
-
-};
-type DemandTypeResponse = {
-    'type' ? : string
-
-    'derivedFromType' ? : string
-
-    'commitmentLevel' ? : "Noncommitted" | "Promised" | "Allocated"
-
-};
-type CreateDemandType = {
-    'derivedFromType' ? : string
-
-};
 
 @Injectable()
 class S4SSearchService {
@@ -745,6 +194,34 @@ class S4SSearchService {
       return this.invoke(`supplier/${parameters['supplierId']}/shipnodes`, parameters);
     }
 
+    public postSuppliers(parameters: {
+        'body': PostSupplierInput,
+        'tenantId': string,
+        $queryParameters ? : any,
+        $headers ? : any,
+        $cache ? : any,
+        $refresh ? : any,
+        useMocks ? : boolean
+    }): Observable < any > {
+      let body = {};
+      // allow use of param with or without underscore
+      parameters['body'] = parameters['body'] || parameters['body'];
+
+      if (parameters['body'] !== undefined) {
+        body = parameters['body'][0];
+      }
+
+      if (parameters['body'] === undefined) {
+        return throwError(new Error('Missing required  parameter: body'));
+      }
+      return this.post(`suppliers`, body, parameters);
+    }
+
+    public getUserInfo(): Observable<any> {
+      const userId = BucSvcAngularStaticAppInfoFacadeUtil.getCurrentUser().userName;
+      return this.invoke(`users/${userId}`, {});
+    }
+
     private invoke(api: string, parameters: SvcParameters, type: string = Constants.GET): Observable<any> {
       const headers = {
         Authorization: 'Basic N21jNGZyN2tqdzh6cnE3a2loYmZpYTV5cThkOHJxNjU6dDg5czk1amJqbm1lZmQyZHhzNDN1bmwxcjJwNnp1ZjA=',
@@ -787,53 +264,10 @@ interface SvcParameters {
 
 export {
   S4SSearchService,
+  PostSupplierInputList,
+  PostSupplierInput,
+  AddressAttrInput,
   AuthenticationError,
-  AccessForbiddenError,
-  AdjustSupplyList,
-  AdjustSupply,
-  AdjustDemandList,
-  AdjustDemand,
-  SyncSupplyList,
-  SyncSupply,
-  SupplyResponse,
-  SyncDemandList,
-  SyncDemand,
-  DemandResponse,
-  ReservationInput,
-  PostReservationRequest,
-  PostReservationRequestLine,
-  PostReservationResponse,
-  PostReservationResponseLine,
-  GetReservationResponse,
-  PatchReservationRequest,
-  GetNetworkAvailabilityRequest,
-  GetNetworkAvailabilityRequestLine,
-  GetNetworkAvailabilityResponse,
-  GetNetworkAvailabilityResponseLine,
-  GetNetworkAvailabilityResponseNetworkAvailabilities,
-  GetNodeAvailabilityRequest,
-  GetNodeAvailabilityRequestLine,
-  GetNodeAvailabilityResponse,
-  GetNodeAvailabilityResponseLine,
-  GetNodeAvailabilityResponseShipNodeAvailability,
-  DistributionGroupInList,
-  DGShipNode,
-  DistributionGroup,
-  DistributionGroupForPut,
-  Threshold,
-  ItemConfiguration,
-  ItemFulfillmentOptions,
-  FulfillmentOptions,
-  ShipNode,
-  ShipNodeResponse,
-  Settings,
-  SafetyStock,
-  GetEventsResponse,
-  CreatePublisherRequest,
-  PublisherResponse,
-  PublisherListResponse,
-  SupplyTypeResponse,
-  CreateSupplyType,
-  DemandTypeResponse,
-  CreateDemandType
+  AccessForbiddenError
+
 }

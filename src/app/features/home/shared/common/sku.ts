@@ -5,4 +5,5 @@ export interface SKU extends Product {
   unit_of_measure: string;
   category: string;
   image_url: string;
+  productClass?: string;
 }
