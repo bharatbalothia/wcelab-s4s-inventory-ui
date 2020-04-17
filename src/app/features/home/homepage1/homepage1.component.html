@@ -25,18 +25,6 @@
         (selectItemAction)="onSupplierDropdownChange($event)">
       </buc-combobox>
     </div>      
-    <div class="bx--col-md-5 bx--col-sm-2">
-      <buc-combobox
-        #modelnumbers
-        placeholder="{{'HOMEPAGE1.LABEL_MODEL_NO' | translate}}"
-        [attr.tid]="'Model-Number-selection'"
-        [disabled]="modelNumberListValues.length === 0"
-        label="{{'HOMEPAGE1.LABEL_MODEL_NO' | translate}}"
-        [items]="modelNumberListValues"
-        type="multi"
-        (selectItemAction)="onModelNumber($event)">
-      </buc-combobox>
-    </div>
     <div class="bx--col-md-3 bx--col-sm-2 d--flex-jc-flex-end d--flex-ai-flex-end">
       <buc-button
         [attr.tid]="'model-search-button'"

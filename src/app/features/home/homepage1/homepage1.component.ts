@@ -36,7 +36,7 @@ export class Homepage1Component implements OnInit {
   @ViewChild('categories', { static: true }) private categories: ComboboxComponent;
   @ViewChild('modelnumbers', { static: true }) private modelnumbers: ComboboxComponent;
   @ViewChild('suppliers', { static: true }) private suppliers: ComboboxComponent;
-  
+
 
 
 
@@ -70,6 +70,7 @@ export class Homepage1Component implements OnInit {
   private lastSelectedSuppliers ;
   
 
+
   user: { buyers: string[], sellers: string[] };
 
   @HostBinding('class') page = 'page-component';
@@ -78,6 +79,7 @@ export class Homepage1Component implements OnInit {
   categoryListValues = [];
   modelNumberListValues = [];
   selectedModelNumbers = [];
+
   selectedSuppliers = [];
 
   productListValues = [];
@@ -111,6 +113,7 @@ export class Homepage1Component implements OnInit {
     this.model.setPgDefaults();
     this._initPcTypes();
     this._initCategories();
+
    
     
     //this._fetchAllSuppliers();
@@ -128,6 +131,7 @@ export class Homepage1Component implements OnInit {
     this.selectedSuppliers = [];
     this.lastSearchedModelNumbers = [];
     this.lastSelectedSuppliers = [];
+
   }
 
   private async _initUserDataAndFetchAllSuppliers() {
@@ -236,6 +240,7 @@ export class Homepage1Component implements OnInit {
     this.isScreenInitialized = true;
   }
 
+
   private async _initModelNumber() { 
 //    const responses4s = await this.invDistService.getProducts().toPromise();
     const supplierIds = Object.keys(this.supplierMap);
@@ -247,6 +252,7 @@ export class Homepage1Component implements OnInit {
         id: p.item_id,
         selected: false
       }));
+
     console.log('Model - Model Number List ', this.modelNumberListValues);
   }
 
@@ -320,10 +326,12 @@ export class Homepage1Component implements OnInit {
     });
     this.modelnumbers.comboBox.selectedValue = currentModelIds.join(', ');
 
+
     console.log('selectedModelNumbers -->', this.selectedModelNumbers);
   }
 
   /**
+
    * Called when user change supplier dropdown (Search by Model# view). 
    * Selected Supplier ids will be used as a filter while making network availability IV call
    * @param event supplier-id-selection container
@@ -342,6 +350,7 @@ export class Homepage1Component implements OnInit {
   
   
   /**
+
    * Called when user click on the button 'search by model number'
    * @param event Model-Number-selection container
    */
@@ -384,6 +393,7 @@ export class Homepage1Component implements OnInit {
     console.log('previousIds, currentIds, isSame ', previousIds, currentIds, isSame);
 
     return isSame;
+
   }
 
   /**
@@ -533,6 +543,7 @@ export class Homepage1Component implements OnInit {
         console.log('Model - allSuppliersHavingSelectedProduct', allSuppliersHavingSelectedProduct);
         this._refreshSupplierTable(allSuppliersHavingSelectedProduct, true);
       }
+
 
     } catch (err) {
       console.log('Error fetching availability: ', err);

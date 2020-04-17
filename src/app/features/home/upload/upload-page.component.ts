@@ -39,6 +39,7 @@ export class UploadPageComponent implements OnInit {
   supplierList: any[] = [];
   supplier: string;
 
+
   constructor(
     private translateSvc: TranslateService,
     private suppSvc: SupplyService,
