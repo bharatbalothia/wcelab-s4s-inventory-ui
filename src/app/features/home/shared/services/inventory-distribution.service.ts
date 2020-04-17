@@ -43,6 +43,12 @@ export class InventoryDistributionService {
     .pipe( map(r => r) );
   }
 
+  public getEntitledProductsBySupplierIds(supplierIds: string[]): Observable<any> {
+    const reqPayLoad = { supplier_ids: supplierIds };
+    return this.s4sSvc.getEntitledProductsBySupplierIds(  { body: reqPayLoad} )
+    .pipe( map(r => r) );
+  }
+
   public getAllCategories(): Observable<any> {
     return this.s4sSvc.getAllCategories({})
     .pipe( map(r => r) );
