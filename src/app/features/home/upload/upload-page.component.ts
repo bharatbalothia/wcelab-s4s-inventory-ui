@@ -53,9 +53,7 @@ export class UploadPageComponent implements OnInit {
   onUpload(e) {
     this._clearTable();
     
-    if (this.supplierList.length == 1) {
-      this.onSupplier({ item: this.supplierList[0] });
-    }
+   
     const f = e.target.files[0];
     const r = new FileReader();
     r.onload = () => this._parseFile(r);
@@ -78,7 +76,10 @@ export class UploadPageComponent implements OnInit {
   private async _init() {
     await this._initTranslations();
     this._initTable();
-    this._initUserDataAndFetchAllSuppliers();
+    await this._initUserDataAndFetchAllSuppliers();
+    if (this.supplierList.length == 1) {
+      this.onSupplier({ item: this.supplierList[0] });
+    }
   }
 
   private async _initTranslations() {
