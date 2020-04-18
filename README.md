@@ -12,7 +12,7 @@ This UI is based on [IBM Business User Control](https://mediacenter.ibm.com/medi
 2. Authorized users search for suppliers and locations for an item
 3. Authorized users views the contact information of a supplier
 
-# Dev Setup ----
+## Dev Setup 
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.3.3.
 
@@ -131,3 +131,46 @@ In order for see this custom app in BUC, you can add a new left navigation menu 
 10. `yarn install`: Install all dependencies using Yarn.
 11. `yarn start`: This will start the local development server over https at: `https://localhost:9000/buc-iv-covid-poc`. Application can now be accessed from the ribbon in BUC. Since this angular https server does not have a valid certificate, you will not view the application in the ribbon on every server restart. Just copy the url above in a new tab and accept the certificate error - this creates the exception in browser for the certificate. After that click on the link again in BUC to access the application.
 12. Detailed steps on how the application was created and reason for various libraries used is in this doc [wiki](https://github.ibm.com/WCI/buc-lib-angular/wiki/Utilizing-buc-library-in-any-angular-application)
+
+
+## Deploying on IBM Cloud
+
+The deployment branch of this project is connected to IBM Cloud CD/CI DevOps pipeline. Any checkin into the deployment branch triggers a build and deploy of the porject. 
+
+The deployment url is - http://s4s-inventory-ui.mybluemix.net/
+
+1. Create a new toolchain 
+2. Create a build stage
+3. Builder type - npm
+4. Build script
+```
+#!/bin/bash
+export NVM_DIR=/home/pipeline/nvm
+export NODE_VERSION=13.12.0
+export NVM_VERSION=0.29.0
+
+npm config delete prefix \
+  && curl https://raw.githubusercontent.com/creationix/nvm/v${NVM_VERSION}/install.sh | sh \
+  && . $NVM_DIR/nvm.sh \
+  && nvm install $NODE_VERSION \
+  && nvm alias default $NODE_VERSION \
+  && nvm use default \
+  && node -v \
+  && npm -v
+
+npm install --global yarn && \
+npm install -g @angular/cli@8.3.3 && \
+ng config -g cli.packageManager yarn && \
+yarn install && \
+yarn build
+```
+
+5. Create a deploy stage
+6. Deployer type: Cloud Foundry
+7. Application name: s4s-inventory-ui
+8. Deploy script
+```
+#!/bin/bash
+cf push "${CF_APP}"
+
+```
