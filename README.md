@@ -59,21 +59,21 @@ In order for see this custom app in BUC, you can add a new left navigation menu 
 
     Local development mode url: https://bucgenerichost:9000/buc-iv-covid-poc
 
-    Child features:
+    Child features: Note - for phase 1 only "Critical Supply" will be enabled.
 ```
 [
   {
-    "featureId": "custom-rapid-inventory-scarce-supply",
+    "featureId": "custom-rapid-inventory-critical-supply",
     "state": "ACTIVE",
     "parentFeatureId": "custom-rapid-inventory",
     "sequence": 1,
-    "title": "Search Scarce Supply",
+    "title": "Critical Supply",
     "link": "https://s4s-inventory-ui.mybluemix.net/buc-iv-covid-poc/home/homepage1",
     "devModeLink": "https://localhost:9000/buc-iv-covid-poc/home/homepage1",
     "path": "/rapid-inventory/scarce-supply",
     "hidden": false,
     "allowedRoles": [ "Fulfillment Manager" ],
-    "description": [ { "title": "Search Scarce Supply", "locale": "en_US", "language": "en" } ],
+    "description": [ { "title": "Critical Supply", "locale": "en_US", "language": "en" } ],
     "type": "IFRAME",
     "featureType": "UserNavigationFeature"
   },
