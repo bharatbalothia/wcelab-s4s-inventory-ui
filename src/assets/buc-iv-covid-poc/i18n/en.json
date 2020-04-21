@@ -33,6 +33,7 @@
       "LABEL_new": "New",
       "LABEL_used": "Used",
       "LABEL_showMap": "Show map",
-      "LABEL_showTable": "Show table"
+      "LABEL_showTable": "Show table",
+      "LABEL_selectALL": "All"
     }
 }
