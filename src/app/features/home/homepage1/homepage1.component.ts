@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, TemplateRef, HostBinding, ElementRef  } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef, HostBinding, ElementRef } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { DatePipe } from '@angular/common';
 
@@ -37,9 +37,6 @@ export class Homepage1Component implements OnInit {
   @ViewChild('modelnumbers', { static: true }) private modelnumbers: ComboboxComponent;
   @ViewChild('suppliers', { static: true }) private suppliers: ComboboxComponent;
 
-
-
-
   private nlsMap: any = {
     'common.LABEL_supplierDetails': '',
     'common.LABEL_supplierLocation': '',
@@ -50,14 +47,15 @@ export class Homepage1Component implements OnInit {
     'common.LABEL_new': '',
     'common.LABEL_used': '',
     'common.LABEL_showMap': '',
-    'common.LABEL_showTable': ''
+    'common.LABEL_showTable': '',
+    'common.LABEL_selectALL': ''
   };
 
-  private supplierMap: { [ key: string ]: Supplier } = {};
+  private supplierMap: { [key: string]: Supplier } = {};
   supplierList: any[] = [];
-  private skuMap: { [ key: string ]: SKU } = {};
-  private supplierLocationMap: { [ key: string ]: SupplierLocation } = {};
-  private cat2ProdMap: { [ key: string ]: any } = {};
+  private skuMap: { [key: string]: SKU } = {};
+  private supplierLocationMap: { [key: string]: SupplierLocation } = {};
+  private cat2ProdMap: { [key: string]: any } = {};
 
   private selectedCat: string;
   private selectedProd: Product = { item_id: undefined, description: undefined };
@@ -67,9 +65,9 @@ export class Homepage1Component implements OnInit {
 
   isSearchByModelNo = false;
   private lastSearchedModelNumbers;
-  private lastSelectedSuppliers ;
+  private lastSearchedSuppliers;
 
-
+  private previousSelectedSuppliers;
   user: { buyers: string[], sellers: string[] };
 
   @HostBinding('class') page = 'page-component';
@@ -121,7 +119,8 @@ export class Homepage1Component implements OnInit {
     this.selectedModelNumbers = [];
     this.selectedSuppliers = [];
     this.lastSearchedModelNumbers = [];
-    this.lastSelectedSuppliers = [];
+    this.lastSearchedSuppliers = [];
+    this.previousSelectedSuppliers = [];
   }
 
   private async _initUserDataAndFetchAllSuppliers() {
@@ -130,15 +129,18 @@ export class Homepage1Component implements OnInit {
     };
 
     this.user = await this.s4sSvc.getUserInfo().toPromise();
-    console.log('S4S response - _initUserDataAndFetchAllSuppliers - getUserInfo',  this.user);
+    console.log('S4S response - _initUserDataAndFetchAllSuppliers - getUserInfo', this.user);
     const obs = this.user.sellers.map(supplierId => this.s4sSvc.getContactDetailsOfSelectedSupplier({ supplierId }));
     const suppliers = await forkJoin(obs).toPromise();
-    console.log('S4S response - _initUserDataAndFetchAllSuppliers - getContactDetailsOfSelectedSupplier combined',  suppliers);
+    console.log('S4S response - _initUserDataAndFetchAllSuppliers - getContactDetailsOfSelectedSupplier combined', suppliers);
 
     this.supplierList = suppliers.map(s => ({ content: `${s.description} (${s.supplier_id})`, id: s.supplier_id }));
-
+    // If there are more than 1 element, then add ALL option as first index, deleting 0 items
+    if (this.supplierList.length >= 2) {
+      this.supplierList.splice(0, 0, { content: this.nlsMap['common.LABEL_selectALL'], id: 'ALL' });
+    }
     getArray(suppliers).forEach((supplier) => {
-      const attrMap: { [ key: string ]: { value: string } } = COMMON.toMap(supplier.address_attributes, 'name');
+      const attrMap: { [key: string]: { value: string } } = COMMON.toMap(supplier.address_attributes, 'name');
       const s: Supplier = {
         _id: supplier._id,
         supplier_id: supplier.supplier_id,
@@ -156,15 +158,15 @@ export class Homepage1Component implements OnInit {
       };
       this.supplierMap[s.supplier_id] = s;
     });
-    console.log('Model - _initUserDataAndFetchAllSuppliers S4S supplierList ', this.supplierList );
+    console.log('Model - _initUserDataAndFetchAllSuppliers S4S supplierList ', this.supplierList);
     console.log('Model - _initUserDataAndFetchAllSuppliers S4S supplierMap ', this.supplierMap);
   }
 
   private _initPcTypes() {
     const list = [
-      { value: Constants.PC_NEW, content: this.nlsMap['common.LABEL_new'], checked: true},
-      { value: Constants.PC_USED, content: this.nlsMap['common.LABEL_used']},
-      { value: Constants.PC_NONE, content: this.nlsMap['common.LABEL_none']},
+      { value: Constants.PC_NEW, content: this.nlsMap['common.LABEL_new'], checked: true },
+      { value: Constants.PC_USED, content: this.nlsMap['common.LABEL_used'] },
+      { value: Constants.PC_NONE, content: this.nlsMap['common.LABEL_none'] },
     ];
     this.pcRadios = list;
   }
@@ -177,7 +179,7 @@ export class Homepage1Component implements OnInit {
     console.log('S4S response - fetchAllSuppliers', responses4s);
 
     getArray(responses4s).forEach((supplier) => {
-      const attrMap: { [ key: string ]: { value: string } } = COMMON.toMap(supplier.address_attributes, 'name');
+      const attrMap: { [key: string]: { value: string } } = COMMON.toMap(supplier.address_attributes, 'name');
       const s: Supplier = {
         _id: supplier._id,
         supplier_id: supplier.supplier_id,
@@ -197,12 +199,12 @@ export class Homepage1Component implements OnInit {
       this.supplierMap[s.supplier_id] = s;
     });
 
-    console.log('Model - S4S allSuppliers List ' , this.supplierMap);
+    console.log('Model - S4S allSuppliers List ', this.supplierMap);
   }
 
   private async _fetchProductsById(childItems: string[]) {
-    const responses4s = await this.invDistService.fetchProductList( childItems ).toPromise();
-    console.log('S4S response -  fetchAllProducts',  responses4s);
+    const responses4s = await this.invDistService.fetchProductList(childItems).toPromise();
+    console.log('S4S response -  fetchAllProducts', responses4s);
     const products = getArray(responses4s);
     products.forEach(product => {
       const s: SKU = {
@@ -220,18 +222,19 @@ export class Homepage1Component implements OnInit {
 
   private async _initCategories() {
     const responses4s = await this.invDistService.getAllCategories().toPromise();
-    console.log('S4S response - getAllCategories '  , responses4s);
+    console.log('S4S response - getAllCategories ', responses4s);
     this.categoryListValues = getArray(responses4s).map((c) => ({
       content: c.category_description,
       id: c.category_id,
       selected: false
     }));
-    console.log('Model - category List ' , this.categoryListValues);
+    console.log('Model - category List ', this.categoryListValues);
     this.isScreenInitialized = true;
   }
 
+
   private async _initModelNumber() {
-//    const responses4s = await this.invDistService.getProducts().toPromise();
+    //    const responses4s = await this.invDistService.getProducts().toPromise();
     const supplierIds = Object.keys(this.supplierMap);
     const responses4s = await this.invDistService.getEntitledProductsBySupplierIds(supplierIds).toPromise();
     console.log('S4S response - _initModelNumber and entitled supplierIds ', responses4s, supplierIds);
@@ -291,7 +294,7 @@ export class Homepage1Component implements OnInit {
             content: `${product.description} (${product.item_id})`,
             id: product.item_id
           }));
-          console.log('Model - Product List ' , this.productListValues);
+          console.log('Model - Product List ', this.productListValues);
         }
 
         this.model.isLoading = false;
@@ -314,16 +317,81 @@ export class Homepage1Component implements OnInit {
   }
 
   /**
-   * Called when user change supplier dropdown (Search by Model# view).
+   * Called when user change supplier dropdown (Search by Model# view). 
    * Selected Supplier ids will be used as a filter while making network availability IV call
    * @param event supplier-id-selection container
    */
   public async onSupplierDropdownChange(event) {
+
     this.selectedSuppliers = event;
-    const supplierNames = this.selectedSuppliers.map(s => s.content);
-    this.suppliers.comboBox.selectedValue = supplierNames.join(', ');
-    console.log('applied filter on supplier  -->', this.selectedSuppliers);
+    const supplierNames = [];
+
+    const isAllInPreviousSelection = [];
+    const isOthersInPreviousSelection = [];
+    for (const eachSupplier of this.previousSelectedSuppliers) {
+      if (eachSupplier === 'ALL') {
+        isAllInPreviousSelection.push('ALL');
+      } else if (eachSupplier !== 'ALL') {
+        isOthersInPreviousSelection.push('Others');
+      }
+    }
+    // current selection
+    const isAllSelected = this.selectedSuppliers.
+      filter(supplierOption => supplierOption.id === 'ALL' && supplierOption.selected);
+    const isOthersSelected = this.selectedSuppliers.
+      filter(supplierOption => supplierOption.id !== 'ALL' && supplierOption.selected);
+
+    if (isAllSelected.length === 0 && isOthersSelected.length === 0) {
+      this.suppliers.comboBox.selectedValue = '';
+    }
+    // Is ALL or Other flow
+    const isAllOnly = ((isAllSelected.length > 0 && isOthersSelected.length === 0) ||
+      (isAllSelected.length !== isAllInPreviousSelection.length));
+    const isOthersOnly = ((isOthersSelected.length > 0 && isAllSelected.length === 0) ||
+      (isOthersSelected.length !== isOthersInPreviousSelection.length));
+
+
+    if (isAllOnly) {
+      this.supplierList.forEach(i => i.selected = false);
+      this.selectedSuppliers.forEach((item, i) => {
+        this.supplierList.forEach((eachsupplierList, j) => {
+          if (eachsupplierList.id === 'ALL') {
+            eachsupplierList.selected = true;
+          }
+        });
+      });
+      this.supplierList = this.supplierList.map(i => i);
+      this.suppliers.comboBox.selectedValue = 'All';
+    }
+
+    if (isOthersOnly) {
+      this.supplierList.forEach(i => i.selected = false);
+      this.selectedSuppliers.forEach((item, i) => {
+        this.supplierList.forEach((eachsupplierList, j) => {
+          if (eachsupplierList.id === item.id && item.selected && item.id !== 'ALL') {
+            eachsupplierList.selected = true;
+            supplierNames.push(item.content);
+          }
+          if (eachsupplierList.id === item.id && item.selected && item.id === 'ALL') {
+            eachsupplierList.selected = false;
+          }
+        });
+      });
+      this.supplierList = this.supplierList.map(i => i);
+      // TODO logic to Keep the dropdown open
+      this.suppliers.comboBox.selectedValue = supplierNames.join(', ');
+    }
+
+
+    this.previousSelectedSuppliers = [];
+    this.selectedSuppliers.forEach((item, i) => {
+      if (item.selected) {
+        this.previousSelectedSuppliers.push(item.id);
+      }
+    });
+
   }
+
 
   /**
    * Called when user click on the button 'search by model number'
@@ -339,10 +407,10 @@ export class Homepage1Component implements OnInit {
       isModelSelectionSame = this.isSelectionUnchanged(this.lastSearchedModelNumbers, this.selectedModelNumbers);
     }
 
-    if (this.lastSelectedSuppliers.length === 0 || this.lastSelectedSuppliers.length !== this.selectedSuppliers.length) {
-      this.lastSelectedSuppliers = this.selectedSuppliers;
+    if (this.lastSearchedSuppliers.length === 0 || this.lastSearchedSuppliers.length !== this.selectedSuppliers.length) {
+      this.lastSearchedSuppliers = this.selectedSuppliers;
     } else {
-      isSupplierSelectionSame = this.isSelectionUnchanged(this.lastSelectedSuppliers, this.selectedSuppliers);
+      isSupplierSelectionSame = this.isSelectionUnchanged(this.lastSearchedSuppliers, this.selectedSuppliers);
     }
 
     if (isModelSelectionSame && isSupplierSelectionSame) {
@@ -383,7 +451,7 @@ export class Homepage1Component implements OnInit {
       if (id === undefined) {
         this._clearCarbonCombo(this.products.comboBox);
       } else {
-        this.selectedProd.description = event.item.content ;
+        this.selectedProd.description = event.item.content;
         this._fetchSuppliersForProductAndClass();
       }
     }
@@ -414,10 +482,10 @@ export class Homepage1Component implements OnInit {
       console.log('IV response ', resp);
 
       const lines = getArray(resp.lines)
-      .filter(l => l.networkAvailabilities.length > 0 && l.networkAvailabilities[0].totalAvailableQuantity > 0);
+        .filter(l => l.networkAvailabilities.length > 0 && l.networkAvailabilities[0].totalAvailableQuantity > 0);
 
       for (const line of lines) {
-        console.log('line', line, line.networkAvailabilities[0].distributionGroupId );
+        console.log('line', line, line.networkAvailabilities[0].distributionGroupId);
         const supplier = this.supplierMap[line.networkAvailabilities[0].distributionGroupId];
         supplier.descAndNode = `${supplier.description} (${line.networkAvailabilities[0].distributionGroupId})`;
 
@@ -440,7 +508,7 @@ export class Homepage1Component implements OnInit {
 
       this.model.isLoading = false;
 
-      console.log('Model - allSuppliersHavingSelectedProduct' , allSuppliersHavingSelectedProduct);
+      console.log('Model - allSuppliersHavingSelectedProduct', allSuppliersHavingSelectedProduct);
       this._refreshSupplierTable(allSuppliersHavingSelectedProduct);
     } catch (err) {
       console.log('Error fetching availability: ', err);
@@ -455,17 +523,30 @@ export class Homepage1Component implements OnInit {
     if (this.selectedModelNumbers.length === 0) {
       return;
     }
-
     const searchSkuIds = [];
     const selectedSupplierIds = [];
     this.selectedModelNumbers.forEach(modelNumber => {
       searchSkuIds.push([modelNumber.id, modelNumber.content]);
     });
 
-
-    this.selectedSuppliers.forEach(supplier => {
-      selectedSupplierIds.push(supplier.id);
+    let isAllSelected = false;
+    this.selectedSuppliers.forEach((item, i) => {
+      if (item.id === 'ALL' && item.selected) {
+        isAllSelected = true;
+      }
     });
+
+    if (isAllSelected) {
+      this.supplierList.forEach(supplier => {
+        selectedSupplierIds.push(supplier.id);
+      });
+    } else {
+      this.selectedSuppliers.forEach(supplier => {
+        selectedSupplierIds.push(supplier.id);
+      });
+    }
+
+
 
     try {
       this.model.isLoading = true;
@@ -473,7 +554,7 @@ export class Homepage1Component implements OnInit {
       const allSuppliersHavingSelectedProduct = [];
       let supplierIds = Object.keys(this.supplierMap);
 
-      // filter suppliers based on selection from supplier dropdown.
+      // filter suppliers based on selection from supplier dropdown. 
       // In case if entitled to one supplier, then it is available in supplierIds
       if (selectedSupplierIds.length > 0) {
         supplierIds = selectedSupplierIds.slice();
@@ -654,11 +735,11 @@ export class Homepage1Component implements OnInit {
 
       const collection = [];
       const lines = getArray(resp.lines)
-      .filter((line, i, self) =>
-        line.networkAvailabilities.length > 0 &&
-        line.networkAvailabilities[0].totalAvailableQuantity > 0 &&
-        (self.length < 2 || line.itemId !== data.product.item_id)
-      );
+        .filter((line, i, self) =>
+          line.networkAvailabilities.length > 0 &&
+          line.networkAvailabilities[0].totalAvailableQuantity > 0 &&
+          (self.length < 2 || line.itemId !== data.product.item_id)
+        );
 
       const children = lines.filter(line => !this.skuMap[line.itemId]).map(line => line.itemId);
       if (children.length > 0) {
@@ -670,7 +751,7 @@ export class Homepage1Component implements OnInit {
         const sku = this.skuMap[line.itemId];
         console.log('S4S response Child Item ', sku);
         if (sku && sku.unit_of_measure !== undefined) {
-          productAvailableQuantity +=  line.networkAvailabilities[0].totalAvailableQuantity ;
+          productAvailableQuantity += line.networkAvailabilities[0].totalAvailableQuantity;
           collection.push(
             {
               itemId: sku.item_id,
@@ -803,9 +884,11 @@ export class Homepage1Component implements OnInit {
         iv.forEach(nodeIv => {
           const name = this.supplierLocationMap[nodeIv.shipNode] ? this.supplierLocationMap[nodeIv.shipNode].shipnode_name : undefined;
           const shipNodeLocation = name || nodeIv.shipNode;
-          productAvailableQuantity +=  nodeIv.totalAvailableQuantity ;
-          locData.push({ shipNodeLocation, sku: line.itemId, availableQuantity: nodeIv.totalAvailableQuantity,
-            latitude: this.supplierLocationMap[nodeIv.shipNode].latitude, longitude: this.supplierLocationMap[nodeIv.shipNode].longitude });
+          productAvailableQuantity += nodeIv.totalAvailableQuantity;
+          locData.push({
+            shipNodeLocation, sku: line.itemId, availableQuantity: nodeIv.totalAvailableQuantity,
+            latitude: this.supplierLocationMap[nodeIv.shipNode].latitude, longitude: this.supplierLocationMap[nodeIv.shipNode].longitude
+          });
         });
       });
 
@@ -909,12 +992,15 @@ export class Homepage1Component implements OnInit {
     // clear multi select
     this.modelNumberListValues.forEach(i => i.selected = false);
     this.modelNumberListValues = this.modelNumberListValues.map(i => i);
+
+
     this.selectedSuppliers = [];
-    this.lastSelectedSuppliers = [];
+    this.lastSearchedSuppliers = [];
     this._clearCarbonCombo(this.suppliers.comboBox);
     // clear multi select
     this.supplierList.forEach(i => i.selected = false);
     this.supplierList = this.supplierList.map(i => i);
+
 
   }
 }
