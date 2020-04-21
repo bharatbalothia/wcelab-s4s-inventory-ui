@@ -125,7 +125,7 @@ class S4SSearchService {
         $refresh ? : any,
         useMocks ? : boolean
     }): Observable < any > {
-      return this.invoke(`product/categories`, parameters);
+      return this.invoke(`productcategories`, parameters);
     }
 
     /**
@@ -143,7 +143,7 @@ class S4SSearchService {
         $refresh ? : any,
         useMocks ? : boolean
     }): Observable < any > {
-      return this.invoke(`products/category/${parameters['categoryId']}`, parameters);
+      return this.invoke(`productcategories/${parameters['categoryId']}/products`, parameters);
     }
 
     public fetchAllSuppliers(parameters: {
