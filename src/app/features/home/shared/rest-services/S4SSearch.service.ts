@@ -211,7 +211,7 @@ class S4SSearchService {
       $refresh?: any,
       useMocks?: boolean
     }): Observable<any> {
-      return this.invoke(`supplier/${parameters['supplierId']}/shipnodes`, parameters);
+      return this.invoke(`suppliers/${parameters['supplierId']}/shipnodes`, parameters);
     }
 
     public postSuppliers(parameters: {
