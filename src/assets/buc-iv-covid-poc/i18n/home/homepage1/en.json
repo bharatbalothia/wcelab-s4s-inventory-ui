@@ -25,7 +25,7 @@
         "LOCATION": "Location"
     },
     "APP_COMPONENT": {
-        "APP_NAME": "Rapid Inventory Visibility",
+        "APP_NAME": "Rapid Inventory",
         "MSG_LOADING": "Loading...",
         "MSG_ERROR": "Loading, refresh page if it is not redirecting to main page within 30 seconds.",
         "TOPITEMS": "Top items",
