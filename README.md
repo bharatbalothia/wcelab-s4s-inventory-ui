@@ -49,61 +49,77 @@ In order for see this custom app in BUC, you can add a new left navigation menu 
 2. Click on Create New
 3. Fill in the form with these proposed values:
 
-    Feature id: emergency-portal
+    Feature id: custom-rapid-inventory
 
-    Title: Emergency Portal
+    Title: Rapid Inventory
 
-    Path: /buc-iv-covid-poc
+    Path: /rapid-inventory
 
-    Url: https://static.omsbusinessusercontrols.ibm.com/buc-app-customization/buc-iv-covid-poc
+    Url: https://s4s-inventory-ui.mybluemix.net/buc-iv-covid-poc
 
-    Local development mode url: https://localhost:9000/buc-iv-covid-poc
+    Local development mode url: https://bucgenerichost:9000/buc-iv-covid-poc
 
     Child features:
 ```
 [
   {
-    "featureId": "emergency-portal-availability-demand",
+    "featureId": "custom-rapid-inventory-scarce-supply",
     "state": "ACTIVE",
-    "parentFeatureId": "emergency-portal",
-    "sequence": 0,
-    "title": "Availability and demand",
-    "link": "https://static.omsbusinessusercontrols.ibm.com/buc-app-customization/buc-iv-covid-poc/home/homepage1",
+    "parentFeatureId": "custom-rapid-inventory",
+    "sequence": 1,
+    "title": "Search Scarce Supply",
+    "link": "https://s4s-inventory-ui.mybluemix.net/buc-iv-covid-poc/home/homepage1",
     "devModeLink": "https://localhost:9000/buc-iv-covid-poc/home/homepage1",
-    "path": "/buc-iv-covid-poc/availability-demand",
+    "path": "/rapid-inventory/scarce-supply",
     "hidden": false,
     "allowedRoles": [ "Fulfillment Manager" ],
-    "description": [ { "title": "Availability and demand", "locale": "en_US", "language": "en" } ],
+    "description": [ { "title": "Search Scarce Supply", "locale": "en_US", "language": "en" } ],
     "type": "IFRAME",
     "featureType": "UserNavigationFeature"
   },
   {
-    "featureId": "emergency-portal-upload-inventory",
+  
+    "featureId": "custom-rapid-inventory-search-iventory",
     "state": "ACTIVE",
-    "parentFeatureId": "emergency-portal",
-    "sequence": 1,
-    "title": "Upload inventory",
-    "link": "https://static.omsbusinessusercontrols.ibm.com/buc-app-customization/buc-iv-covid-poc/home/upload",
-    "devModeLink": "https://localhost:9000/buc-iv-covid-poc/home/upload",
-    "path": "/buc-iv-covid-poc/upload",
-    "hidden": false,
-    "allowedRoles": [ "Tenant Administrator" ],
-    "description": [ { "title": "Upload inventory", "locale": "en_US", "language": "en" } ],
-    "type": "IFRAME",
-    "featureType": "UserNavigationFeature"
-  },
-  {
-    "featureId": "emergency-portal-supplier-search",
-    "state": "ACTIVE",
-    "parentFeatureId": "emergency-portal",
+    "parentFeatureId": "custom-rapid-inventory",
     "sequence": 2,
-    "title": "Supplier search",
-    "link": "https://static.omsbusinessusercontrols.ibm.com/buc-app-customization/buc-iv-covid-poc/home/supplier-search",
-    "devModeLink": "https://localhost:9000/buc-iv-covid-poc/home/supplier-search",
-    "path": "/buc-iv-covid-poc/supplier-search",
+    "title": "Search Inventory",
+    "link": "https://s4s-inventory-ui.mybluemix.net/buc-iv-covid-poc/home/search-iventory",
+    "devModeLink": "https://localhost:9000/buc-iv-covid-poc/home/search-iventory",
+    "path": "/rapid-inventory/search-iventory",
+    "hidden": false,
+    "allowedRoles": [ "Fulfillment Manager" ],
+    "description": [ { "title": "Search Inventory", "locale": "en_US", "language": "en" } ],
+    "type": "IFRAME",
+    "featureType": "UserNavigationFeature"
+  },
+  {
+    "featureId": "custom-rapid-inventory-upload-inventory",
+    "state": "ACTIVE",
+    "parentFeatureId": "custom-rapid-inventory",
+    "sequence": 3,
+    "title": "Upload Inventory",
+    "link": "https://s4s-inventory-ui.mybluemix.net/buc-iv-covid-poc/home/upload",
+    "devModeLink": "https://localhost:9000/buc-iv-covid-poc/home/upload",
+    "path": "/rapid-inventory/upload-inventory",
     "hidden": false,
     "allowedRoles": [ "Tenant Administrator" ],
-    "description": [ { "title": "Supplier search", "locale": "en_US", "language": "en" } ],
+    "description": [ { "title": "Upload Inventory", "locale": "en_US", "language": "en" } ],
+    "type": "IFRAME",
+    "featureType": "UserNavigationFeature"
+  },
+  {
+    "featureId": "custom-rapid-inventory-upload-demand",
+    "state": "ACTIVE",
+    "parentFeatureId": "custom-rapid-inventory",
+    "sequence": 4,
+    "title": "Upload Demand",
+    "link": "https://s4s-inventory-ui.mybluemix.net/buc-iv-covid-poc/home/upload-demand",
+    "devModeLink": "https://localhost:9000/buc-iv-covid-poc/home/upload-demand",
+    "path": "/rapid-inventory/upload-demand",
+    "hidden": false,
+    "allowedRoles": [ "Tenant Administrator" ],
+    "description": [ { "title": "Upload Demand", "locale": "en_US", "language": "en" } ],
     "type": "IFRAME",
     "featureType": "UserNavigationFeature"
   }
