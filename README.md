@@ -70,7 +70,7 @@ In order for see this custom app in BUC, you can add a new left navigation menu 
     "title": "Critical Supply",
     "link": "https://s4s-inventory-ui.mybluemix.net/buc-iv-covid-poc/home/homepage1",
     "devModeLink": "https://localhost:9000/buc-iv-covid-poc/home/homepage1",
-    "path": "/rapid-inventory/scarce-supply",
+    "path": "/rapid-inventory/critical-supply",
     "hidden": false,
     "allowedRoles": [ "Fulfillment Manager" ],
     "description": [ { "title": "Critical Supply", "locale": "en_US", "language": "en" } ],
