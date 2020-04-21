@@ -1,6 +1,6 @@
 {
   "UPLOAD": {
-    "TITLE_UPLOAD_INV": "Upload inventory",
+    "TITLE_UPLOAD_INV": "Upload Inventory",
     "PAGE_LOADED": "Upload page loaded.",
     "LABEL_instructions": "Upload the list of SKUs using a CSV file.",
     "LABEL_tooltip": "Upload file must be of the following format:<br><br>modelnumber,quantity,shipbydate,shipnode<br>itemId1,1000,2020-01-17T00:00:00Z,shipNode1<br>itemId2,2000,2020-01-20T00:00:00Z,shipNode2",
