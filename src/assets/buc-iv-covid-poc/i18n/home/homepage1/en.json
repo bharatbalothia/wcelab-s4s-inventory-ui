@@ -1,5 +1,6 @@
 {
     "HOMEPAGE1": {
+      "TITLE_SEARCH_INV":"Search Inventory",
         "ITEM_AVAILABILITY_AND_DEMAND": "Top items availability & demand",
         "LABEL_DG": "Your network level",
         "LABEL_SELECT_DG": "Select your network level to see data",
