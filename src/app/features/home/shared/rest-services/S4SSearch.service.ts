@@ -248,7 +248,7 @@ class S4SSearchService {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       };
-      const hostPrefix = 'https://s4s-supplement-service-dev.mybluemix.net/s4s';
+      const hostPrefix = 'https://s4s-supplement-service-prod.mybluemix.net/s4s';
       const tenantId = BucSvcAngularStaticAppInfoFacadeUtil.getInventoryTenantId();
 
       // everything is GET for now
@@ -262,7 +262,7 @@ class S4SSearchService {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       };
-      const hostPrefix = 'https://s4s-supplement-service-dev.mybluemix.net/s4s';
+      const hostPrefix = 'https://s4s-supplement-service-prod.mybluemix.net/s4s';
       const tenantId = BucSvcAngularStaticAppInfoFacadeUtil.getInventoryTenantId();
 
       const obs = this._httpClient.post(`${hostPrefix}/${tenantId}/${api}`, body, { headers });

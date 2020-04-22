@@ -35,7 +35,7 @@ export class SupplierSearchComponent implements OnInit {
   private last: string;
   private asMap: { [ key: string ]: { locs: Array<SupplierLocation>, skus: Array<SKU> } } = {};
   @HostBinding('class') page = 'page-component';
-  user: { buyers: string[], sellers: string[] };
+  user: { buyers: string[], suppliers: string[], connected_suppliers: string[] };
   model: S4STableModel = new S4STableModel();
   searchType: number = Constants.SS_LOCATION;
   listDisplay: { label: string, ph: string } = { label: '', ph: '' };
@@ -100,7 +100,7 @@ export class SupplierSearchComponent implements OnInit {
     await this._initUserData();
     this._initSearchType();
     this._setDisplay(this.nlsMap['ss.LABEL_sku'], this.nlsMap['ss.LABEL_location'], this.nlsMap['ss.LABEL_selectLocation']);
-    if (this.user.sellers.length === 1) {
+    if (this.user.connected_suppliers.length === 1) {
       this.onSupplier({ item: this.supplierList[0] });
     }
     this.initialized = true;
@@ -164,7 +164,7 @@ export class SupplierSearchComponent implements OnInit {
 
   private async _initUserData() {
     this.user = await this.s4sSvc.getUserInfo().toPromise();
-    const obs = this.user.sellers.map(supplierId => this.s4sSvc.getContactDetailsOfSelectedSupplier({ supplierId }));
+    const obs = this.user.connected_suppliers.map(supplierId => this.s4sSvc.getContactDetailsOfSelectedSupplier({ supplierId }));
     const suppliers = await forkJoin(obs).toPromise();
     this.supplierList = suppliers.map(s => ({ content: `${s.description} (${s.supplier_id})`, id: s.supplier_id }));
   }

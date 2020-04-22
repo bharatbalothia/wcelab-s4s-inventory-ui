@@ -44,7 +44,7 @@ export class UploadPageComponent implements OnInit {
   model: BucTableModel = new BucTableModel();
   headerModel: BucTableHeaderModel;
 
-  user: { buyers: string[], sellers: string[] };
+  user: { buyers: string[], suppliers: string[], connected_suppliers: string[] };
   supplierList: any[] = [];
   supplier: string;
 
@@ -255,7 +255,7 @@ export class UploadPageComponent implements OnInit {
 
     this.user = await this.s4sSvc.getUserInfo().toPromise();
     console.log('S4S response - _initUserDataAndFetchAllSuppliers - getUserInfo', this.user);
-    const obs = this.user.sellers.map(supplierId => this.s4sSvc.getContactDetailsOfSelectedSupplier({ supplierId }));
+    const obs = this.user.suppliers.map(supplierId => this.s4sSvc.getContactDetailsOfSelectedSupplier({ supplierId }));
     const suppliers = await forkJoin(obs).toPromise();
     console.log('S4S response - _initUserDataAndFetchAllSuppliers - getContactDetailsOfSelectedSupplier combined', suppliers);
     this.supplierList = suppliers.map(s => ({ content: `${s.description} (${s.supplier_id})`, id: s.supplier_id }));
