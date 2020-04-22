@@ -244,7 +244,7 @@ class S4SSearchService {
 
     private invoke(api: string, parameters: SvcParameters, type: string = Constants.GET): Observable<any> {
       const headers = {
-        Authorization: 'Basic N21jNGZyN2tqdzh6cnE3a2loYmZpYTV5cThkOHJxNjU6dDg5czk1amJqbm1lZmQyZHhzNDN1bmwxcjJwNnp1ZjA=',
+        Authorization: 'Basic OGE4MmpvaG5kb2h6NGFrbm54OW1kc3B6bTU0MTBuZDk6M3dodW0xcjRvejZ0N2RqMHdrN3lkZGpicm0wdXIwNHE=',
         Accept: 'application/json',
         'Content-Type': 'application/json',
       };
@@ -258,7 +258,7 @@ class S4SSearchService {
 
     private post(api: string, body:any, parameters: SvcParameters, type: string = Constants.POST): Observable<any> {
       const headers = {
-        Authorization: 'Basic N21jNGZyN2tqdzh6cnE3a2loYmZpYTV5cThkOHJxNjU6dDg5czk1amJqbm1lZmQyZHhzNDN1bmwxcjJwNnp1ZjA=',
+        Authorization: 'Basic OGE4MmpvaG5kb2h6NGFrbm54OW1kc3B6bTU0MTBuZDk6M3dodW0xcjRvejZ0N2RqMHdrN3lkZGpicm0wdXIwNHE=',
         Accept: 'application/json',
         'Content-Type': 'application/json',
       };
