@@ -70,7 +70,7 @@ export class Homepage1Component implements OnInit {
   private lastSelectedSuppliers ;
 
 
-  user: { buyers: string[], sellers: string[] };
+  user: { buyers: string[], suppliers: string[], connected_suppliers: string[] };
 
   @HostBinding('class') page = 'page-component';
   isScreenInitialized = false;
@@ -131,7 +131,7 @@ export class Homepage1Component implements OnInit {
 
     this.user = await this.s4sSvc.getUserInfo().toPromise();
     console.log('S4S response - _initUserDataAndFetchAllSuppliers - getUserInfo',  this.user);
-    const obs = this.user.sellers.map(supplierId => this.s4sSvc.getContactDetailsOfSelectedSupplier({ supplierId }));
+    const obs = this.user.connected_suppliers .map(supplierId => this.s4sSvc.getContactDetailsOfSelectedSupplier({ supplierId }));
     const suppliers = await forkJoin(obs).toPromise();
     console.log('S4S response - _initUserDataAndFetchAllSuppliers - getContactDetailsOfSelectedSupplier combined',  suppliers);
 
