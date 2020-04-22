@@ -24,17 +24,10 @@ script:
       yarn build --source-map --base-href=/buc-app-customization/$COS_FOLDER_ID_PRODUCTION/$APP_NAME/ --deploy-url=/buc-app-customization/$COS_FOLDER_ID_PRODUCTION/$APP_NAME/;
       mv dist dist_production;
     fi
-  - if [[ ( "$TRAVIS_BRANCH" == "deploy-test" ) && "$TRAVIS_PULL_REQUEST" == "false"  ]]; then
-      yarn build --source-map --base-href=/buc-app-customization/$COS_FOLDER_ID_MASTER/$APP_NAME/ --deploy-url=/buc-app-customization/$COS_FOLDER_ID_MASTER/$APP_NAME/;
-      mv dist dist_master;
-    fi    
 after_success:
   - if [[ ( "$TRAVIS_BRANCH" == "deploy-test" ) && "$TRAVIS_PULL_REQUEST" == "false"  ]]; then
        ./publish-to-buc.sh ./dist_master $BUC_CLIENT_ID_MASTER $BUC_CLIENT_SECRET_MASTER;
     fi
   - if [[ ( "$TRAVIS_BRANCH" == "deploy-prod" ) && "$TRAVIS_PULL_REQUEST" == "false"  ]]; then
        ./publish-to-buc.sh ./dist_production $BUC_CLIENT_ID_PRODUCTION $BUC_CLIENT_SECRET_PRODUCTION;
-    fi
-  - if [[ ( "$TRAVIS_BRANCH" == "deploy-test" ) && "$TRAVIS_PULL_REQUEST" == "false"  ]]; then
-       ./publish-to-buc.sh ./dist_master $BUC_CLIENT_ID_MASTER $BUC_CLIENT_SECRET_MASTER;
     fi
