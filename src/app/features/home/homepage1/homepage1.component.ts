@@ -35,7 +35,7 @@ export class Homepage1Component implements OnInit {
   @ViewChild('products', { static: true }) private products: ComboboxComponent;
   @ViewChild('categories', { static: true }) private categories: ComboboxComponent;
   @ViewChild('modelnumbers', { static: true }) private modelnumbers: ComboboxComponent;
-  @ViewChild('suppliers', { static: true }) private suppliers: ComboboxComponent;
+  // @ViewChild('suppliers', { static: true }) private suppliers: ComboboxComponent; from HTML it was removed.
 
 
 
@@ -321,7 +321,7 @@ export class Homepage1Component implements OnInit {
   public async onSupplierDropdownChange(event) {
     this.selectedSuppliers = event;
     const supplierNames = this.selectedSuppliers.map(s => s.content);
-    this.suppliers.comboBox.selectedValue = supplierNames.join(', ');
+    //this.suppliers.comboBox.selectedValue = supplierNames.join(', ');
     console.log('applied filter on supplier  -->', this.selectedSuppliers);
   }
 
@@ -911,7 +911,7 @@ export class Homepage1Component implements OnInit {
     this.modelNumberListValues = this.modelNumberListValues.map(i => i);
     this.selectedSuppliers = [];
     this.lastSelectedSuppliers = [];
-    this._clearCarbonCombo(this.suppliers.comboBox);
+    // this._clearCarbonCombo(this.suppliers.comboBox);
     // clear multi select
     this.supplierList.forEach(i => i.selected = false);
     this.supplierList = this.supplierList.map(i => i);

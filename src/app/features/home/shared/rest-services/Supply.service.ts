@@ -49,7 +49,9 @@ type AdjustSupply = {
 
     'lineReference' ? : string
 
-    'changedQuantity': number
+    'changedQuantity' ? : number
+
+    'quantity' ?: number
 
     'adjustmentReason' ? : string
 
