@@ -25,8 +25,8 @@ import { environment } from '../../../../environments/environment';
 // PENDING - 1 - Need additonal logic to see the logged in users timezone
 @Component({
   selector: 'app-homepage',
-  templateUrl: './homepage.component.html',
-  styleUrls: ['./homepage.component.scss'],
+  templateUrl: './homepage1.component.html',
+  styleUrls: ['./homepage1.component.scss'],
 })
 export class HomepageComponent implements OnInit {
   @ViewChild('supplierLink', { static: true }) private supplierLink: TemplateRef<any>;
