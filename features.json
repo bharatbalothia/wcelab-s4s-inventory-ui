@@ -2,7 +2,7 @@
     {
         "featureId": "custom-rapid-inventory",
         "state": "ACTIVE",
-        "sequence": 1,
+        "sequence": 9,
         "title": "Rapid Inventory",
         "iconName": "inventory-20",
         "link": "/buc-iv-covid-poc",
