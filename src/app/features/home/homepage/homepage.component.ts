@@ -437,9 +437,9 @@ export class HomepageComponent implements OnInit {
           product: this.selectedProd,
           productClass: this.selectedPc,
           productOnHandAvailableQuantity: ((line.networkAvailabilities[0].onhandAvailableQuantity > 0) ?
-            line.networkAvailabilities[0].onhandAvailableQuantity : ''),
+            line.networkAvailabilities[0].onhandAvailableQuantity : '-'),
           productFutureAvailableQuantity: ((line.networkAvailabilities[0].futureAvailableQuantity > 0) ?
-            line.networkAvailabilities[0].futureAvailableQuantity : ''),
+            line.networkAvailabilities[0].futureAvailableQuantity : '-'),
           Date: availableDate
           // TODO PENDING - 1
         });

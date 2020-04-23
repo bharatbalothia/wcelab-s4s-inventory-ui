@@ -1,0 +1,14 @@
+[
+    {
+        "Location": "Fresno",
+        "Availability": "1,000"
+    },
+    {
+		"Location": "Alameda",
+        "Availability": "2,000"
+	},
+	{
+		"Location": "Los Angeles",
+        "Availability": "1,000"
+	}
+]

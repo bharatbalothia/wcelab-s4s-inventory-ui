@@ -177,32 +177,12 @@ ul.bx--list-box__menu.bx--multi-select {
   }
 }
 
-buc-table.no-data {
-  sc-table {
-    overflow-y: hidden !important;
-    table {
-      height: 100%;
-      td {
-        vertical-align: middle;
-        height: 100%;
-      }
-    }
-  }
-}
 
-buc-table.header--bigger {
-  .bx--data-table--compact.bx--data-table--sort th {
-    height: 2.5rem;
-    vertical-align: middle;
-    span.bx--table-header-label {
-        text-align: center;
-        padding-left: 0px;
-        padding-right: 0px;
-    }
-    button.bx--table-sort {
-        text-align: center;
-        padding-left: 0px;
-        padding-right: 0px;
+.no-data {
+  table {
+    height: 100%;
+    td {
+      vertical-align: middle;
     }
   }
 }

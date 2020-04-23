@@ -39,5 +39,12 @@
       display: flex;
       flex: 1;
     }
+
+    .no-data {
+      ::ng-deep table {
+        height: 100%;
+      }
+    }
   }
+
 }

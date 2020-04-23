@@ -16,16 +16,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'buc-iv-covid-poc'`, () => {
+  it(`should have as title 'rapid-inventory'`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.debugElement.componentInstance;
-    expect(app.title).toEqual('buc-iv-covid-poc');
+    expect(app.title).toEqual('rapid-inventory');
   });
 
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.debugElement.nativeElement;
-    expect(compiled.querySelector('.content span').textContent).toContain('buc-iv-covid-poc app is running!');
+    expect(compiled.querySelector('.content span').textContent).toContain('rapid-inventory app is running!');
   });
 });

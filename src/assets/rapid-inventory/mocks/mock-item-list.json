@@ -1,0 +1,29 @@
+{
+  "ItemList": [
+    {
+    "itemName": "Gloves",
+    "availability": "100",
+    "demand":"1000"
+    },
+    {
+    "itemName": "Tissues",
+    "availability": "30",
+    "demand":"400"
+    },
+    {
+    "itemName": "Sanitizers",
+    "availability": "34",
+    "demand":"200"
+    },
+    {
+    "itemName": "Medicine",
+    "availability": "45",
+    "demand":"111"
+    },
+    {
+    "itemName": "Water",
+    "availability": "67",
+    "demand":"2223"
+    }
+  ]
+}
