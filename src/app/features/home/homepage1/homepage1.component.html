@@ -180,6 +180,7 @@
     <div class="bx--row d--flex-1 d--flex-jc-space-evenly padding-top--1rem">
       <div class="bx--col padding-left-right--0">
         <buc-table
+          class="header--bigger"
           [class.no-data]="data.model.totalDataLength===0"
           [model]="data.model"
           [size]="'sm'"
@@ -241,7 +242,7 @@
             {{ data.sku.availableQuantity }}
           </div>
           <!--<div class="d--flex-jc-flex-end margin-bottom--0" [innerHTML]="'common.LABEL_availableDisplay' | translate: { date: data.sku.parentData.date }"></div> -->
-          <div class="d--flex-jc-flex-end margin-bottom--0" [innerHTML]=""></div> 
+          <div class="d--flex-jc-flex-end margin-bottom--0" [innerHTML]=""></div>
         </div>
       </div>
     </div>
@@ -253,11 +254,11 @@
         </buc-button>
       </div>
     </div>
-    
+
     <div class="bx--row d--flex-1 d--flex-jc-space-evenly padding-top--1rem">
       <div class="bx--col padding-left-right--0">
         <div #mapContainer class="google-map" [class.hide-div]="data.hideMap"></div>
-         
+
         <buc-table
           [class.hide-div]="!data.hideMap"
           [class.no-data]="data.model.totalDataLength===0"
