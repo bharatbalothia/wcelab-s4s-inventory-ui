@@ -24,11 +24,11 @@ import { environment } from '../../../../environments/environment';
 
 // PENDING - 1 - Need additonal logic to see the logged in users timezone
 @Component({
-  selector: 'app-homepage',
+  selector: 'app-homepage1',
   templateUrl: './homepage1.component.html',
   styleUrls: ['./homepage1.component.scss'],
 })
-export class HomepageComponent implements OnInit {
+export class Homepage1Component implements OnInit {
   @ViewChild('supplierLink', { static: true }) private supplierLink: TemplateRef<any>;
   @ViewChild('supplierTpl', { static: true }) private supplierTpl: TemplateRef<any>;
   @ViewChild('supplierLocationLink', { static: true }) private supplierLocationLink: TemplateRef<any>;
