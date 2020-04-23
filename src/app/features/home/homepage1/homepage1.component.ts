@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, TemplateRef, HostBinding, ElementRef  } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef, HostBinding, ElementRef } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { DatePipe } from '@angular/common';
 
@@ -19,6 +19,7 @@ import { SKU } from '../shared/common/sku';
 import { S4STableModel } from '../shared/common/table-model';
 import { Constants } from '../shared/common/constants';
 
+import { environment } from '../../../../environments/environment';
 
 
 // PENDING - 1 - Need additonal logic to see the logged in users timezone
@@ -53,11 +54,11 @@ export class Homepage1Component implements OnInit {
     'common.LABEL_showTable': ''
   };
 
-  private supplierMap: { [ key: string ]: Supplier } = {};
+  private supplierMap: { [key: string]: Supplier } = {};
   supplierList: any[] = [];
-  private skuMap: { [ key: string ]: SKU } = {};
-  private supplierLocationMap: { [ key: string ]: SupplierLocation } = {};
-  private cat2ProdMap: { [ key: string ]: any } = {};
+  private skuMap: { [key: string]: SKU } = {};
+  private supplierLocationMap: { [key: string]: SupplierLocation } = {};
+  private cat2ProdMap: { [key: string]: any } = {};
 
   private selectedCat: string;
   private selectedProd: Product = { item_id: undefined, description: undefined };
@@ -67,8 +68,9 @@ export class Homepage1Component implements OnInit {
 
   isSearchByModelNo = false;
   private lastSearchedModelNumbers;
-  private lastSelectedSuppliers ;
+  private lastSelectedSuppliers;
 
+  isGoogleMapEnabled = false;
 
   user: { buyers: string[], suppliers: string[], connected_suppliers: string[] };
 
@@ -93,12 +95,14 @@ export class Homepage1Component implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.isGoogleMapEnabled = environment.isGoogleMapEnabled;
     this._init();
   }
 
   private async _init() {
     await this._initTranslations();
     this._initializePage();
+
   }
 
   private async _initTranslations() {
@@ -130,15 +134,15 @@ export class Homepage1Component implements OnInit {
     };
 
     this.user = await this.s4sSvc.getUserInfo().toPromise();
-    console.log('S4S response - _initUserDataAndFetchAllSuppliers - getUserInfo',  this.user);
-    const obs = this.user.connected_suppliers .map(supplierId => this.s4sSvc.getContactDetailsOfSelectedSupplier({ supplierId }));
+    console.log('S4S response - _initUserDataAndFetchAllSuppliers - getUserInfo', this.user);
+    const obs = this.user.connected_suppliers.map(supplierId => this.s4sSvc.getContactDetailsOfSelectedSupplier({ supplierId }));
     const suppliers = await forkJoin(obs).toPromise();
-    console.log('S4S response - _initUserDataAndFetchAllSuppliers - getContactDetailsOfSelectedSupplier combined',  suppliers);
+    console.log('S4S response - _initUserDataAndFetchAllSuppliers - getContactDetailsOfSelectedSupplier combined', suppliers);
 
     this.supplierList = suppliers.map(s => ({ content: `${s.description} (${s.supplier_id})`, id: s.supplier_id }));
 
     getArray(suppliers).forEach((supplier) => {
-      const attrMap: { [ key: string ]: { value: string } } = COMMON.toMap(supplier.address_attributes, 'name');
+      const attrMap: { [key: string]: { value: string } } = COMMON.toMap(supplier.address_attributes, 'name');
       const s: Supplier = {
         _id: supplier._id,
         supplier_id: supplier.supplier_id,
@@ -156,15 +160,15 @@ export class Homepage1Component implements OnInit {
       };
       this.supplierMap[s.supplier_id] = s;
     });
-    console.log('Model - _initUserDataAndFetchAllSuppliers S4S supplierList ', this.supplierList );
+    console.log('Model - _initUserDataAndFetchAllSuppliers S4S supplierList ', this.supplierList);
     console.log('Model - _initUserDataAndFetchAllSuppliers S4S supplierMap ', this.supplierMap);
   }
 
   private _initPcTypes() {
     const list = [
-      { value: Constants.PC_NEW, content: this.nlsMap['common.LABEL_new'], checked: true},
-      { value: Constants.PC_USED, content: this.nlsMap['common.LABEL_used']},
-      { value: Constants.PC_NONE, content: this.nlsMap['common.LABEL_none']},
+      { value: Constants.PC_NEW, content: this.nlsMap['common.LABEL_new'], checked: true },
+      { value: Constants.PC_USED, content: this.nlsMap['common.LABEL_used'] },
+      { value: Constants.PC_NONE, content: this.nlsMap['common.LABEL_none'] },
     ];
     this.pcRadios = list;
   }
@@ -177,7 +181,7 @@ export class Homepage1Component implements OnInit {
     console.log('S4S response - fetchAllSuppliers', responses4s);
 
     getArray(responses4s).forEach((supplier) => {
-      const attrMap: { [ key: string ]: { value: string } } = COMMON.toMap(supplier.address_attributes, 'name');
+      const attrMap: { [key: string]: { value: string } } = COMMON.toMap(supplier.address_attributes, 'name');
       const s: Supplier = {
         _id: supplier._id,
         supplier_id: supplier.supplier_id,
@@ -197,12 +201,12 @@ export class Homepage1Component implements OnInit {
       this.supplierMap[s.supplier_id] = s;
     });
 
-    console.log('Model - S4S allSuppliers List ' , this.supplierMap);
+    console.log('Model - S4S allSuppliers List ', this.supplierMap);
   }
 
   private async _fetchProductsById(childItems: string[]) {
-    const responses4s = await this.invDistService.fetchProductList( childItems ).toPromise();
-    console.log('S4S response -  fetchAllProducts',  responses4s);
+    const responses4s = await this.invDistService.fetchProductList(childItems).toPromise();
+    console.log('S4S response -  fetchAllProducts', responses4s);
     const products = getArray(responses4s);
     products.forEach(product => {
       const s: SKU = {
@@ -220,18 +224,18 @@ export class Homepage1Component implements OnInit {
 
   private async _initCategories() {
     const responses4s = await this.invDistService.getAllCategories().toPromise();
-    console.log('S4S response - getAllCategories '  , responses4s);
+    console.log('S4S response - getAllCategories ', responses4s);
     this.categoryListValues = getArray(responses4s).map((c) => ({
       content: c.category_description,
       id: c.category_id,
       selected: false
     }));
-    console.log('Model - category List ' , this.categoryListValues);
+    console.log('Model - category List ', this.categoryListValues);
     this.isScreenInitialized = true;
   }
 
   private async _initModelNumber() {
-//    const responses4s = await this.invDistService.getProducts().toPromise();
+    //    const responses4s = await this.invDistService.getProducts().toPromise();
     const supplierIds = Object.keys(this.supplierMap);
     const responses4s = await this.invDistService.getEntitledProductsBySupplierIds(supplierIds).toPromise();
     console.log('S4S response - _initModelNumber and entitled supplierIds ', responses4s, supplierIds);
@@ -291,7 +295,7 @@ export class Homepage1Component implements OnInit {
             content: `${product.description} (${product.item_id})`,
             id: product.item_id
           }));
-          console.log('Model - Product List ' , this.productListValues);
+          console.log('Model - Product List ', this.productListValues);
         }
 
         this.model.isLoading = false;
@@ -321,7 +325,7 @@ export class Homepage1Component implements OnInit {
   public async onSupplierDropdownChange(event) {
     this.selectedSuppliers = event;
     const supplierNames = this.selectedSuppliers.map(s => s.content);
-    //this.suppliers.comboBox.selectedValue = supplierNames.join(', ');
+    // this.suppliers.comboBox.selectedValue = supplierNames.join(', ');
     console.log('applied filter on supplier  -->', this.selectedSuppliers);
   }
 
@@ -383,7 +387,7 @@ export class Homepage1Component implements OnInit {
       if (id === undefined) {
         this._clearCarbonCombo(this.products.comboBox);
       } else {
-        this.selectedProd.description = event.item.content ;
+        this.selectedProd.description = event.item.content;
         this._fetchSuppliersForProductAndClass();
       }
     }
@@ -414,25 +418,28 @@ export class Homepage1Component implements OnInit {
       console.log('IV response ', resp);
 
       const lines = getArray(resp.lines)
-      .filter(l => l.networkAvailabilities.length > 0 && l.networkAvailabilities[0].totalAvailableQuantity > 0);
+        .filter(l => l.networkAvailabilities.length > 0 && l.networkAvailabilities[0].totalAvailableQuantity > 0);
 
       for (const line of lines) {
-        console.log('line', line, line.networkAvailabilities[0].distributionGroupId );
+        console.log('line', line, line.networkAvailabilities[0].distributionGroupId);
         const supplier = this.supplierMap[line.networkAvailabilities[0].distributionGroupId];
         supplier.descAndNode = `${supplier.description} (${line.networkAvailabilities[0].distributionGroupId})`;
 
-        let availableDate = 'Now';
-        if (line.networkAvailabilities[0].thresholdType === 'ONHAND') {
+        let availableDate = '-';
+        if (line.networkAvailabilities[0].onhandAvailableQuantity > 0) {
           availableDate = 'Now';
-        } else {
-          availableDate = new DatePipe('en-US').transform(line.networkAvailabilities[0].earliestShipTs, 'MM/dd/yyyy');
+        } else if (line.networkAvailabilities[0].futureAvailableQuantity > 0) {
+          availableDate = new DatePipe('en-US').transform(line.networkAvailabilities[0].futureEarliestShipTs, 'MM/dd/yyyy');
         }
 
         allSuppliersHavingSelectedProduct.push({
           supplier,
           product: this.selectedProd,
           productClass: this.selectedPc,
-          Availability: line.networkAvailabilities[0].totalAvailableQuantity,
+          productOnHandAvailableQuantity: ((line.networkAvailabilities[0].onhandAvailableQuantity > 0) ?
+            line.networkAvailabilities[0].onhandAvailableQuantity : ''),
+          productFutureAvailableQuantity: ((line.networkAvailabilities[0].futureAvailableQuantity > 0) ?
+            line.networkAvailabilities[0].futureAvailableQuantity : ''),
           Date: availableDate
           // TODO PENDING - 1
         });
@@ -440,7 +447,7 @@ export class Homepage1Component implements OnInit {
 
       this.model.isLoading = false;
 
-      console.log('Model - allSuppliersHavingSelectedProduct' , allSuppliersHavingSelectedProduct);
+      console.log('Model - allSuppliersHavingSelectedProduct', allSuppliersHavingSelectedProduct);
       this._refreshSupplierTable(allSuppliersHavingSelectedProduct);
     } catch (err) {
       console.log('Error fetching availability: ', err);
@@ -493,21 +500,25 @@ export class Homepage1Component implements OnInit {
           const supplier = this.supplierMap[line.networkAvailabilities[0].distributionGroupId];
           supplier.descAndNode = `${supplier.description} (${line.networkAvailabilities[0].distributionGroupId})`;
 
-          let availableDate = 'Now';
-          if (line.networkAvailabilities[0].thresholdType === 'ONHAND') {
+          let availableDate = '-';
+          if (line.networkAvailabilities[0].onhandAvailableQuantity > 0) {
             availableDate = 'Now';
-          } else {
-            availableDate = new DatePipe('en-US').transform(line.networkAvailabilities[0].earliestShipTs, 'MM/dd/yyyy');
+          } else if (line.networkAvailabilities[0].futureAvailableQuantity > 0) {
+            availableDate = new DatePipe('en-US').transform(line.networkAvailabilities[0].futureEarliestShipTs, 'MM/dd/yyyy');
           }
 
           allSuppliersHavingSelectedProduct.push({
             supplier,
             product: { item_id: sku[0], description: sku[1] },
             productClass: this.selectedPc,
-            Availability: line.networkAvailabilities[0].totalAvailableQuantity,
+            productOnHandAvailableQuantity: ((line.networkAvailabilities[0].onhandAvailableQuantity > 0) ?
+              line.networkAvailabilities[0].onhandAvailableQuantity : '-'),
+            productFutureAvailableQuantity: ((line.networkAvailabilities[0].futureAvailableQuantity > 0) ?
+              line.networkAvailabilities[0].futureAvailableQuantity : '-'),
             Date: availableDate
             // TODO PENDING - 1
           });
+
         }
 
         this.model.isLoading = false;
@@ -534,11 +545,15 @@ export class Homepage1Component implements OnInit {
             sortable: true
           }),
           new TableHeaderItem({
-            data: this.translateService.instant('LIST_TABLE.HEADER_AVAILABILITY'),
+            data: this.translateService.instant('LIST_TABLE.HEADER_AVAILABILITY_NOW'),
             sortable: true
           }),
           new TableHeaderItem({
-            data: this.translateService.instant('LIST_TABLE.HEADER_DATE'),
+            data: this.translateService.instant('LIST_TABLE.HEADER_AVAILABILITY_LATER'),
+            sortable: true
+          }),
+          new TableHeaderItem({
+            data: this.translateService.instant('LIST_TABLE.HEADER_EARLIEST_AVAILABILITY_DATE'),
             sortable: true
           }),
         ]
@@ -551,11 +566,15 @@ export class Homepage1Component implements OnInit {
             sortable: true
           }),
           new TableHeaderItem({
-            data: this.translateService.instant('LIST_TABLE.HEADER_AVAILABILITY'),
+            data: this.translateService.instant('LIST_TABLE.HEADER_AVAILABILITY_NOW'),
             sortable: true
           }),
           new TableHeaderItem({
-            data: this.translateService.instant('LIST_TABLE.HEADER_DATE'),
+            data: this.translateService.instant('LIST_TABLE.HEADER_AVAILABILITY_LATER'),
+            sortable: true
+          }),
+          new TableHeaderItem({
+            data: this.translateService.instant('LIST_TABLE.HEADER_EARLIEST_AVAILABILITY_DATE'),
             sortable: true
           }),
         ]
@@ -577,7 +596,10 @@ export class Homepage1Component implements OnInit {
           data: record.product.description,
         },
         {
-          data: record.Availability,
+          data: record.productOnHandAvailableQuantity,
+        },
+        {
+          data: record.productFutureAvailableQuantity,
         },
         {
           data: record.Date
@@ -592,7 +614,10 @@ export class Homepage1Component implements OnInit {
           id: i
         },
         {
-          data: record.Availability,
+          data: record.productOnHandAvailableQuantity,
+        },
+        {
+          data: record.productFutureAvailableQuantity,
         },
         {
           data: record.Date
@@ -623,7 +648,9 @@ export class Homepage1Component implements OnInit {
         [
           new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.PRODUCT_MODEL_NUMBER') }),
           new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.UOM') }),
-          new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.HEADER_AVAILABILITY') }),
+          new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.HEADER_AVAILABILITY_NOW') }),
+          new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.HEADER_AVAILABILITY_LATER') }),
+          new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.HEADER_EARLIEST_AVAILABILITY_DATE') }),
         ]
       ];
       const makeRows = (records) => records
@@ -637,13 +664,17 @@ export class Homepage1Component implements OnInit {
             template: this.supplierLocationLink, id: sku.itemId
           },
           { data: sku.unitOfMeasure, },
-          { data: sku.availableQuantity }
+          { data: sku.itemOnHandAvailableQuantity },
+          { data: sku.itemFutureAvailableQuantity },
+          { data: sku.itemAvailableDate }
         ]));
 
       const templateData: any = {
         supplier: data.supplier,
         product: data.product,
         quantity: data.Availability,
+        onHandQuantity: data.itemOnHandAvailableQuantity,
+        futureQuantity: data.itemFutureAvailableQuantity,
         date: data.Date
       };
 
@@ -654,11 +685,11 @@ export class Homepage1Component implements OnInit {
 
       const collection = [];
       const lines = getArray(resp.lines)
-      .filter((line, i, self) =>
-        line.networkAvailabilities.length > 0 &&
-        line.networkAvailabilities[0].totalAvailableQuantity > 0 &&
-        (self.length < 2 || line.itemId !== data.product.item_id)
-      );
+        .filter((line, i, self) =>
+          line.networkAvailabilities.length > 0 &&
+          line.networkAvailabilities[0].totalAvailableQuantity > 0 &&
+          (self.length < 2 || line.itemId !== data.product.item_id)
+        );
 
       const children = lines.filter(line => !this.skuMap[line.itemId]).map(line => line.itemId);
       if (children.length > 0) {
@@ -666,11 +697,20 @@ export class Homepage1Component implements OnInit {
       }
 
       let productAvailableQuantity = 0;
+      const itemAvailableDates = [];
       lines.forEach(line => {
         const sku = this.skuMap[line.itemId];
         console.log('S4S response Child Item ', sku);
         if (sku && sku.unit_of_measure !== undefined) {
-          productAvailableQuantity +=  line.networkAvailabilities[0].totalAvailableQuantity ;
+
+          let itemAvailableDate = '-';
+          if (line.networkAvailabilities[0].onhandAvailableQuantity > 0) {
+            itemAvailableDate = 'Now';
+          } else if (line.networkAvailabilities[0].futureAvailableQuantity > 0) {
+            itemAvailableDate = new DatePipe('en-US').transform(line.networkAvailabilities[0].futureEarliestShipTs, 'MM/dd/yyyy');
+          }
+          itemAvailableDates.push(itemAvailableDate);
+          productAvailableQuantity += line.networkAvailabilities[0].totalAvailableQuantity;
           collection.push(
             {
               itemId: sku.item_id,
@@ -682,11 +722,16 @@ export class Homepage1Component implements OnInit {
               productClass: data.productClass,
               shipNodes: line.networkAvailabilities[0].distributionGroupId,
               availableQuantity: line.networkAvailabilities[0].totalAvailableQuantity,
-              itemAvailableDate: line
+              itemAvailableDate,
+              itemOnHandAvailableQuantity: ((line.networkAvailabilities[0].onhandAvailableQuantity > 0) ?
+                line.networkAvailabilities[0].onhandAvailableQuantity : '-'),
+              itemFutureAvailableQuantity: ((line.networkAvailabilities[0].futureAvailableQuantity > 0) ?
+                line.networkAvailabilities[0].futureAvailableQuantity : '-')
             }
           );
         }
       });
+
       // product AvailableQuantity after sum up all SKU's quantity
       data.Availability = productAvailableQuantity;
       templateData.quantity = productAvailableQuantity;
@@ -743,13 +788,17 @@ export class Homepage1Component implements OnInit {
       const makeHeaders = () => [
         [
           new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.LOCATION') }),
-          new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.HEADER_AVAILABILITY') })
+          new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.HEADER_AVAILABILITY_NOW') }),
+          new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.HEADER_AVAILABILITY_LATER') }),
+          new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.HEADER_EARLIEST_AVAILABILITY_DATE') }),
         ]
       ];
       const makeRows = (records) => records
         .map(loc => ([
           { data: loc.shipNodeLocation, id: loc.sku },
-          { data: loc.availableQuantity }
+          { data: loc.skuOnHandAvailableQuantity },
+          { data: loc.skuFutureAvailableQuantity },
+          { data: loc.skuAvailableDate },
         ]));
 
       const templateData: any = {
@@ -796,23 +845,40 @@ export class Homepage1Component implements OnInit {
       console.log('IV response', ivResponse);
 
 
-      let productAvailableQuantity = 0;
+      let skuAvailableQuantity = 0;
+
       const lines = getArray(ivResponse.lines);
       lines.filter(l => l.itemId === sku.itemId).forEach(line => {
         const iv = getArray(line.shipNodeAvailability).filter(l => l.totalAvailableQuantity > 0);
         iv.forEach(nodeIv => {
           const name = this.supplierLocationMap[nodeIv.shipNode] ? this.supplierLocationMap[nodeIv.shipNode].shipnode_name : undefined;
           const shipNodeLocation = name || nodeIv.shipNode;
-          productAvailableQuantity +=  nodeIv.totalAvailableQuantity ;
-          locData.push({ shipNodeLocation, sku: line.itemId, availableQuantity: nodeIv.totalAvailableQuantity,
-            latitude: this.supplierLocationMap[nodeIv.shipNode].latitude, longitude: this.supplierLocationMap[nodeIv.shipNode].longitude });
+          skuAvailableQuantity += nodeIv.totalAvailableQuantity;
+
+          let skuAvailableDate = '-';
+          if (nodeIv.onhandAvailableQuantity > 0) {
+            skuAvailableDate = 'Now';
+          } else if (nodeIv.futureAvailableQuantity > 0) {
+            skuAvailableDate = new DatePipe('en-US').transform(nodeIv.futureEarliestShipTs, 'MM/dd/yyyy');
+          }
+
+          locData.push({
+            shipNodeLocation,
+            sku: line.itemId,
+            availableQuantity: nodeIv.totalAvailableQuantity,
+            latitude: this.supplierLocationMap[nodeIv.shipNode].latitude,
+            longitude: this.supplierLocationMap[nodeIv.shipNode].longitude,
+            skuOnHandAvailableQuantity: ((nodeIv.onhandAvailableQuantity > 0) ?
+              nodeIv.onhandAvailableQuantity : '-'),
+            skuFutureAvailableQuantity: ((nodeIv.futureAvailableQuantity > 0) ?
+              nodeIv.futureAvailableQuantity : '-'),
+            skuAvailableDate
+          });
         });
       });
 
       // product AvailableQuantity after sum up all SKU per location quantity
-      sku.availableQuantity = productAvailableQuantity;
-
-
+      sku.availableQuantity = skuAvailableQuantity;
 
       const tModel = new S4STableModel();
       tModel.header = makeHeaders();
