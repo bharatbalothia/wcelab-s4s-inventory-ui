@@ -24,11 +24,11 @@ import { environment } from '../../../../environments/environment';
 
 // PENDING - 1 - Need additonal logic to see the logged in users timezone
 @Component({
-  selector: 'app-homepage1',
-  templateUrl: './homepage1.component.html',
-  styleUrls: ['./homepage1.component.scss'],
+  selector: 'app-homepage',
+  templateUrl: './homepage.component.html',
+  styleUrls: ['./homepage.component.scss'],
 })
-export class Homepage1Component implements OnInit {
+export class HomepageComponent implements OnInit {
   @ViewChild('supplierLink', { static: true }) private supplierLink: TemplateRef<any>;
   @ViewChild('supplierTpl', { static: true }) private supplierTpl: TemplateRef<any>;
   @ViewChild('supplierLocationLink', { static: true }) private supplierLocationLink: TemplateRef<any>;
@@ -437,9 +437,9 @@ export class Homepage1Component implements OnInit {
           product: this.selectedProd,
           productClass: this.selectedPc,
           productOnHandAvailableQuantity: ((line.networkAvailabilities[0].onhandAvailableQuantity > 0) ?
-            line.networkAvailabilities[0].onhandAvailableQuantity : ''),
+            line.networkAvailabilities[0].onhandAvailableQuantity : '-'),
           productFutureAvailableQuantity: ((line.networkAvailabilities[0].futureAvailableQuantity > 0) ?
-            line.networkAvailabilities[0].futureAvailableQuantity : ''),
+            line.networkAvailabilities[0].futureAvailableQuantity : '-'),
           Date: availableDate
           // TODO PENDING - 1
         });
