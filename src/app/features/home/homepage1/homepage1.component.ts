@@ -28,7 +28,7 @@ import { environment } from '../../../../environments/environment';
   templateUrl: './homepage1.component.html',
   styleUrls: ['./homepage1.component.scss'],
 })
-export class Homepage1Component implements OnInit {
+export class HomepageComponent implements OnInit {
   @ViewChild('supplierLink', { static: true }) private supplierLink: TemplateRef<any>;
   @ViewChild('supplierTpl', { static: true }) private supplierTpl: TemplateRef<any>;
   @ViewChild('supplierLocationLink', { static: true }) private supplierLocationLink: TemplateRef<any>;
