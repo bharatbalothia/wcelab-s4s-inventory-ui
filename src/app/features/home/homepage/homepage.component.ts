@@ -142,7 +142,7 @@ export class HomepageComponent implements OnInit {
     this.supplierList = suppliers.map(s => ({ content: `${s.description} (${s.supplier_id})`, id: s.supplier_id }));
 
     getArray(suppliers).forEach((supplier) => {
-      const attrMap: { [key: string]: { value: string } } = COMMON.toMap(supplier.address_attributes, 'name');
+      // const attrMap: { [key: string]: { value: string } } = COMMON.toMap(supplier.address_attributes, 'name');
       const s: Supplier = {
         _id: supplier._id,
         supplier_id: supplier.supplier_id,
@@ -151,12 +151,18 @@ export class HomepageComponent implements OnInit {
         supplier_type: supplier.supplier_type,
         url: supplier.supplier_url || '',
         contactPerson: supplier.contact_person || this.nlsMap['common.LABEL_noContact'],
-        address_line_1: getValue(attrMap.address_line_1),
-        city: getValue(attrMap.city),
-        state: getValue(attrMap.state),
-        zipcode: getValue(attrMap.zipcode),
-        country: getValue(attrMap.country),
-        phoneNumber: getValue(attrMap.phone_number, this.nlsMap['common.LABEL_noPhone'])
+        // address_line_1: getValue(attrMap.address_line_1),
+        // city: getValue(attrMap.city),
+        // state: getValue(attrMap.state),
+        // zipcode: getValue(attrMap.zipcode),
+        // country: getValue(attrMap.country),
+        // phoneNumber: getValue(attrMap.phone_number, this.nlsMap['common.LABEL_noPhone'])
+        address_line_1: supplier.contact.address_line_1,
+        city: supplier.contact.city,
+        state: supplier.contact.state,
+        zipcode: supplier.contact.zipcode,
+        country: supplier.contact.country,
+        phoneNumber: (supplier.contact.phone_number, this.nlsMap['common.LABEL_noPhone'])
       };
       this.supplierMap[s.supplier_id] = s;
     });
@@ -181,7 +187,7 @@ export class HomepageComponent implements OnInit {
     console.log('S4S response - fetchAllSuppliers', responses4s);
 
     getArray(responses4s).forEach((supplier) => {
-      const attrMap: { [key: string]: { value: string } } = COMMON.toMap(supplier.address_attributes, 'name');
+      // const attrMap: { [key: string]: { value: string } } = COMMON.toMap(supplier.address_attributes, 'name');
       const s: Supplier = {
         _id: supplier._id,
         supplier_id: supplier.supplier_id,
@@ -190,12 +196,18 @@ export class HomepageComponent implements OnInit {
         supplier_type: supplier.supplier_type,
         url: supplier.supplier_url || '',
         contactPerson: supplier.contact_person || this.nlsMap['common.LABEL_noContact'],
-        address_line_1: getValue(attrMap.address_line_1),
-        city: getValue(attrMap.city),
-        state: getValue(attrMap.state),
-        zipcode: getValue(attrMap.zipcode),
-        country: getValue(attrMap.country),
-        phoneNumber: getValue(attrMap.phone_number, this.nlsMap['common.LABEL_noPhone'])
+        // address_line_1: getValue(attrMap.address_line_1),
+        // city: getValue(attrMap.city),
+        // state: getValue(attrMap.state),
+        // zipcode: getValue(attrMap.zipcode),
+        // country: getValue(attrMap.country),
+        // phoneNumber: getValue(attrMap.phone_number, this.nlsMap['common.LABEL_noPhone'])
+        address_line_1: supplier.contact.address_line_1,
+        city: supplier.contact.city,
+        state: supplier.contact.state,
+        zipcode: supplier.contact.zipcode,
+        country: supplier.contact.country,
+        phoneNumber: (supplier.contact.phone_number, this.nlsMap['common.LABEL_noPhone'])
       };
 
       this.supplierMap[s.supplier_id] = s;
