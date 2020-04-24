@@ -15,7 +15,7 @@
       "LABEL_modelNumber": "Model number",
       "LABEL_availQuant": "Available quantity",
       "LABEL_availDate": "Available as of",
-      "LABEL_availableDisplay": "<span class='font-weight--600'>Available:</span> {{ date }}",
+      "LABEL_availableDisplay": "<span class='font-weight--600'>Available</span>",
       "LABEL_ok": "OK",
       "LABEL_noData": "No data available",
       "LABEL_supplierDisplay": "{{ supplier.description }} ({{ supplier.supplier_id }})",
