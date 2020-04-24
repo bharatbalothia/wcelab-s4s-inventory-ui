@@ -437,11 +437,10 @@ export class HomepageComponent implements OnInit {
         const supplier = this.supplierMap[line.networkAvailabilities[0].distributionGroupId];
         supplier.descAndNode = `${supplier.description} (${line.networkAvailabilities[0].distributionGroupId})`;
 
-        let availableDate = '-';
-        if (line.networkAvailabilities[0].onhandAvailableQuantity > 0) {
-          availableDate = 'Now';
-        } else if (line.networkAvailabilities[0].futureAvailableQuantity > 0) {
+        let availableDate = '';
+        if (line.networkAvailabilities[0].futureAvailableQuantity > 0) {
           availableDate = new DatePipe('en-US').transform(line.networkAvailabilities[0].futureEarliestShipTs, 'MM/dd/yyyy');
+          availableDate = " (starts on " + availableDate + ")";
         }
 
         allSuppliersHavingSelectedProduct.push({
@@ -512,11 +511,10 @@ export class HomepageComponent implements OnInit {
           const supplier = this.supplierMap[line.networkAvailabilities[0].distributionGroupId];
           supplier.descAndNode = `${supplier.description} (${line.networkAvailabilities[0].distributionGroupId})`;
 
-          let availableDate = '-';
-          if (line.networkAvailabilities[0].onhandAvailableQuantity > 0) {
-            availableDate = 'Now';
-          } else if (line.networkAvailabilities[0].futureAvailableQuantity > 0) {
+          let availableDate = '';
+          if (line.networkAvailabilities[0].futureAvailableQuantity > 0) {
             availableDate = new DatePipe('en-US').transform(line.networkAvailabilities[0].futureEarliestShipTs, 'MM/dd/yyyy');
+            availableDate = " (starts on " + availableDate + ")";
           }
 
           allSuppliersHavingSelectedProduct.push({
@@ -564,10 +562,10 @@ export class HomepageComponent implements OnInit {
             data: this.translateService.instant('LIST_TABLE.HEADER_AVAILABILITY_LATER'),
             sortable: true
           }),
-          new TableHeaderItem({
-            data: this.translateService.instant('LIST_TABLE.HEADER_EARLIEST_AVAILABILITY_DATE'),
-            sortable: true
-          }),
+          // new TableHeaderItem({
+          //   data: this.translateService.instant('LIST_TABLE.HEADER_EARLIEST_AVAILABILITY_DATE'),
+          //   sortable: true,
+          // }),
         ]
       ];
     } else {
@@ -585,10 +583,10 @@ export class HomepageComponent implements OnInit {
             data: this.translateService.instant('LIST_TABLE.HEADER_AVAILABILITY_LATER'),
             sortable: true
           }),
-          new TableHeaderItem({
-            data: this.translateService.instant('LIST_TABLE.HEADER_EARLIEST_AVAILABILITY_DATE'),
-            sortable: true
-          }),
+          // new TableHeaderItem({
+          //   data: this.translateService.instant('LIST_TABLE.HEADER_EARLIEST_AVAILABILITY_DATE'),
+          //   sortable: true
+          // }),
         ]
       ];
     }
@@ -611,11 +609,11 @@ export class HomepageComponent implements OnInit {
           data: record.productOnHandAvailableQuantity,
         },
         {
-          data: record.productFutureAvailableQuantity,
+          data: record.productFutureAvailableQuantity + record.Date,
         },
-        {
-          data: record.Date
-        }
+        // {
+        //   data: record.Date
+        // }
       ]);
       this.model.populate(records, { 0: 'name' });
     } else {
@@ -629,11 +627,11 @@ export class HomepageComponent implements OnInit {
           data: record.productOnHandAvailableQuantity,
         },
         {
-          data: record.productFutureAvailableQuantity,
+          data: record.productFutureAvailableQuantity + record.Date,
         },
-        {
-          data: record.Date
-        }
+        // {
+        //   data: record.Date
+        // }
       ]);
       this.model.populate(records, { 0: 'name' });
     }
@@ -662,7 +660,7 @@ export class HomepageComponent implements OnInit {
           new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.UOM') }),
           new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.HEADER_AVAILABILITY_NOW') }),
           new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.HEADER_AVAILABILITY_LATER') }),
-          new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.HEADER_EARLIEST_AVAILABILITY_DATE') }),
+          // new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.HEADER_EARLIEST_AVAILABILITY_DATE') }),
         ]
       ];
       const makeRows = (records) => records
@@ -677,8 +675,8 @@ export class HomepageComponent implements OnInit {
           },
           { data: sku.unitOfMeasure, },
           { data: sku.itemOnHandAvailableQuantity },
-          { data: sku.itemFutureAvailableQuantity },
-          { data: sku.itemAvailableDate }
+          { data: sku.itemFutureAvailableQuantity  + sku.itemAvailableDate},
+          // { data: sku.itemAvailableDate }
         ]));
 
       const templateData: any = {
@@ -687,7 +685,7 @@ export class HomepageComponent implements OnInit {
         quantity: data.Availability,
         onHandQuantity: data.itemOnHandAvailableQuantity,
         futureQuantity: data.itemFutureAvailableQuantity,
-        date: data.Date
+        // date: data.Date
       };
 
 
@@ -715,11 +713,10 @@ export class HomepageComponent implements OnInit {
         console.log('S4S response Child Item ', sku);
         if (sku && sku.unit_of_measure !== undefined) {
 
-          let itemAvailableDate = '-';
-          if (line.networkAvailabilities[0].onhandAvailableQuantity > 0) {
-            itemAvailableDate = 'Now';
-          } else if (line.networkAvailabilities[0].futureAvailableQuantity > 0) {
+          let itemAvailableDate = '';
+          if (line.networkAvailabilities[0].futureAvailableQuantity > 0) {
             itemAvailableDate = new DatePipe('en-US').transform(line.networkAvailabilities[0].futureEarliestShipTs, 'MM/dd/yyyy');
+            itemAvailableDate = " (starts on " + itemAvailableDate + ")";
           }
           itemAvailableDates.push(itemAvailableDate);
           productAvailableQuantity += line.networkAvailabilities[0].totalAvailableQuantity;
@@ -802,15 +799,15 @@ export class HomepageComponent implements OnInit {
           new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.LOCATION') }),
           new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.HEADER_AVAILABILITY_NOW') }),
           new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.HEADER_AVAILABILITY_LATER') }),
-          new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.HEADER_EARLIEST_AVAILABILITY_DATE') }),
+          // new TableHeaderItem({ data: this.translateService.instant('LIST_TABLE.HEADER_EARLIEST_AVAILABILITY_DATE') }),
         ]
       ];
       const makeRows = (records) => records
         .map(loc => ([
           { data: loc.shipNodeLocation, id: loc.sku },
           { data: loc.skuOnHandAvailableQuantity },
-          { data: loc.skuFutureAvailableQuantity },
-          { data: loc.skuAvailableDate },
+          { data: loc.skuFutureAvailableQuantity + loc.skuAvailableDate},
+          // { data: loc.skuAvailableDate },
         ]));
 
       const templateData: any = {
@@ -867,11 +864,10 @@ export class HomepageComponent implements OnInit {
           const shipNodeLocation = name || nodeIv.shipNode;
           skuAvailableQuantity += nodeIv.totalAvailableQuantity;
 
-          let skuAvailableDate = '-';
-          if (nodeIv.onhandAvailableQuantity > 0) {
-            skuAvailableDate = 'Now';
-          } else if (nodeIv.futureAvailableQuantity > 0) {
+          let skuAvailableDate = '';
+          if (nodeIv.futureAvailableQuantity > 0) {
             skuAvailableDate = new DatePipe('en-US').transform(nodeIv.futureEarliestShipTs, 'MM/dd/yyyy');
+            skuAvailableDate = " (starts on " + skuAvailableDate + ")";
           }
 
           locData.push({
