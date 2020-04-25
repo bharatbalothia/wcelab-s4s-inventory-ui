@@ -2,7 +2,7 @@
     {
         "featureId": "custom-rapid-inventory",
         "state": "ACTIVE",
-        "sequence": 9,
+        "sequence": 1,
         "title": "Rapid Inventory",
         "iconName": "inventory-20",
         "link": "/rapid-inventory",
