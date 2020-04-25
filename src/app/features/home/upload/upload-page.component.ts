@@ -44,7 +44,7 @@ export class UploadPageComponent implements OnInit {
   model: BucTableModel = new BucTableModel();
   headerModel: BucTableHeaderModel;
 
-  user: { buyers: string[], suppliers: string[], connected_suppliers: string[] };
+  user: { buyers: string[], suppliers: string[] };
   supplierList: any[] = [];
   supplier: string;
 
