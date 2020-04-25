@@ -19,15 +19,15 @@ import { AppComponent } from './app.component';
 import { ContentSwitcherModule } from 'carbon-components-angular';
 import { BucCommonComponentsModule } from '@buc/common-components';
 
-export class BucIVCovidPOCAppModuleBundles {
+export class RapidInventoryAppModuleBundles {
   static bundles: Array<any> = [{
-      prefix: './assets/buc-iv-covid-poc/i18n/',
+      prefix: './assets/rapid-inventory/i18n/',
       suffix: '.json'
   }];
 }
 
-export function bucIVCovidPOCAppModuleHttpLoaderFactory(http: HttpClient) {
-  return new BucMultiTranslateHttpLoader(http, BucIVCovidPOCAppModuleBundles.bundles);
+export function rapidInventoryAppModuleHttpLoaderFactory(http: HttpClient) {
+  return new BucMultiTranslateHttpLoader(http, RapidInventoryAppModuleBundles.bundles);
 }
 
 @NgModule({
@@ -44,7 +44,7 @@ export function bucIVCovidPOCAppModuleHttpLoaderFactory(http: HttpClient) {
     TranslateModule.forRoot({
       loader: {
       provide: TranslateLoader,
-          useFactory: bucIVCovidPOCAppModuleHttpLoaderFactory,
+          useFactory: rapidInventoryAppModuleHttpLoaderFactory,
           deps: [HttpClient]
       },
       isolate: true
@@ -58,7 +58,7 @@ export function bucIVCovidPOCAppModuleHttpLoaderFactory(http: HttpClient) {
       useClass: BucCommBEHttpInterceptorService,
       multi: true
     }
-    // Any other interceptor added by buc-iv-covid-poc to be added 2nd.
+    // Any other interceptor added by rapid-inventory to be added 2nd.
   ],
   bootstrap: [AppComponent]
 })

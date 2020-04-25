@@ -13,7 +13,7 @@ import {
 } from '@buc/svc-angular';
 import { BucCommonComponentsModule } from '@buc/common-components';
 
-import { Homepage1Component } from './homepage1/homepage1.component';
+import { HomepageComponent } from './homepage/homepage.component';
 import { UploadPageComponent } from './upload/upload-page.component';
 import { FindInventoryComponent } from './find-inventory/find-inventory.component';
 import { ItemSummaryComponent } from './find-inventory/item-summary/item-summary.component';
@@ -42,34 +42,34 @@ import { SupplierSearchComponent } from './supplier-search/supplier-search.compo
 
 const bundles: Array<any> = [
   {
-    prefix: './assets/buc-iv-covid-poc/i18n/',
+    prefix: './assets/rapid-inventory/i18n/',
     suffix: '.json'
   },
   {
-    prefix: './assets/buc-iv-covid-poc/i18n/home/homepage1/',
+    prefix: './assets/rapid-inventory/i18n/home/homepage/',
     suffix: '.json'
   },
   {
-    prefix: './assets/buc-iv-covid-poc/i18n/home/upload/',
+    prefix: './assets/rapid-inventory/i18n/home/upload/',
     suffix: '.json'
   },
   {
-    prefix: './assets/buc-iv-covid-poc/i18n/home/findinventory/',
+    prefix: './assets/rapid-inventory/i18n/home/findinventory/',
     suffix: '.json'
   },
   {
-    prefix: './assets/buc-iv-covid-poc/i18n/home/supplierupload/',
+    prefix: './assets/rapid-inventory/i18n/home/supplierupload/',
     suffix: '.json'
   },
   {
-    prefix: './assets/buc-iv-covid-poc/i18n/home/supplier-search/',
+    prefix: './assets/rapid-inventory/i18n/home/supplier-search/',
     suffix: '.json'
   }
 ];
 
 @NgModule({
   declarations: [
-    Homepage1Component,
+    HomepageComponent,
     UploadPageComponent,
     FindInventoryComponent,
     ItemSummaryComponent,
