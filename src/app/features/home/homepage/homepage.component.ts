@@ -135,39 +135,44 @@ export class HomepageComponent implements OnInit {
 
     this.user = await this.s4sSvc.getUserInfo().toPromise();
     console.log('S4S response - _initUserDataAndFetchAllSuppliers - getUserInfo', this.user);
-    const obs = this.user.connected_suppliers.map(supplierId => this.s4sSvc.getContactDetailsOfSelectedSupplier({ supplierId }));
-    const suppliers = await forkJoin(obs).toPromise();
-    console.log('S4S response - _initUserDataAndFetchAllSuppliers - getContactDetailsOfSelectedSupplier combined', suppliers);
 
-    this.supplierList = suppliers.map(s => ({ content: `${s.description} (${s.supplier_id})`, id: s.supplier_id }));
+    if (this.user !== undefined && this.user.connected_suppliers !== undefined && this.user.connected_suppliers.length > 0) {
+      const obs = this.user.connected_suppliers.map(supplierId => this.s4sSvc.getContactDetailsOfSelectedSupplier({ supplierId }));
+      const suppliers = await forkJoin(obs).toPromise();
+      console.log('S4S response - _initUserDataAndFetchAllSuppliers - getContactDetailsOfSelectedSupplier combined', suppliers);
 
-    getArray(suppliers).forEach((supplier) => {
-      // const attrMap: { [key: string]: { value: string } } = COMMON.toMap(supplier.address_attributes, 'name');
-      const s: Supplier = {
-        _id: supplier._id,
-        supplier_id: supplier.supplier_id,
-        description: supplier.description,
-        descAndNode: '',
-        supplier_type: supplier.supplier_type,
-        url: supplier.supplier_url || '',
-        contactPerson: supplier.contact_person || this.nlsMap['common.LABEL_noContact'],
-        // address_line_1: getValue(attrMap.address_line_1),
-        // city: getValue(attrMap.city),
-        // state: getValue(attrMap.state),
-        // zipcode: getValue(attrMap.zipcode),
-        // country: getValue(attrMap.country),
-        // phoneNumber: getValue(attrMap.phone_number, this.nlsMap['common.LABEL_noPhone'])
-        address_line_1: supplier.contact.address_line_1,
-        city: supplier.contact.city,
-        state: supplier.contact.state,
-        zipcode: supplier.contact.zipcode,
-        country: supplier.contact.country,
-        phoneNumber: (supplier.contact.phone_number, this.nlsMap['common.LABEL_noPhone'])
-      };
-      this.supplierMap[s.supplier_id] = s;
-    });
-    console.log('Model - _initUserDataAndFetchAllSuppliers S4S supplierList ', this.supplierList);
-    console.log('Model - _initUserDataAndFetchAllSuppliers S4S supplierMap ', this.supplierMap);
+      this.supplierList = suppliers.map(s => ({ content: `${s.description} (${s.supplier_id})`, id: s.supplier_id }));
+
+      getArray(suppliers).forEach((supplier) => {
+        // const attrMap: { [key: string]: { value: string } } = COMMON.toMap(supplier.address_attributes, 'name');
+        const s: Supplier = {
+          _id: supplier._id,
+          supplier_id: supplier.supplier_id,
+          description: supplier.description,
+          descAndNode: '',
+          supplier_type: supplier.supplier_type,
+          url: supplier.supplier_url || '',
+          contactPerson: supplier.contact_person || this.nlsMap['common.LABEL_noContact'],
+          // address_line_1: getValue(attrMap.address_line_1),
+          // city: getValue(attrMap.city),
+          // state: getValue(attrMap.state),
+          // zipcode: getValue(attrMap.zipcode),
+          // country: getValue(attrMap.country),
+          // phoneNumber: getValue(attrMap.phone_number, this.nlsMap['common.LABEL_noPhone'])
+          address_line_1: supplier.contact.address_line_1,
+          city: supplier.contact.city,
+          state: supplier.contact.state,
+          zipcode: supplier.contact.zipcode,
+          country: supplier.contact.country,
+          phoneNumber: supplier.contact.phone_number || this.nlsMap['common.LABEL_noPhone']
+        };
+        this.supplierMap[s.supplier_id] = s;
+      });
+      console.log('Model - _initUserDataAndFetchAllSuppliers S4S supplierList ', this.supplierList);
+      console.log('Model - _initUserDataAndFetchAllSuppliers S4S supplierMap ', this.supplierMap);
+    }
+
+
   }
 
   private _initPcTypes() {
@@ -207,7 +212,7 @@ export class HomepageComponent implements OnInit {
         state: supplier.contact.state,
         zipcode: supplier.contact.zipcode,
         country: supplier.contact.country,
-        phoneNumber: (supplier.contact.phone_number, this.nlsMap['common.LABEL_noPhone'])
+        phoneNumber: supplier.contact.phone_number || this.nlsMap['common.LABEL_noPhone']
       };
 
       this.supplierMap[s.supplier_id] = s;
@@ -440,7 +445,7 @@ export class HomepageComponent implements OnInit {
         let availableDate = '';
         if (line.networkAvailabilities[0].futureAvailableQuantity > 0) {
           availableDate = new DatePipe('en-US').transform(line.networkAvailabilities[0].futureEarliestShipTs, 'MM/dd/yyyy');
-          availableDate = " (starts on " + availableDate + ")";
+          availableDate = ` (starts on  ${availableDate} )`;
         }
 
         allSuppliersHavingSelectedProduct.push({
@@ -514,7 +519,7 @@ export class HomepageComponent implements OnInit {
           let availableDate = '';
           if (line.networkAvailabilities[0].futureAvailableQuantity > 0) {
             availableDate = new DatePipe('en-US').transform(line.networkAvailabilities[0].futureEarliestShipTs, 'MM/dd/yyyy');
-            availableDate = " (starts on " + availableDate + ")";
+            availableDate = ` (starts on ${availableDate} )`;
           }
 
           allSuppliersHavingSelectedProduct.push({
@@ -675,7 +680,7 @@ export class HomepageComponent implements OnInit {
           },
           { data: sku.unitOfMeasure, },
           { data: sku.itemOnHandAvailableQuantity },
-          { data: sku.itemFutureAvailableQuantity  + sku.itemAvailableDate},
+          { data: sku.itemFutureAvailableQuantity + sku.itemAvailableDate },
           // { data: sku.itemAvailableDate }
         ]));
 
@@ -716,7 +721,7 @@ export class HomepageComponent implements OnInit {
           let itemAvailableDate = '';
           if (line.networkAvailabilities[0].futureAvailableQuantity > 0) {
             itemAvailableDate = new DatePipe('en-US').transform(line.networkAvailabilities[0].futureEarliestShipTs, 'MM/dd/yyyy');
-            itemAvailableDate = " (starts on " + itemAvailableDate + ")";
+            itemAvailableDate = ` (starts on ${itemAvailableDate} )`;
           }
           itemAvailableDates.push(itemAvailableDate);
           productAvailableQuantity += line.networkAvailabilities[0].totalAvailableQuantity;
@@ -806,7 +811,7 @@ export class HomepageComponent implements OnInit {
         .map(loc => ([
           { data: loc.shipNodeLocation, id: loc.sku },
           { data: loc.skuOnHandAvailableQuantity },
-          { data: loc.skuFutureAvailableQuantity + loc.skuAvailableDate},
+          { data: loc.skuFutureAvailableQuantity + loc.skuAvailableDate },
           // { data: loc.skuAvailableDate },
         ]));
 
@@ -867,7 +872,7 @@ export class HomepageComponent implements OnInit {
           let skuAvailableDate = '';
           if (nodeIv.futureAvailableQuantity > 0) {
             skuAvailableDate = new DatePipe('en-US').transform(nodeIv.futureEarliestShipTs, 'MM/dd/yyyy');
-            skuAvailableDate = " (starts on " + skuAvailableDate + ")";
+            skuAvailableDate = ` (starts on ${skuAvailableDate} )`;
           }
 
           locData.push({
