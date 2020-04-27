@@ -55,9 +55,9 @@ In order for see this custom app in BUC, you can add a new left navigation menu 
 
     Path: /rapid-inventory
 
-    Url: https://s4s-inventory-ui.mybluemix.net/buc-iv-covid-poc
+    Url: https://s4s-inventory-ui.mybluemix.net/rapid-inventory
 
-    Local development mode url: https://bucgenerichost:9000/buc-iv-covid-poc
+    Local development mode url: https://bucgenerichost:9000/rapid-inventory
 
     Child features: Note - for phase 1 only "Critical Supply" will be enabled.
 ```
@@ -68,8 +68,8 @@ In order for see this custom app in BUC, you can add a new left navigation menu 
     "parentFeatureId": "custom-rapid-inventory",
     "sequence": 1,
     "title": "Critical Supply",
-    "link": "https://s4s-inventory-ui.mybluemix.net/buc-iv-covid-poc/home/homepage1",
-    "devModeLink": "https://localhost:9000/buc-iv-covid-poc/home/homepage1",
+    "link": "https://s4s-inventory-ui.mybluemix.net/rapid-inventory/home/homepage",
+    "devModeLink": "https://localhost:9000/rapid-inventory/home/homepage",
     "path": "/rapid-inventory/critical-supply",
     "hidden": false,
     "allowedRoles": [ "Fulfillment Manager" ],
@@ -84,8 +84,8 @@ In order for see this custom app in BUC, you can add a new left navigation menu 
     "parentFeatureId": "custom-rapid-inventory",
     "sequence": 2,
     "title": "Search Inventory",
-    "link": "https://s4s-inventory-ui.mybluemix.net/buc-iv-covid-poc/home/search-iventory",
-    "devModeLink": "https://localhost:9000/buc-iv-covid-poc/home/search-iventory",
+    "link": "https://s4s-inventory-ui.mybluemix.net/rapid-inventory/home/search-iventory",
+    "devModeLink": "https://localhost:9000/rapid-inventory/home/search-iventory",
     "path": "/rapid-inventory/search-iventory",
     "hidden": false,
     "allowedRoles": [ "Fulfillment Manager" ],
@@ -99,8 +99,8 @@ In order for see this custom app in BUC, you can add a new left navigation menu 
     "parentFeatureId": "custom-rapid-inventory",
     "sequence": 3,
     "title": "Upload Inventory",
-    "link": "https://s4s-inventory-ui.mybluemix.net/buc-iv-covid-poc/home/upload",
-    "devModeLink": "https://localhost:9000/buc-iv-covid-poc/home/upload",
+    "link": "https://s4s-inventory-ui.mybluemix.net/rapid-inventory/home/upload",
+    "devModeLink": "https://localhost:9000/rapid-inventory/home/upload",
     "path": "/rapid-inventory/upload-inventory",
     "hidden": false,
     "allowedRoles": [ "Tenant Administrator" ],
@@ -114,8 +114,8 @@ In order for see this custom app in BUC, you can add a new left navigation menu 
     "parentFeatureId": "custom-rapid-inventory",
     "sequence": 4,
     "title": "Upload Demand",
-    "link": "https://s4s-inventory-ui.mybluemix.net/buc-iv-covid-poc/home/upload-demand",
-    "devModeLink": "https://localhost:9000/buc-iv-covid-poc/home/upload-demand",
+    "link": "https://s4s-inventory-ui.mybluemix.net/rapid-inventory/home/upload-demand",
+    "devModeLink": "https://localhost:9000/rapid-inventory/home/upload-demand",
     "path": "/rapid-inventory/upload-demand",
     "hidden": false,
     "allowedRoles": [ "Tenant Administrator" ],
