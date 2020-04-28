@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
   isGoogleMapEnabled : false,
-  S4SAuthorization : 'Basic N21jNGZyN2tqdzh6cnE3a2loYmZpYTV5cThkOHJxNjU6dDg5czk1amJqbm1lZmQyZHhzNDN1bmwxcjJwNnp1ZjA=',
-  S4SHostPrefix : 'https://s4s-supplement-service-dev.mybluemix.net/s4s'
+  S4SAuthorization : 'Basic OGE4MmpvaG5kb2h6NGFrbm54OW1kc3B6bTU0MTBuZDk6M3dodW0xcjRvejZ0N2RqMHdrN3lkZGpicm0wdXIwNHE=',
+  S4SHostPrefix : 'https://s4s-supplement-service-prod.mybluemix.net/s4s'
 };
