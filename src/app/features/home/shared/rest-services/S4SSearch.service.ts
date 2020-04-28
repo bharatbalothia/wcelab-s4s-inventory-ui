@@ -189,6 +189,17 @@ class S4SSearchService {
     return this.post(`productslist`, body, parameters);
   }
 
+  public getContactDetailsOfSelectedBuyer(parameters: {
+    'buyerId': string,
+    $queryParameters?: any,
+    $headers?: any,
+    $cache?: any,
+    $refresh?: any,
+    useMocks?: boolean
+  }): Observable<any> {
+    return this.invoke(`buyers/${parameters['buyerId']}`, parameters);
+  }
+
   public getContactDetailsOfSelectedSupplier(parameters: {
     'supplierId': string,
     $queryParameters?: any,

@@ -1,0 +1,30 @@
+{
+  "DEMANDUPLOAD": {
+    "TITLE_UPLOAD_INV": "Upload Demand",
+    "PAGE_LOADED": "Upload page loaded.",
+    "LABEL_instructions": "Upload the Demand for SKUs using a CSV file.",
+    "LABEL_tooltip": "Upload file must be of the following format:<br><br>supplier id, customer id, location id, item id,product class, quantity,uom,available from<br>KC,scbn_3,DALLAS,46827,NEW,40,UNIT,2020-04-21 11:12:50<br>KC,scbn_3,DALLAS,46827,NEW,40,UNIT,2020-04-21 11:12:50",
+    "LABEL_upload": "Upload",
+    "LABEL_noData": "No data",
+    "LABEL_uploadSuccessful": "Upload was successful.",
+    "SKUID": "SKU ID",
+    "NODEID": "Node ID",
+    "QUANTITY": "Quantity",
+    "PRODUCTCLASS": "Product class",
+    "UOM": "Unit of measure",
+    "MODEL_NUMBER": "Model#",
+    "SHIP_BY_DATE": "Ship by date",
+    "SHIP_NODE": "Location",
+    "BUYERID": "Buyer Id",
+    "CUSTOMERID": "Customer Id",
+    "SUPPLIERID":"Supplier Id",
+    "LOCATIONID": "Location Id",
+    "ITEMID": "Item Id",
+    "NEEDBYDATE": "Cancel Date",
+    "UPLOAD_CUSTOM_ERROR_MSG" : "Supplier id in CSV does not match with selected buyer id, please correct the CSV file with right Buyer id",
+    "LABEL_selectbuyer": "Select a Buyer",
+    "LABEL_buyer":"Buyer"
+
+  }
+}
+ 

@@ -39,6 +39,8 @@ import { S4SSearchService } from './shared/rest-services/S4SSearch.service';
 import { HomeSharedModule } from './shared/home-shared.module';
 import { Image32Module } from '@carbon/icons-angular/lib/image/32';
 import { SupplierSearchComponent } from './supplier-search/supplier-search.component';
+import { UploadDemandPageComponent } from './upload-demand/upload-demand-page.component';
+
 
 const bundles: Array<any> = [
   {
@@ -64,6 +66,10 @@ const bundles: Array<any> = [
   {
     prefix: './assets/rapid-inventory/i18n/home/supplier-search/',
     suffix: '.json'
+  },
+  {
+    prefix: './assets/rapid-inventory/i18n/home/upload-demand/',
+    suffix: '.json'
   }
 ];
 
@@ -75,7 +81,8 @@ const bundles: Array<any> = [
     ItemSummaryComponent,
     ItemDGAvailabilityComponent,
     SupplierUploadPageComponent,
-    SupplierSearchComponent
+    SupplierSearchComponent,
+    UploadDemandPageComponent
   ],
   imports: [
     CommonModule,
