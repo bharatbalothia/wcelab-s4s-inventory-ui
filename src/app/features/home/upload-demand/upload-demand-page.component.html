@@ -10,12 +10,11 @@
       <buc-tooltip [placement]="'bottom'" [tooltipMsg]="'UPLOAD.LABEL_tooltip' | translate" [showCloseButton]="false"></buc-tooltip>
     </div>
   
-    <div class="bx--col d--jc--flex-end" [class.hide-div]="buyerlist.length <=  1">
+    <div class="bx--col d--jc--flex-end" >
       <buc-combobox
         #buyerCombo
         [label]="'DEMANDUPLOAD.LABEL_buyer' | translate"
         [attr.tid]="'buyer'"
-        [disabled]="buyer.length === 0"
         [placeholder]="'DEMANDUPLOAD.LABEL_selectbuyer' | translate"
         [items]="buyerList"
         (selectItemAction)="onbuyer($event)">
@@ -23,8 +22,8 @@
     </div> 
     <div class="bx--col d--jc--flex-end" > 
       <label [attr.tid]="'sku-upload'">
-        <input [disabled]="((buyerlist.length === 0) || !buyer)" type="file" class="input--file" id="csvUpload" (change)="onUpload($event)" (click)="u.value=null" accept=".csv" #u>
-        <span class="bx--btn bx--btn--primary bx--btn--sm" [class.bx--btn--disabled]="((buyerlist.length === 0) || !buyer)" >
+        <input  type="file" class="input--file" id="csvUpload" (change)="onUpload($event)" (click)="u.value=null" accept=".csv" #u>
+        <span class="bx--btn bx--btn--primary bx--btn--sm" >
           {{ 'DEMANDUPLOAD.LABEL_upload' | translate }} 
           <ibm-icon-upload16 class="bx--btn__icon"></ibm-icon-upload16>
         </span>
