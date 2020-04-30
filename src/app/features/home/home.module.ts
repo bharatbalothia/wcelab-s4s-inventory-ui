@@ -66,6 +66,10 @@ const bundles: Array<any> = [
   {
     prefix: './assets/rapid-inventory/i18n/home/supplier-search/',
     suffix: '.json'
+  },
+  {
+    prefix: './assets/rapid-inventory/i18n/home/upload-demand/',
+    suffix: '.json'
   }
 ];
 

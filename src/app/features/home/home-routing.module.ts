@@ -29,7 +29,7 @@ const routes: Routes = [
     component: SupplierUploadPageComponent,
   },
   {
-    path: 'uploaddemand',
+    path: 'upload-demand',
     component: UploadDemandPageComponent,
   },
   {
