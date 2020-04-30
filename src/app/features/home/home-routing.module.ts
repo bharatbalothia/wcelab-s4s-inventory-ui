@@ -5,6 +5,7 @@ import { UploadPageComponent } from './upload/upload-page.component';
 import { FindInventoryComponent } from './find-inventory/find-inventory.component';
 import { SupplierUploadPageComponent } from './supplierupload/supplier-upload-page.component';
 import { SupplierSearchComponent } from './supplier-search/supplier-search.component';
+import { UploadDemandPageComponent } from './upload-demand/upload-demand-page.component';
 
 const routes: Routes = [
   {
@@ -26,6 +27,10 @@ const routes: Routes = [
   {
     path: 'supplierupload',
     component: SupplierUploadPageComponent,
+  },
+  {
+    path: 'uploaddemand',
+    component: UploadDemandPageComponent,
   },
   {
     path: '',
