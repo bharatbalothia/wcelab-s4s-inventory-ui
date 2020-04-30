@@ -35,6 +35,9 @@
     "TOPITEMS": "Top items",
     "ITEMSEARCH": "Find inventory",
     "IVUPLOAD": "Upload inventory"
+  },
+  "ERROR":{
+    "ERR_USER_NOTSET":"User has not been set up. Please contact support before performing any action."
   }
 
 

@@ -1,31 +1,30 @@
 <div class="bx--row">
   <div class="bx--col">
-  <h2><span>{{'UPLOAD.TITLE_UPLOAD_INV' | translate}}</span></h2>
+  <h2><span>{{'DEMANDUPLOAD.TITLE_UPLOAD_INV' | translate}}</span></h2>
   </div>
 </div>
 <div class="bx--grid bx--no-gutter">
   <div class="bx--row d--ai--center d--jc--space-between">
     <div class="bx--col-md-3 bx--col-lg-6 d--jc--flex-start padding--top-down-1rem">
-      <p class="bx--data-table-header__description">{{ 'UPLOAD.LABEL_instructions' | translate }}</p>
+      <p class="bx--data-table-header__description">{{ 'DEMANDUPLOAD.LABEL_instructions' | translate }}</p>
       <buc-tooltip [placement]="'bottom'" [tooltipMsg]="'UPLOAD.LABEL_tooltip' | translate" [showCloseButton]="false"></buc-tooltip>
     </div>
   
-    <div class="bx--col d--jc--flex-end" [class.hide-div]="supplierList.length <=  1">
+    <div class="bx--col d--jc--flex-end" >
       <buc-combobox
-        #supplierCombo
-        [label]="'ss.LABEL_supplier' | translate"
-        [attr.tid]="'supplier'"
-        [disabled]="supplierList.length === 0"
-        [placeholder]="'ss.LABEL_selectSupplier' | translate"
-        [items]="supplierList"
-        (selectItemAction)="onSupplier($event)">
+        #buyerCombo
+        [label]="'DEMANDUPLOAD.LABEL_buyer' | translate"
+        [attr.tid]="'buyer'"
+        [placeholder]="'DEMANDUPLOAD.LABEL_selectbuyer' | translate"
+        [items]="buyerList"
+        (selectItemAction)="onbuyer($event)">
       </buc-combobox>
     </div> 
     <div class="bx--col d--jc--flex-end" > 
       <label [attr.tid]="'sku-upload'">
-        <input [disabled]="((supplierList.length === 0) || !supplier)" type="file" class="input--file" id="csvUpload" (change)="onUpload($event)" (click)="u.value=null" accept=".csv" #u>
-        <span class="bx--btn bx--btn--primary bx--btn--sm" [class.bx--btn--disabled]="((supplierList.length === 0) || !supplier)" >
-          {{ 'UPLOAD.LABEL_upload' | translate }} 
+        <input  type="file" class="input--file" id="csvUpload" (change)="onUpload($event)" (click)="u.value=null" accept=".csv" #u>
+        <span class="bx--btn bx--btn--primary bx--btn--sm" >
+          {{ 'DEMANDUPLOAD.LABEL_upload' | translate }} 
           <ibm-icon-upload16 class="bx--btn__icon"></ibm-icon-upload16>
         </span>
       </label>
@@ -43,8 +42,8 @@
         (selectPage)="onSelectPage($event)">
       <tbody>
         <tr>
-          <td class="no-data" colspan="8">
-            <buc-empty-state [stateMessage]="'UPLOAD.LABEL_noData' | translate"></buc-empty-state>
+          <td class="no-data" colspan="7">
+            <buc-empty-state [stateMessage]="'DEMANDUPLOAD.LABEL_noData' | translate"></buc-empty-state>
           </td>
         </tr>
       </tbody>

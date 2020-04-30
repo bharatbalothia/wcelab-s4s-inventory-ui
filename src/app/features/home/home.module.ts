@@ -19,6 +19,8 @@ import { FindInventoryComponent } from './find-inventory/find-inventory.componen
 import { ItemSummaryComponent } from './find-inventory/item-summary/item-summary.component';
 import { ItemDGAvailabilityComponent } from './find-inventory/item-dg-availability/item-dg-availability.component';
 import { SupplierUploadPageComponent } from './supplierupload/supplier-upload-page.component';
+import { UploadDemandPageComponent } from './upload-demand/upload-demand-page.component';
+
 
 import { BUCInvAvailabilityService } from './shared/rest-services/inventory-buc/Availability.service';
 import { AvailabilityService } from './shared/rest-services/Availability.service';
@@ -64,6 +66,10 @@ const bundles: Array<any> = [
   {
     prefix: './assets/rapid-inventory/i18n/home/supplier-search/',
     suffix: '.json'
+  },
+  {
+    prefix: './assets/rapid-inventory/i18n/home/upload-demand/',
+    suffix: '.json'
   }
 ];
 
@@ -75,7 +81,8 @@ const bundles: Array<any> = [
     ItemSummaryComponent,
     ItemDGAvailabilityComponent,
     SupplierUploadPageComponent,
-    SupplierSearchComponent
+    SupplierSearchComponent,
+    UploadDemandPageComponent
   ],
   imports: [
     CommonModule,

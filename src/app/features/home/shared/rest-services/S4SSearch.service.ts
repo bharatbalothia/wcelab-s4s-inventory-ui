@@ -77,7 +77,6 @@ class S4SSearchService {
 
   /**
   * Retrieves all products present in S4S
-
   * @method
   * @name S4SSearch#getProducts
        * @param {string} tenantId - The tenant ID provided by IBM to access your APIs.
@@ -199,7 +198,16 @@ class S4SSearchService {
   }): Observable<any> {
     return this.invoke(`suppliers/${parameters['supplierId']}`, parameters);
   }
-
+  public getContactDetailsOfSelectedBuyer(parameters: {
+    'buyerId': string,
+    $queryParameters?: any,
+    $headers?: any,
+    $cache?: any,
+    $refresh?: any,
+    useMocks?: boolean
+  }): Observable<any> {
+    return this.invoke(`buyers/${parameters['buyerId']}`, parameters);
+  }
   public getItemDetails(parameters: {
     'childItemId': string,
     $queryParameters?: any,
