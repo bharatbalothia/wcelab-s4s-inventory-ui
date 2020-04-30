@@ -2,8 +2,8 @@ import { Component, OnInit, ViewChild, TemplateRef, HostBinding, ElementRef } fr
 import { TranslateService } from '@ngx-translate/core';
 import { DatePipe } from '@angular/common';
 
-import { COMMON, ComboboxComponent } from '@buc/common-components';
-import { TableHeaderItem, ModalService, ComboBox } from 'carbon-components-angular';
+import { COMMON, ComboboxComponent,BucNotificationModel, BucNotificationService } from '@buc/common-components';
+import { TableHeaderItem, ModalService, ComboBox, NotificationService } from 'carbon-components-angular';
 import { InventoryAvailabilityService } from '../shared/services/inventory-availability.service';
 import { InventoryDistributionService } from '../shared/services/inventory-distribution.service';
 import { S4SSearchService } from '../shared/rest-services/S4SSearch.service';
@@ -51,7 +51,8 @@ export class HomepageComponent implements OnInit {
     'common.LABEL_new': '',
     'common.LABEL_used': '',
     'common.LABEL_showMap': '',
-    'common.LABEL_showTable': ''
+    'common.LABEL_showTable': '',
+    'ERROR.ERR_USER_NOTSET':'',
   };
 
   private supplierMap: { [key: string]: Supplier } = {};
@@ -69,6 +70,8 @@ export class HomepageComponent implements OnInit {
   isSearchByModelNo = false;
   private lastSearchedModelNumbers;
   private lastSelectedSuppliers;
+
+  private bucNS: BucNotificationService = new BucNotificationService();
 
   isGoogleMapEnabled = false;
 
@@ -92,6 +95,8 @@ export class HomepageComponent implements OnInit {
     private modalSvc: ModalService,
     private translateSvc: TranslateService,
     private s4sSvc: S4SSearchService,
+    private notificationService: NotificationService,
+
   ) { }
 
   ngOnInit() {
@@ -115,6 +120,7 @@ export class HomepageComponent implements OnInit {
     this.model.setPgDefaults();
     this._initPcTypes();
     this._initCategories();
+    this.supplierList = [];
 
     await this._initUserDataAndFetchAllSuppliers();
     await this._initModelNumber();
@@ -171,8 +177,21 @@ export class HomepageComponent implements OnInit {
       console.log('Model - _initUserDataAndFetchAllSuppliers S4S supplierList ', this.supplierList);
       console.log('Model - _initUserDataAndFetchAllSuppliers S4S supplierMap ', this.supplierMap);
     }
+    else {
+      this._showError(this.nlsMap['ERROR.ERR_USER_NOTSET'],true);
+    }
+  }
+  private _showError(msg, onShell = true) {
+    this._showNotification('error', '', msg, false, onShell);
+  }
 
-
+  private _showNotification(type, title, message, showClose = false, onShell = true) {
+    if (onShell) {
+      const notification = new BucNotificationModel({ statusType: type, statusContent: message });
+      this.bucNS.send([notification]);
+    } else {
+      this.notificationService.showNotification({ type, title, message, showClose });
+    }
   }
 
   private _initPcTypes() {

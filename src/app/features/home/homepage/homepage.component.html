@@ -9,8 +9,8 @@
 
 <div class="bx--grid bx--no-gutter" [class.hide-div]="!initialized">
   <div class="bx--row">
-    <div class="bx--col">
-        <buc-checkbox [checked]="isSearchByModelNo" [attr.tid]="'search-by-model-no'" (change)="onChangeSearchByModelNo($event)">
+    <div class="bx--col" >
+        <buc-checkbox [checked]="isSearchByModelNo" [disabled]="supplierList.length === 0 || modelNumberListValues.length === 0" [attr.tid]="'search-by-model-no'" (change)="onChangeSearchByModelNo($event) ">
           {{ 'HOMEPAGE.LABEL_SEARCH_BY_MODEL_NO' | translate }}
         </buc-checkbox>
     </div>
@@ -65,7 +65,7 @@
         #categories
         placeholder="{{'HOMEPAGE.LABEL_CATEGORY' | translate}}"
         [attr.tid]="'Category-selection'"
-        [disabled]="categoryListValues.length === 0"
+        [disabled]="categoryListValues.length === 0 ||  supplierList.length === 0"
         label="{{'HOMEPAGE.LABEL_CATEGORY' | translate}}"
         [items]="categoryListValues"
         (selectItemAction)="onCategory($event)">
