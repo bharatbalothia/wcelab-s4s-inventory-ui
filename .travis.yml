@@ -28,6 +28,6 @@ after_success:
   - if [[ ( "$TRAVIS_BRANCH" == "deploy-test" ) && "$TRAVIS_PULL_REQUEST" == "false"  ]]; then
        ./publish-to-buc.sh ./dist_master $BUC_CLIENT_ID_MASTER $BUC_CLIENT_SECRET_MASTER;
     fi
-  - if [[ ( "$TRAVIS_BRANCH" == "deploy-prod" || "$TRAVIS_BRANCH" == "deploy-prod" ) && "$TRAVIS_PULL_REQUEST" == "false"  ]]; then
+  - if [[ ( "$TRAVIS_BRANCH" == "deploy-prod" ) && "$TRAVIS_PULL_REQUEST" == "false"  ]]; then
        ./publish-to-buc.sh ./dist_production $BUC_CLIENT_ID_PRODUCTION $BUC_CLIENT_SECRET_PRODUCTION;
     fi
