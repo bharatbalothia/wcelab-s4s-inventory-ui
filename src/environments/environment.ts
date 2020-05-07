@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   isGoogleMapEnabled : false,
-  S4SAuthorization : 'Basic ZDhlOGM4YjEtZjhhOC00MGMxLTk4ZTctM2E5N2E2MTY5YWY5OkkxeVkzd0EyY1U1bkExdlkwdEUyc0M1ZVIwZEExZVkxaUc4bkozZVg3c1Q1cFYzb0k4',
+  S4SAuthorization : 'Basic NDg4NWQ3YzUtMmFiZi00YTQ5LThkYWQtZDE5YjUxOGFjNGEyOkEza1k3ckI3cVkzcUMwa1ExbVAwZ1Q0ZUsxeEUzbVIzbVM3b1A0clYxY0g4ZUw0eVg3',
   S4SHostPrefix : 'https://api.us-south.apiconnect.appdomain.cloud/nedzhangusibmcom1544551803151-dev/rapid-dev/s4s/'
 
 };
