@@ -5,8 +5,8 @@
 export const environment = {
   production: false,
   isGoogleMapEnabled : false,
-  S4SAuthorization : 'Basic N21jNGZyN2tqdzh6cnE3a2loYmZpYTV5cThkOHJxNjU6dDg5czk1amJqbm1lZmQyZHhzNDN1bmwxcjJwNnp1ZjA=',
-  S4SHostPrefix : 'https://s4s-supplement-service-dev.mybluemix.net/s4s'
+  S4SAuthorization : 'Basic ZDhlOGM4YjEtZjhhOC00MGMxLTk4ZTctM2E5N2E2MTY5YWY5OkkxeVkzd0EyY1U1bkExdlkwdEUyc0M1ZVIwZEExZVkxaUc4bkozZVg3c1Q1cFYzb0k4',
+  S4SHostPrefix : 'https://api.us-south.apiconnect.appdomain.cloud/nedzhangusibmcom1544551803151-dev/rapid-dev/s4s/'
 
 };
 
