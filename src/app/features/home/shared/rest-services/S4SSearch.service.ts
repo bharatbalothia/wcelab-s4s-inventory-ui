@@ -153,6 +153,28 @@ class S4SSearchService {
     return this.invoke(`productcategories/${parameters['categoryId']}/products`, parameters);
   }
 
+  public getAllProductsBySupplierId(parameters: {
+    'supplierId': string,
+    $queryParameters?: any,
+    $headers?: any,
+    $cache?: any,
+    $refresh?: any,
+    useMocks?: boolean
+  }): Observable<any> {
+    return this.invoke(`suppliers/${parameters['supplierId']}/products`, parameters);
+  }
+
+  public getProductsDetailsById(parameters: {
+    'productId': string,
+    $queryParameters?: any,
+    $headers?: any,
+    $cache?: any,
+    $refresh?: any,
+    useMocks?: boolean
+  }): Observable<any> {
+    return this.invoke(`products/${parameters['productId']}`, parameters);
+  }
+
   public fetchAllSuppliers(parameters: {
     'transactionId'?: string,
     $queryParameters?: any,

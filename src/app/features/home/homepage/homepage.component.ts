@@ -241,9 +241,8 @@ export class HomepageComponent implements OnInit {
   }
 
   private async _fetchProductsById(childItems: string[]) {
-    const responses4s = await this.invDistService.fetchProductList(childItems).toPromise();
-    console.log('S4S response -  fetchAllProducts', responses4s);
-    const products = getArray(responses4s);
+    const obs = childItems.map(productId => this.s4sSvc.getProductsDetailsById({ productId }));
+    const products = await forkJoin(obs).toPromise();
     products.forEach(product => {
       const s: SKU = {
         unit_of_measure: product.unit_of_measure,
@@ -271,17 +270,22 @@ export class HomepageComponent implements OnInit {
   }
 
   private async _initModelNumber() {
-    //    const responses4s = await this.invDistService.getProducts().toPromise();
-    const supplierIds = Object.keys(this.supplierMap);
-    const responses4s = await this.invDistService.getEntitledProductsBySupplierIds(supplierIds).toPromise();
-    console.log('S4S response - _initModelNumber and entitled supplierIds ', responses4s, supplierIds);
-    this.modelNumberListValues = getArray(responses4s)
+
+    const obs = this.user.connected_suppliers.map(supplierId => this.s4sSvc.getAllProductsBySupplierId({ supplierId }));
+    const suppliers = await forkJoin(obs).toPromise();
+    console.log('S4S response - _initUserDataAndFetchAllSuppliers - getContactDetailsOfSelectedSupplier combined', suppliers);
+      
+    var responses4s = [];
+    suppliers.filter(item => item.length > 0)
+    .forEach(item =>  item.forEach( item =>
+      responses4s.push(item)))
+    
+      this.modelNumberListValues = getArray(responses4s)
       .filter(p => (p.category === '' && this.supplierMap[p.supplier_id])).map(p => ({
         content: `${p.description} (${p.item_id.replace(/^.+?::/, '')})`,
         id: p.item_id,
         selected: false
       }));
-    console.log('Model - Model Number List ', this.modelNumberListValues);
   }
 
 
