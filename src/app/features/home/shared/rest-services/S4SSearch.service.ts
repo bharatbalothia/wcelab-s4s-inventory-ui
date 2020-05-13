@@ -164,6 +164,12 @@ class S4SSearchService {
     return this.invoke(`suppliers/${parameters['supplierId']}/products`, parameters);
   }
 
+  public getAllProductsByUser(): Observable<any> {
+    const userId = BucSvcAngularStaticAppInfoFacadeUtil.getCurrentUser().userName;
+    return this.invoke(`users/${userId}/connected_supplier_products`, {}).pipe(catchError((err) => observableOf([])));
+
+  }
+
   public getProductsDetailsById(parameters: {
     'productId': string,
     $queryParameters?: any,
