@@ -271,16 +271,9 @@ export class HomepageComponent implements OnInit {
 
   private async _initModelNumber() {
 
-    const obs = this.user.connected_suppliers.map(supplierId => this.s4sSvc.getAllProductsBySupplierId({ supplierId }));
-    const suppliers = await forkJoin(obs).toPromise();
-    console.log('S4S response - _initUserDataAndFetchAllSuppliers - getContactDetailsOfSelectedSupplier combined', suppliers);
-      
-    var responses4s = [];
-    suppliers.filter(item => item.length > 0)
-    .forEach(item =>  item.forEach( item =>
-      responses4s.push(item)))
-    
-      this.modelNumberListValues = getArray(responses4s)
+    const obs = await this.s4sSvc.getAllProductsByUser().toPromise();
+
+      this.modelNumberListValues = getArray(obs)
       .filter(p => (p.category === '' && this.supplierMap[p.supplier_id])).map(p => ({
         content: `${p.description} (${p.item_id.replace(/^.+?::/, '')})`,
         id: p.item_id,
