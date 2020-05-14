@@ -142,13 +142,13 @@ export class HomepageComponent implements OnInit {
     // this.user = await this.s4sSvc.getUserInfo().toPromise();
     // console.log('S4S response - _initUserDataAndFetchAllSuppliers - getUserInfo', this.user);
 
-    this.user.connected_suppliers = await this.s4sSvc.getAllSuppliersByUser().toPromise();
+    var connected_suppliers = await this.s4sSvc.getAllSuppliersByUser().toPromise();
 
 
-    if (this.user !== undefined && this.user.connected_suppliers !== undefined && this.user.connected_suppliers.length > 0) {
+    if (connected_suppliers !== undefined && connected_suppliers !== undefined && connected_suppliers.length > 0) {
       // const obs = this.user.connected_suppliers.map(supplierId => this.s4sSvc.getContactDetailsOfSelectedSupplier({ supplierId }));
       // const suppliers = await forkJoin(obs).toPromise();
-      const suppliers = this.user.connected_suppliers;
+      const suppliers = connected_suppliers;
       
       // console.log('S4S response - _initUserDataAndFetchAllSuppliers - getContactDetailsOfSelectedSupplier combined', suppliers);
 
