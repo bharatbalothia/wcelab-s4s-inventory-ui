@@ -169,6 +169,11 @@ class S4SSearchService {
     return this.invoke(`users/${userId}/connected_supplier_products`, {}).pipe(catchError((err) => observableOf([])));
 
   }
+  public getAllSuppliersByUser(): Observable<any> {
+    const userId = BucSvcAngularStaticAppInfoFacadeUtil.getCurrentUser().userName;
+    return this.invoke(`users/${userId}/connected_suppliers`, {}).pipe(catchError((err) => observableOf([])));
+
+  }
 
   public getProductsDetailsById(parameters: {
     'productId': string,
