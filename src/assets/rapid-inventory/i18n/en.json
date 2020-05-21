@@ -18,6 +18,7 @@
       "LABEL_availableDisplay": "<span class='font-weight--600'>Available</span>",
       "LABEL_ok": "OK",
       "LABEL_noData": "No data available",
+      "LABEL_noSearch": "Select search options to begin",
       "LABEL_supplierDisplay": "{{ supplier.description }} ({{ supplier.supplier_id }})",
       "LABEL_productDisplay": "{{ product.description }} ({{ product.item_id }})",
       "LABEL_skuDisplay": "{{ sku.itemDescription }} ({{ sku.itemIdDisplay }})",

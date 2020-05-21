@@ -68,6 +68,7 @@ export class HomepageComponent implements OnInit {
   private supplierSkuSingleton: number = 0;
 
   isSearchByModelNo = false;
+  isSearchPerformed = false;
   private lastSearchedModelNumbers;
   private lastSelectedSuppliers;
 
@@ -350,6 +351,8 @@ export class HomepageComponent implements OnInit {
    */
   public async onModelNumber(event) {
     this.selectedModelNumbers = event;
+    this.isSearchPerformed = false;
+
     const currentModelIds = this.selectedModelNumbers.map(selectedModelNumber => selectedModelNumber.id.replace(/^.+?::/, ''));
     this.modelnumbers.comboBox.selectedValue = currentModelIds.join(', ');
     console.log('selectedModelNumbers --->', this.selectedModelNumbers);
@@ -374,6 +377,7 @@ export class HomepageComponent implements OnInit {
   searchSuppliersByModelNumber(event) {
     let isModelSelectionSame = false;
     let isSupplierSelectionSame = false;
+    this.isSearchPerformed = true;
 
     if (this.lastSearchedModelNumbers.length === 0 || this.lastSearchedModelNumbers.length !== this.selectedModelNumbers.length) {
       this.lastSearchedModelNumbers = this.selectedModelNumbers;
@@ -417,6 +421,7 @@ export class HomepageComponent implements OnInit {
    * @param event product-id container
    */
   public async onProduct(event) {
+    this.isSearchPerformed = true;
     const id = event.item ? event.item.id : undefined;
     console.log('User selected Product ', id);
     if (id === undefined || id !== this.selectedProd.item_id) {
@@ -434,6 +439,8 @@ export class HomepageComponent implements OnInit {
   private _clearCarbonCombo(carbon: ComboBox) {
     carbon.selectedValue = '';
     carbon.showClearButton = false;
+    this.isSearchPerformed = false;
+
   }
 
   /**
@@ -992,6 +999,7 @@ export class HomepageComponent implements OnInit {
 
   onChangeSearchByModelNo(event) {
     this.isSearchByModelNo = !this.isSearchByModelNo;
+    this.isSearchPerformed = false;
     console.log('isSearchByModelNo -->', this.isSearchByModelNo);
 
     this._refreshSupplierTableHeader(this.isSearchByModelNo);
