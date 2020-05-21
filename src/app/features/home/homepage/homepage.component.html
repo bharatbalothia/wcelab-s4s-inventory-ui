@@ -99,6 +99,7 @@
     <div class="bx--col">
       <buc-table
       [class.no-data]="model.totalDataLength===0"
+      [class.no-search]="model.totalDataLength===1"
       [model]='model'
       [skeleton]="!isScreenInitialized || model.isLoading"
       [hasSearch]=false
@@ -109,8 +110,11 @@
         <tbody>
           <tr>
             <td class="no-data" [attr.colspan]="model.header[0].length">
-              <div>
+              <div [class.hide-div]="!isSearchPerformed" >
                 <buc-empty-state stateMessage="{{ 'common.LABEL_noData' | translate }}"></buc-empty-state>
+              </div>
+              <div [class.hide-div]="isSearchPerformed" >
+                <buc-empty-state stateMessage="{{ 'common.LABEL_noSearch' | translate }}"></buc-empty-state>
               </div>
             </td>
           </tr>
